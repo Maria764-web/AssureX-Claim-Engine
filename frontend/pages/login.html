@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sign In — AssureX Claim Engine</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800;900&family=Space+Grotesk:wght@600;700;800&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+html,body{height:100%;font-family:'Inter',sans-serif;-webkit-font-smoothing:antialiased;overflow:hidden;}
+
+/* ── VIDEO BACKGROUND ── */
+.vid-bg{position:fixed;inset:0;z-index:0;}
+.vid-bg video{width:100%;height:100%;object-fit:cover;display:block;}
+/* Glassmorphism dark overlay */
+.vid-bg::after{
+  content:'';position:absolute;inset:0;
+  background:rgba(4,6,20,.78);
+  backdrop-filter:blur(2px);
+}
+
+/* ── STAR PARTICLES CANVAS ── */
+#star-canvas{position:fixed;inset:0;z-index:1;pointer-events:none;}
+
+/* ── PAGE CENTER ── */
+.page{
+  position:relative;z-index:2;
+  height:100vh;
+  display:flex;align-items:center;justify-content:center;
+  padding:1rem;
+}
+
+/* ── GLASS FORM ── */
+.auth-box{width:100%;max-width:420px;}
+
+.auth-brand{text-align:center;margin-bottom:1.4rem;}
+.auth-logo{
+  display:inline-flex;align-items:center;justify-content:center;
+  width:46px;height:46px;
+  background:linear-gradient(135deg,#7c3aed,#38bdf8);
+  border-radius:12px;
+  box-shadow:0 0 22px rgba(56,189,248,.5),0 0 44px rgba(124,58,237,.28);
+  margin-bottom:.6rem;
+  animation:logoP 3s ease-in-out infinite;
+}
+@keyframes logoP{
+  0%,100%{box-shadow:0 0 22px rgba(56,189,248,.5),0 0 44px rgba(124,58,237,.28)}
+  50%{box-shadow:0 0 34px rgba(56,189,248,.75),0 0 65px rgba(124,58,237,.44)}
+}
+.auth-name{font-family:'Space Grotesk',sans-serif;font-size:1.55rem;font-weight:800;letter-spacing:-.04em;color:#fff;}
+.auth-x{background:linear-gradient(90deg,#38bdf8,#e879f9);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.auth-sub{font-size:.75rem;color:rgba(255,255,255,.32);margin-top:.15rem;}
+
+.auth-card{
+  background:rgba(5,8,25,.68);
+  border:1px solid rgba(56,189,248,.16);
+  border-radius:20px;
+  padding:2rem 2.2rem 1.8rem;
+  backdrop-filter:blur(36px);-webkit-backdrop-filter:blur(36px);
+  box-shadow:0 28px 70px rgba(0,0,0,.6),inset 0 1px 0 rgba(255,255,255,.06),0 0 0 1px rgba(124,58,237,.07);
+  position:relative;overflow:hidden;
+  animation:cardIn .7s cubic-bezier(.22,1,.36,1) both;
+}
+@keyframes cardIn{from{opacity:0;transform:translateY(22px) scale(.97)}to{opacity:1;transform:none}}
+.auth-card::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:1.5px;
+  background:linear-gradient(90deg,transparent,#38bdf8 35%,#e879f9 65%,transparent);
+  animation:tl 3s ease-in-out infinite;
+}
+@keyframes tl{0%,100%{opacity:.4}50%{opacity:1}}
+
+.auth-h{font-family:'Space Grotesk',sans-serif;font-size:1.18rem;font-weight:800;color:#fff;margin-bottom:.18rem;}
+.auth-p{font-size:.79rem;color:rgba(255,255,255,.34);margin-bottom:1.4rem;}
+
+/* Alerts */
+.alert{padding:.62rem .9rem;border-radius:8px;font-size:.79rem;margin-bottom:.9rem;display:flex;align-items:center;gap:.42rem;}
+.alert-error{background:rgba(239,68,68,.12);border:1px solid rgba(239,68,68,.32);color:#fca5a5;}
+.alert-success{background:rgba(74,222,128,.1);border:1px solid rgba(74,222,128,.28);color:#86efac;}
+.alert-info{background:rgba(56,189,248,.1);border:1px solid rgba(56,189,248,.22);color:#bae6fd;}
+
+/* Form fields */
+.fg{margin-bottom:.88rem;}
+.fl{display:block;font-size:.75rem;font-weight:600;color:rgba(255,255,255,.48);margin-bottom:.28rem;}
+.iw{position:relative;}
+.iw svg{position:absolute;left:.8rem;top:50%;transform:translateY(-50%);color:rgba(255,255,255,.2);pointer-events:none;transition:color .2s;width:14px;height:14px;}
+.ic{
+  width:100%;padding:.7rem .9rem .7rem 2.35rem;
+  background:rgba(4,7,22,.72);
+  border:1px solid rgba(56,189,248,.11);
+  border-radius:9px;color:#fff;
+  font-size:.88rem;font-family:'Inter',sans-serif;
+  transition:all .22s;
+}
+.ic::placeholder{color:rgba(255,255,255,.18);}
+.ic:focus{outline:none;border-color:#38bdf8;background:rgba(4,7,22,.9);box-shadow:0 0 0 2px rgba(56,189,248,.1),0 0 14px rgba(56,189,248,.12);}
+.iw:focus-within svg{color:#38bdf8;}
+
+.form-row{display:flex;align-items:center;margin-bottom:1.2rem;}
+.ck{display:flex;align-items:center;gap:.38rem;font-size:.76rem;color:rgba(255,255,255,.35);cursor:pointer;}
+input[type=checkbox]{accent-color:#38bdf8;width:12px;height:12px;}
+
+/* Submit */
+.btn-sub{
+  width:100%;padding:.82rem;
+  background:linear-gradient(135deg,#7c3aed 0%,#6366f1 52%,#38bdf8 100%);
+  background-size:200% 200%;
+  color:#fff;border:none;border-radius:10px;
+  font-size:.92rem;font-weight:700;font-family:'Outfit',sans-serif;
+  letter-spacing:.03em;cursor:pointer;
+  position:relative;overflow:hidden;
+  box-shadow:0 4px 20px rgba(124,58,237,.58),0 0 0 1.5px rgba(167,139,250,.25);
+  animation:glow 2.8s ease-in-out infinite;
+  transition:transform .18s;
+}
+.btn-sub::before{
+  content:'◆';position:absolute;left:.78rem;top:50%;
+  transform:translateY(-50%) scale(.68);font-size:.6rem;
+  color:rgba(255,255,255,.5);animation:spin 4s linear infinite;
+}
+.btn-sub::after{
+  content:'';position:absolute;top:0;left:-60%;width:36%;height:100%;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.2),transparent);
+  animation:shim 2.8s 1s linear infinite;
+}
+@keyframes glow{
+  0%,100%{box-shadow:0 4px 20px rgba(124,58,237,.58),0 0 0 1.5px rgba(167,139,250,.25)}
+  50%{box-shadow:0 8px 36px rgba(124,58,237,.85),0 0 26px rgba(99,102,241,.45),0 0 0 2px rgba(167,139,250,.48)}
+}
+@keyframes spin{to{transform:translateY(-50%) scale(.68) rotate(360deg)}}
+@keyframes shim{0%{left:-60%}100%{left:120%}}
+.btn-sub:hover{transform:translateY(-2px) scale(1.02);}
+.btn-sub:active{transform:translateY(1px);}
+
+/* Ripple */
+.rip{position:absolute;border-radius:50%;background:rgba(255,255,255,.2);transform:scale(0);animation:rgo .6s linear;pointer-events:none;}
+@keyframes rgo{to{transform:scale(5);opacity:0}}
+
+.auth-div{display:flex;align-items:center;gap:.65rem;margin:1.1rem 0 .8rem;color:rgba(255,255,255,.1);font-size:.68rem;}
+.auth-div::before,.auth-div::after{content:'';flex:1;height:1px;background:rgba(255,255,255,.07);}
+.auth-foot{text-align:center;font-size:.79rem;color:rgba(255,255,255,.34);}
+.auth-foot a{color:#38bdf8;text-decoration:none;font-weight:600;}
+.auth-foot a:hover{color:#7dd3fc;}
+
+.back-btn{
+  display:inline-flex;align-items:center;gap:.4rem;
+  font-size:.76rem;font-weight:600;color:rgba(255,255,255,.45);
+  text-decoration:none;
+  margin-bottom:1rem;
+  padding:.32rem .7rem;
+  border-radius:8px;
+  border:1px solid rgba(255,255,255,.1);
+  background:rgba(255,255,255,.04);
+  transition:all .2s;
+  backdrop-filter:blur(8px);
+}
+.back-btn:hover{color:#fff;border-color:rgba(56,189,248,.35);background:rgba(56,189,248,.07);}
+.back-btn svg{transition:transform .2s;}
+.back-btn:hover svg{transform:translateX(-3px);}
+</style>
+</head>
+<body>
+
+<!-- VIDEO BACKGROUND -->
+<div class="vid-bg">
+  <video autoplay muted loop playsinline preload="auto">
+    <source src="{{ url_for('static', filename='videos/auth-bg.mp4') }}" type="video/mp4">
+  </video>
+</div>
+
+<!-- Floating star particles canvas -->
+<canvas id="star-canvas"></canvas>
+
+<div class="page">
+  <div class="auth-box">
+
+    <div class="auth-brand">
+      <div class="auth-logo">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.3"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg>
+      </div>
+      <div class="auth-name">Assure<span class="auth-x">X</span></div>
+      <div class="auth-sub">AI-Powered Warranty Claim Engine</div>
+    </div>
+
+    <div style="text-align:center;margin-bottom:.7rem;">
+      <a href="{{ url_for('main.index') }}" class="back-btn">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+        Back to Home
+      </a>
+    </div>
+
+    <div class="auth-card">
+      <h2 class="auth-h">Welcome back</h2>
+      <p class="auth-p">Sign in to your account to continue</p>
+
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+          {% for category, message in messages %}
+            <div class="alert alert-{{ 'error' if category in ['error','danger'] else ('success' if category == 'success' else 'info') }}">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+              {{ message }}
+            </div>
+          {% endfor %}
+        {% endif %}
+      {% endwith %}
+
+      <form method="POST" action="{{ url_for('auth.login') }}" id="login-form">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+        <input type="hidden" name="next" value="{{ request.args.get('next', '') }}"/>
+
+        <div class="fg">
+          <label class="fl" for="email">Email Address</label>
+          <div class="iw">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+            <input type="email" id="email" name="email" class="ic" placeholder="name@example.com" value="{{ email or '' }}" required autocomplete="email" autofocus>
+          </div>
+        </div>
+
+        <div class="fg">
+          <label class="fl" for="password">Password</label>
+          <div class="iw">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            <input type="password" id="password" name="password" class="ic" placeholder="••••••••" required autocomplete="current-password">
+          </div>
+        </div>
+
+        <div class="form-row">
+          <label class="ck" for="remember">
+            <input type="checkbox" id="remember" name="remember" value="1">
+            <span>Remember me</span>
+          </label>
+        </div>
+
+        <button type="submit" class="btn-sub" id="login-btn">
+          Sign In to AssureX &rarr;
+        </button>
+      </form>
+
+      <div class="auth-div">or</div>
+      <div class="auth-foot">
+        Don't have an account? <a href="{{ url_for('auth.register_view') }}">Create Account</a>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+/* ── FLOATING STAR PARTICLES ── */
+(function(){
+  var c = document.getElementById('star-canvas');
+  if(!c) return;
+  var ctx = c.getContext('2d');
+  var W, H, stars = [];
+
+  function resize(){
+    W = c.width = window.innerWidth;
+    H = c.height = window.innerHeight;
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  /* Create stars */
+  for(var i = 0; i < 90; i++){
+    stars.push({
+      x: Math.random() * window.innerWidth,
+      y: Math.random() * window.innerHeight,
+      r: Math.random() * 1.6 + 0.3,
+      opacity: Math.random() * 0.7 + 0.1,
+      speed: Math.random() * 0.35 + 0.08,
+      drift: (Math.random() - 0.5) * 0.3,
+      twinkle: Math.random() * Math.PI * 2,
+      twinkleSpeed: Math.random() * 0.04 + 0.01,
+      color: Math.random() > 0.6
+        ? 'rgba(56,189,248,'  /* cyan */
+        : Math.random() > 0.5
+          ? 'rgba(167,139,250,' /* violet */
+          : 'rgba(232,121,249,' /* magenta */
+    });
+  }
+
+  function draw(){
+    ctx.clearRect(0, 0, W, H);
+    stars.forEach(function(s){
+      s.twinkle += s.twinkleSpeed;
+      var alpha = s.opacity * (0.5 + 0.5 * Math.sin(s.twinkle));
+      /* Glow effect */
+      var grd = ctx.createRadialGradient(s.x, s.y, 0, s.x, s.y, s.r * 3);
+      grd.addColorStop(0, s.color + alpha + ')');
+      grd.addColorStop(1, s.color + '0)');
+      ctx.beginPath();
+      ctx.arc(s.x, s.y, s.r * 3, 0, Math.PI * 2);
+      ctx.fillStyle = grd;
+      ctx.fill();
+      /* Core dot */
+      ctx.beginPath();
+      ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+      ctx.fillStyle = s.color + alpha + ')';
+      ctx.fill();
+      /* Move upward */
+      s.y -= s.speed;
+      s.x += s.drift;
+      /* Reset when off screen */
+      if(s.y < -6){
+        s.y = H + 6;
+        s.x = Math.random() * W;
+      }
+      if(s.x < -6) s.x = W + 6;
+      if(s.x > W + 6) s.x = -6;
+    });
+    requestAnimationFrame(draw);
+  }
+  draw();
+})();
+
+/* RIPPLE */
+document.getElementById('login-btn').addEventListener('click', function(e){
+  var r = document.createElement('span'); r.className = 'rip';
+  var rect = this.getBoundingClientRect(), sz = Math.max(rect.width, rect.height) * 2;
+  r.style.cssText = 'width:'+sz+'px;height:'+sz+'px;left:'+(e.clientX-rect.left-sz/2)+'px;top:'+(e.clientY-rect.top-sz/2)+'px';
+  this.appendChild(r); setTimeout(function(){ r.remove(); }, 700);
+});
+</script>
+</body>
+</html>

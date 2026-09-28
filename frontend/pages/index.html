@@ -1,0 +1,884 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AssureX Claim Engine — AI-Powered Warranty Validation</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@500;600;700;800&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/vanilla-tilt@1.8.1/dist/vanilla-tilt.min.js" defer></script>
+<style>
+:root{
+  --bg:#050816;--bg2:#080d1f;--bg3:#0d1535;
+  --card:rgba(10,15,40,.82);
+  --blue:#38bdf8;--blue2:#60a5fa;
+  --purple:#7c3aed;--violet:#a78bfa;
+  --magenta:#e879f9;--cyan:#22d3ee;--green:#4ade80;
+  --text:#fff;--body:rgba(255,255,255,.65);--muted:rgba(255,255,255,.35);
+  --border:rgba(56,189,248,.14);
+  --glow-b:0 0 30px rgba(56,189,248,.3);
+  --shadow:0 20px 60px rgba(0,0,0,.6),0 0 0 1px rgba(56,189,248,.05);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--body);overflow-x:hidden;-webkit-font-smoothing:antialiased;}
+h1,h2,h3,h4{font-family:'Outfit',sans-serif;color:var(--text);}
+::-webkit-scrollbar{width:4px}::-webkit-scrollbar-track{background:var(--bg2)}::-webkit-scrollbar-thumb{background:var(--purple);border-radius:2px}
+
+/* BG */
+.bg-grad{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0;
+  background:radial-gradient(ellipse 70% 55% at 15% 18%,rgba(56,189,248,.08) 0%,transparent 55%),
+    radial-gradient(ellipse 60% 55% at 85% 25%,rgba(124,58,237,.1) 0%,transparent 55%),
+    radial-gradient(ellipse 50% 45% at 50% 88%,rgba(232,121,249,.07) 0%,transparent 55%),
+    var(--bg);}
+.dot-grid{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;pointer-events:none;
+  background-image:radial-gradient(circle,rgba(255,255,255,.055) 1px,transparent 1px);
+  background-size:32px 32px;
+  mask-image:radial-gradient(ellipse 100% 100% at 50% 50%,black 0%,transparent 100%);}
+#bg-canvas{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;pointer-events:none;}
+.page{position:relative;z-index:1;}
+.container{max-width:1240px;margin:0 auto;padding:0 2rem;}
+.sec-pad{padding:7rem 0;}
+
+/* NAV */
+.site-header{position:sticky;top:0;z-index:100;background:rgba(5,8,22,.82);backdrop-filter:blur(22px);-webkit-backdrop-filter:blur(22px);border-bottom:1px solid rgba(56,189,248,.07);transition:all .3s;}
+.site-header.scrolled{background:rgba(5,8,22,.96);border-bottom-color:rgba(56,189,248,.15);box-shadow:0 4px 28px rgba(0,0,0,.5);}
+.nav-inner{max-width:1240px;margin:0 auto;padding:0 2rem;height:70px;display:flex;align-items:center;justify-content:space-between;}
+.brand{display:flex;align-items:center;gap:.7rem;text-decoration:none;}
+.brand-ico{width:34px;height:34px;background:linear-gradient(135deg,var(--purple),var(--blue));border-radius:9px;display:flex;align-items:center;justify-content:center;box-shadow:0 0 14px rgba(56,189,248,.4);}
+.brand-name{font-family:'Space Grotesk',sans-serif;font-size:1.4rem;font-weight:800;letter-spacing:-.03em;color:var(--text);}
+.brand-x{background:linear-gradient(90deg,var(--blue),var(--magenta));-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.brand-tag{font-size:.62rem;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:var(--blue);background:rgba(56,189,248,.1);padding:.18rem .5rem;border-radius:4px;border:1px solid rgba(56,189,248,.2);}
+.nav-links{list-style:none;display:flex;align-items:center;gap:2.2rem;}
+.nav-links a{text-decoration:none;color:rgba(255,255,255,.55);font-size:.88rem;font-weight:500;transition:color .15s;}
+.nav-links a:hover{color:var(--blue);}
+.nav-ctas{display:flex;align-items:center;gap:.7rem;}
+.mob-btn{display:none;background:none;border:none;cursor:pointer;color:var(--text);padding:.4rem;}
+
+/* BUTTONS */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:.48rem;font-family:'Outfit',sans-serif;font-weight:700;font-size:.9rem;letter-spacing:.01em;padding:.62rem 1.45rem;border-radius:999px;cursor:pointer;text-decoration:none;border:none;position:relative;overflow:hidden;transition:all .28s cubic-bezier(.16,1,.3,1);white-space:nowrap;}
+.btn::before{content:'';position:absolute;top:0;left:-120%;width:60%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.27),transparent);transform:skewX(-20deg);transition:left .6s;}
+.btn:hover::before{left:160%;}
+.btn-primary{background:linear-gradient(135deg,var(--purple) 0%,#6366f1 55%,var(--blue) 100%);color:#fff;box-shadow:0 4px 18px rgba(124,58,237,.5),0 0 0 1.5px rgba(167,139,250,.3);animation:btnGlow 3.5s ease-in-out infinite;}
+@keyframes btnGlow{0%,100%{box-shadow:0 4px 18px rgba(124,58,237,.5),0 0 0 1.5px rgba(167,139,250,.3)}50%{box-shadow:0 6px 32px rgba(124,58,237,.75),0 0 22px rgba(99,102,241,.4),0 0 0 2px rgba(167,139,250,.55)}}
+.btn-primary:hover{transform:translateY(-2px) scale(1.03);color:#fff;}
+.btn-demo{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.15);color:var(--text);}
+.btn-demo:hover{background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.3);transform:translateY(-2px);}
+.btn-ghost{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.2);color:var(--text);}
+.btn-ghost:hover{background:rgba(255,255,255,.12);transform:translateY(-2px);}
+.btn-white{background:#fff;color:var(--purple);font-weight:800;}
+.btn-white:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,.3);}
+.btn-lg{padding:.82rem 2rem;font-size:.98rem;}
+.btn-sm{padding:.4rem 1rem;font-size:.8rem;}
+.ripple{position:absolute;border-radius:50%;background:rgba(255,255,255,.25);transform:scale(0);animation:rippleGo .65s linear;pointer-events:none;}
+@keyframes rippleGo{to{transform:scale(5);opacity:0}}
+
+/* SECTION HELPERS */
+.sec-tag{display:inline-flex;align-items:center;gap:.38rem;font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;padding:.26rem .82rem;border-radius:4px;background:rgba(56,189,248,.08);color:var(--blue);border:1px solid rgba(56,189,248,.2);margin-bottom:1.2rem;}
+.stag-dot{width:5px;height:5px;border-radius:50%;background:var(--blue);animation:sdot 2s infinite;}
+@keyframes sdot{0%,100%{box-shadow:0 0 0 0 rgba(56,189,248,.7)}70%{box-shadow:0 0 0 6px transparent}}
+.sec-h{font-size:2.55rem;font-weight:800;letter-spacing:-.035em;line-height:1.15;color:var(--text);}
+.grad-text{background:linear-gradient(90deg,var(--blue) 0%,var(--violet) 50%,var(--magenta) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.center{text-align:center;max-width:760px;margin:0 auto 4.5rem;}
+.center .sec-h{font-size:2.75rem;}
+.sub-txt{font-size:1rem;color:var(--body);margin-top:.65rem;line-height:1.7;}
+.divider-glow{width:70px;height:2.5px;background:linear-gradient(90deg,var(--blue),var(--magenta));border-radius:2px;margin:.9rem auto 0;box-shadow:0 0 10px rgba(232,121,249,.45);}
+.reveal{opacity:0;transform:translateY(24px);transition:opacity .6s cubic-bezier(.16,1,.3,1),transform .6s cubic-bezier(.16,1,.3,1);}
+.reveal.visible{opacity:1;transform:translateY(0);}
+
+/* ═══════════════════════════════
+   HERO
+   ═══════════════════════════════ */
+.hero{
+  position:relative;
+  overflow:hidden;
+  background:rgba(7,11,32,.68);
+  backdrop-filter:blur(30px);-webkit-backdrop-filter:blur(30px);
+  border-bottom:1px solid rgba(56,189,248,.1);
+}
+.hero::before{
+  content:'';position:absolute;top:0;left:0;width:55%;height:100%;
+  background:radial-gradient(ellipse at 25% 55%,rgba(124,58,237,.18) 0%,rgba(56,189,248,.07) 50%,transparent 75%);
+  filter:blur(70px);pointer-events:none;z-index:0;
+}
+
+/* 55/45 full-width grid */
+.hero-wrap{
+  display:grid;
+  grid-template-columns:50% 50%;
+  min-height:80vh;
+  position:relative;z-index:1;
+  width:100%;
+}
+
+/* LEFT — content, centered vertically */
+.hero-left-col{
+  display:flex;flex-direction:column;justify-content:center;
+  padding:5rem clamp(2rem,5vw,5rem) 5rem clamp(2.5rem,8vw,8rem);
+}
+
+/* Chip */
+.hero-chip{
+  display:inline-flex;align-items:center;gap:.5rem;
+  padding:.28rem 1rem;border-radius:999px;
+  background:rgba(56,189,248,.09);
+  border:1px solid rgba(56,189,248,.26);
+  font-size:.67rem;font-weight:700;text-transform:uppercase;letter-spacing:.14em;
+  color:var(--blue);margin-bottom:1.4rem;width:fit-content;
+  animation:chipIn .6s .4s cubic-bezier(.22,1,.36,1) both;
+}
+@keyframes chipIn{from{opacity:0;transform:translateY(-10px)}to{opacity:1;transform:none}}
+.hero-dot{width:6px;height:6px;border-radius:50%;background:var(--blue);animation:sdot 1.8s infinite;flex-shrink:0;}
+
+/* Title */
+.hero-title{
+  font-family:'Space Grotesk',sans-serif;
+  font-size:clamp(2.6rem,3.8vw,3.8rem);
+  font-weight:900;letter-spacing:-.04em;line-height:1.08;
+  color:#fff;margin-bottom:1.1rem;
+}
+.hero-title .w1{display:block;animation:wordUp .55s .5s cubic-bezier(.22,1,.36,1) both;}
+.hero-title .w2{display:block;animation:wordUp .55s .64s cubic-bezier(.22,1,.36,1) both;}
+.hero-title .w3{
+  display:block;font-size:1.1em;
+  background:linear-gradient(100deg,var(--cyan) 0%,var(--violet) 50%,var(--magenta) 100%);
+  background-size:200% 100%;
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  animation:wordUp .55s .78s cubic-bezier(.22,1,.36,1) both,gradShift 4s 1.5s linear infinite;
+}
+@keyframes wordUp{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:none}}
+@keyframes gradShift{0%{background-position:0% 50%}100%{background-position:200% 50%}}
+
+/* Description */
+.hero-sub{
+  font-size:.93rem;color:rgba(255,255,255,.6);line-height:1.88;
+  max-width:420px;margin-bottom:1.8rem;
+  animation:fadeUp .55s .9s cubic-bezier(.22,1,.36,1) both;
+}
+@keyframes fadeUp{from{opacity:0;transform:translateY(13px)}to{opacity:1;transform:none}}
+
+/* Buttons */
+.hero-btns{
+  display:flex;gap:.8rem;flex-wrap:wrap;margin-bottom:1.6rem;
+  animation:fadeUp .55s 1.04s cubic-bezier(.22,1,.36,1) both;
+}
+
+/* Primary — diamond + shimmer + pulse */
+.btn-primary{
+  background:linear-gradient(135deg,#7c3aed 0%,#6366f1 50%,#38bdf8 100%);
+  background-size:200% 200%;
+  color:#fff;font-weight:700;letter-spacing:.03em;border:none;
+  box-shadow:0 4px 22px rgba(124,58,237,.6),0 0 0 1.5px rgba(167,139,250,.28);
+  position:relative;overflow:hidden;
+  animation:btnPulse 2.8s ease-in-out infinite;
+  transition:transform .2s,box-shadow .2s;
+}
+.btn-primary::before{
+  content:'◆';position:absolute;left:.72rem;top:50%;
+  transform:translateY(-50%) scale(.7);font-size:.62rem;
+  color:rgba(255,255,255,.55);
+  animation:starSpin 4s linear infinite;
+}
+.btn-primary::after{
+  content:'';position:absolute;top:0;left:-60%;width:38%;height:100%;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.22),transparent);
+  animation:shimmer 2.8s 1s linear infinite;
+}
+@keyframes shimmer{0%{left:-60%}100%{left:120%}}
+@keyframes btnPulse{
+  0%,100%{box-shadow:0 4px 22px rgba(124,58,237,.6),0 0 0 1.5px rgba(167,139,250,.28)}
+  50%{box-shadow:0 8px 38px rgba(124,58,237,.88),0 0 28px rgba(99,102,241,.48),0 0 0 2px rgba(167,139,250,.5)}
+}
+@keyframes starSpin{to{transform:translateY(-50%) scale(.7) rotate(360deg)}}
+.btn-primary:hover{transform:translateY(-3px) scale(1.04);color:#fff;}
+.btn-primary:active{transform:translateY(1px) scale(.97);}
+.btn-primary.btn-lg{padding-left:2.1rem;}
+
+/* Demo — conic star border on hover */
+.btn-demo{
+  background:rgba(255,255,255,.05);
+  border:1px solid rgba(255,255,255,.16);
+  color:rgba(255,255,255,.82);
+  position:relative;overflow:hidden;
+  font-weight:600;letter-spacing:.02em;transition:all .25s;
+}
+.btn-demo::before{
+  content:'';position:absolute;inset:-1.5px;border-radius:inherit;
+  background:conic-gradient(from var(--angle,0deg),transparent 55%,var(--cyan) 68%,var(--violet) 82%,transparent 95%);
+  opacity:0;z-index:-1;transition:opacity .3s;
+}
+@property --angle{syntax:'<angle>';initial-value:0deg;inherits:false;}
+.btn-demo:hover{background:rgba(56,189,248,.07);border-color:transparent;color:#fff;}
+.btn-demo:hover::before{opacity:1;animation:conicSpin 1.8s linear infinite;}
+@keyframes conicSpin{to{--angle:360deg}}
+.btn-demo .star-dec{font-size:.67rem;opacity:.6;transition:opacity .2s,transform .25s;margin-right:.1rem;}
+.btn-demo:hover .star-dec{opacity:1;transform:rotate(36deg);}
+.btn-demo svg{transition:transform .2s;}
+.btn-demo:hover svg{transform:translateX(3px);}
+
+/* Trust badges */
+.trust-badges{
+  display:flex;align-items:center;gap:1.4rem;flex-wrap:wrap;
+  animation:fadeUp .55s 1.18s cubic-bezier(.22,1,.36,1) both;
+}
+.tb{display:flex;align-items:center;gap:.38rem;font-size:.74rem;color:rgba(255,255,255,.45);}
+.tb svg{width:13px;height:13px;color:var(--blue);flex-shrink:0;}
+
+/* ── RIGHT: image fills column ── */
+.hero-img-right{
+  position:relative;
+  overflow:hidden;
+  animation:imgReveal .9s .25s cubic-bezier(.22,1,.36,1) both;
+}
+@keyframes imgReveal{from{opacity:0}to{opacity:1}}
+.hero-img-right img{
+  position:absolute;
+  inset:0;width:100%;height:100%;
+  object-fit:cover;object-position:center top;
+  animation:imgFloat 10s ease-in-out infinite;
+}
+@keyframes imgFloat{0%,100%{transform:scale(1.03)}50%{transform:scale(1.06) translateY(-7px)}}
+/* Left fade — seamless blend into content */
+.hero-img-right::before{
+  content:'';position:absolute;inset:0;z-index:2;pointer-events:none;
+  background:linear-gradient(to right,rgba(7,11,32,.92) 0%,rgba(7,11,32,.55) 28%,rgba(7,11,32,.12) 60%,transparent 100%);
+}
+/* Top/bottom fade */
+.hero-img-right::after{
+  content:'';position:absolute;inset:0;z-index:2;pointer-events:none;
+  background:linear-gradient(to bottom,rgba(7,11,32,.45) 0%,transparent 15%,transparent 82%,rgba(7,11,32,.65) 100%);
+}
+/* Cyan aura glow */
+.hero-img-glow{
+  position:absolute;top:40%;left:40%;
+  width:300px;height:350px;
+  background:radial-gradient(ellipse,rgba(56,189,248,.2) 0%,rgba(124,58,237,.12) 50%,transparent 70%);
+  filter:blur(55px);z-index:1;
+  animation:auraP 5s ease-in-out infinite alternate;
+}
+@keyframes auraP{from{opacity:.55;transform:scale(1)}to{opacity:1;transform:scale(1.18)}}
+/* Floating stat cards */
+.hf{
+  position:absolute;z-index:5;
+  background:rgba(5,9,28,.78);
+  border:1px solid rgba(56,189,248,.18);
+  border-radius:12px;padding:.58rem .82rem;
+  display:flex;align-items:center;gap:.52rem;
+  backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);
+  box-shadow:0 8px 28px rgba(0,0,0,.5);
+  animation:fcard 5.5s ease-in-out infinite;
+  white-space:nowrap;
+}
+.hf:nth-child(2){animation-delay:-2s}
+.hf:nth-child(3){animation-delay:-3.8s}
+.hf:nth-child(4){animation-delay:-5.2s}
+@keyframes fcard{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+.hf-tl{top:14%;left:8%;}
+.hf-tr{top:10%;right:6%;}
+.hf-bl{bottom:18%;left:8%;}
+.hf-br{bottom:13%;right:6%;}
+.hf-ico{width:30px;height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.ico-b{background:rgba(56,189,248,.15);color:var(--blue);}
+.ico-p{background:rgba(124,58,237,.2);color:var(--violet);}
+.ico-c{background:rgba(34,211,238,.15);color:var(--cyan);}
+.ico-g{background:rgba(74,222,128,.15);color:var(--green);}
+.hf-name{font-size:.78rem;font-weight:700;color:#fff;line-height:1.15;}
+.hf-sub{font-size:.64rem;color:rgba(255,255,255,.42);}
+
+/* TRUSTED BY — marquee */
+.trusted-sec{
+  border-top:1px solid rgba(255,255,255,.06);
+  border-bottom:1px solid rgba(255,255,255,.06);
+  padding:1.5rem 0;
+  background:rgba(255,255,255,.02);
+  overflow:hidden;
+  position:relative;
+}
+/* Left + right edge fade */
+.trusted-sec::before,.trusted-sec::after{
+  content:'';position:absolute;top:0;bottom:0;width:120px;z-index:2;pointer-events:none;
+}
+.trusted-sec::before{left:0;background:linear-gradient(to right,var(--bg),transparent);}
+.trusted-sec::after{right:0;background:linear-gradient(to left,var(--bg),transparent);}
+
+.trusted-row{display:flex;align-items:center;gap:0;}
+.trusted-lbl{
+  font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.12em;
+  color:var(--muted);white-space:nowrap;
+  padding:0 2rem 0 2.5rem;flex-shrink:0;
+}
+.trusted-sep{width:1px;height:20px;background:rgba(255,255,255,.1);flex-shrink:0;margin-right:0;}
+
+/* Marquee track */
+.trusted-logos{
+  display:flex;align-items:center;gap:0;
+  overflow:hidden;flex:1;
+}
+.marquee-track{
+  display:flex;align-items:center;gap:3rem;
+  animation:marquee 18s linear infinite;
+  white-space:nowrap;
+  padding-left:3rem;
+}
+.marquee-track:hover{animation-play-state:paused;}
+@keyframes marquee{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+.t-logo{
+  font-size:.82rem;font-weight:700;letter-spacing:.04em;
+  color:rgba(255,255,255,.28);
+  transition:color .25s,text-shadow .25s;
+  cursor:default;white-space:nowrap;flex-shrink:0;
+}
+.t-logo:hover{
+  color:rgba(255,255,255,.75);
+  text-shadow:0 0 18px rgba(56,189,248,.5);
+}
+.t-logo{font-family:'Space Grotesk',sans-serif;font-size:.95rem;font-weight:700;color:rgba(255,255,255,.22);letter-spacing:-.02em;transition:color .2s;cursor:default;}
+.t-logo:hover{color:rgba(255,255,255,.5);}
+
+/* FEATURES */
+.feat-sec{background:linear-gradient(180deg,var(--bg) 0%,var(--bg2) 100%);}
+.feat-cards{display:grid;grid-template-columns:repeat(4,1fr);gap:1.4rem;margin-top:4rem;}
+.fc{background:linear-gradient(155deg,rgba(12,20,55,.92) 0%,rgba(8,13,38,.78) 100%);border:1px solid rgba(56,189,248,.1);border-radius:18px;padding:1.9rem;position:relative;overflow:hidden;transition:all .3s cubic-bezier(.16,1,.3,1);}
+.fc::after{content:'';position:absolute;top:0;left:0;right:0;height:1.5px;background:linear-gradient(90deg,transparent,var(--blue),transparent);opacity:0;transition:opacity .3s;}
+.fc:hover{border-color:rgba(56,189,248,.3);transform:translateY(-6px);box-shadow:0 20px 55px rgba(0,0,0,.5),0 0 0 1px rgba(56,189,248,.12),var(--glow-b);}
+.fc:hover::after{opacity:.7;}
+.fc-ico{width:50px;height:50px;border-radius:13px;display:flex;align-items:center;justify-content:center;margin-bottom:1.35rem;}
+.fci-b{background:rgba(56,189,248,.14);color:var(--blue);}
+.fci-p{background:rgba(124,58,237,.18);color:var(--violet);}
+.fci-c{background:rgba(34,211,238,.14);color:var(--cyan);}
+.fci-g{background:rgba(74,222,128,.14);color:var(--green);}
+.fc h3{font-size:1.03rem;font-weight:700;color:var(--text);margin-bottom:.5rem;}
+.fc p{font-size:.84rem;color:var(--body);line-height:1.68;}
+.fc-arrow{width:30px;height:30px;border-radius:50%;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);display:flex;align-items:center;justify-content:center;margin-top:1.35rem;transition:all .2s;}
+.fc:hover .fc-arrow{background:rgba(56,189,248,.15);border-color:var(--blue);}
+
+/* DASHBOARD */
+.dash-sec{background:linear-gradient(180deg,var(--bg2) 0%,var(--bg) 100%);}
+.dash-wrap{max-width:1100px;margin:0 auto;}
+.dash-mockup{background:rgba(6,10,26,.92);border:1px solid rgba(56,189,248,.12);border-radius:22px;overflow:hidden;box-shadow:0 40px 100px rgba(0,0,0,.7);position:relative;}
+.dash-mockup::before{content:'';position:absolute;top:0;left:0;right:0;height:1.5px;background:linear-gradient(90deg,transparent,var(--blue) 30%,var(--magenta) 70%,transparent);}
+.br-bar{display:flex;align-items:center;gap:.9rem;padding:.8rem 1.1rem;background:rgba(3,6,18,.96);border-bottom:1px solid rgba(255,255,255,.04);}
+.br-dots{display:flex;gap:.38rem;}
+.bd{width:10px;height:10px;border-radius:50%;}
+.bd-r{background:#ff5f57;}.bd-y{background:#ffbd2e;}.bd-g{background:#28c840;}
+.br-url{flex:1;max-width:250px;margin:0 auto;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);border-radius:5px;padding:.27rem .8rem;font-size:.72rem;color:rgba(255,255,255,.3);font-family:monospace;text-align:center;}
+.db-layout{display:grid;grid-template-columns:165px 1fr 195px;min-height:390px;}
+.db-sidebar{background:rgba(3,6,18,.96);border-right:1px solid rgba(255,255,255,.04);padding:1.1rem .85rem;display:flex;flex-direction:column;gap:.32rem;}
+.db-logo{display:flex;align-items:center;gap:.42rem;padding:.45rem;margin-bottom:.9rem;}
+.db-logo-ico{width:20px;height:20px;background:linear-gradient(135deg,var(--purple),var(--blue));border-radius:5px;display:flex;align-items:center;justify-content:center;}
+.db-logo-txt{font-size:.78rem;font-weight:700;color:var(--text);}
+.db-nav{display:flex;align-items:center;gap:.5rem;padding:.48rem .6rem;border-radius:7px;font-size:.76rem;color:rgba(255,255,255,.38);cursor:pointer;transition:all .15s;}
+.db-nav:hover{background:rgba(255,255,255,.04);color:rgba(255,255,255,.65);}
+.db-nav.active{background:rgba(56,189,248,.1);color:var(--blue);font-weight:600;}
+.db-nav svg{width:13px;height:13px;flex-shrink:0;}
+.db-usage{margin-top:auto;padding:.65rem;background:rgba(56,189,248,.05);border-radius:8px;border:1px solid rgba(56,189,248,.1);}
+.db-u-lbl{font-size:.63rem;color:var(--muted);}.db-u-num{font-size:.92rem;font-weight:700;color:var(--blue);}
+.db-u-bar{height:3px;background:rgba(255,255,255,.08);border-radius:2px;margin-top:.3rem;}
+.db-u-fill{height:100%;width:68%;background:linear-gradient(90deg,var(--blue),var(--violet));border-radius:2px;}
+.db-main{padding:1.35rem;display:flex;flex-direction:column;gap:1.1rem;}
+.db-hdr{display:flex;justify-content:space-between;align-items:center;}
+.db-title{font-size:.9rem;font-weight:700;color:var(--text);}
+.db-period{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:5px;padding:.26rem .7rem;font-size:.7rem;color:rgba(255,255,255,.42);}
+.db-chart-box{background:rgba(3,6,18,.65);border:1px solid rgba(255,255,255,.04);border-radius:11px;padding:.95rem;}
+.db-ch-hdr{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:.9rem;}
+.db-accuracy{font-size:1.55rem;font-weight:800;color:var(--text);}
+.db-delta{font-size:.7rem;color:var(--green);background:rgba(74,222,128,.1);padding:.13rem .45rem;border-radius:4px;margin-left:.4rem;}
+.db-acc-lbl{font-size:.67rem;color:var(--muted);}
+.chart-svg{width:100%;height:85px;display:block;}
+.db-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:.65rem;}
+.ds{background:rgba(3,6,18,.6);border:1px solid rgba(255,255,255,.04);border-radius:9px;padding:.75rem;}
+.ds-num{font-size:1.1rem;font-weight:800;color:var(--text);}
+.ds-lbl{font-size:.66rem;color:var(--muted);}
+.ds-d{font-size:.64rem;color:var(--green);}
+.db-right{border-left:1px solid rgba(255,255,255,.04);padding:1.1rem;display:flex;flex-direction:column;background:rgba(3,5,15,.5);}
+.dr-title{font-size:.76rem;font-weight:700;color:var(--text);margin-bottom:.8rem;}
+.dr-search{width:100%;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);border-radius:6px;padding:.32rem .6rem;font-size:.7rem;color:rgba(255,255,255,.35);font-family:inherit;margin-bottom:.8rem;outline:none;}
+.dr-list{display:flex;flex-direction:column;gap:.5rem;}
+.dr-item{display:flex;align-items:center;gap:.45rem;}
+.dr-ic{width:22px;height:22px;border-radius:5px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.dr-name{font-size:.7rem;color:rgba(255,255,255,.55);flex:1;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;}
+.dr-badge{font-size:.6rem;padding:.1rem .4rem;border-radius:3px;font-weight:600;white-space:nowrap;}
+.b-ok{background:rgba(74,222,128,.15);color:var(--green);}
+.b-warn{background:rgba(251,191,36,.12);color:#fbbf24;}
+.b-info{background:rgba(56,189,248,.12);color:var(--blue);}
+.dr-pct{font-size:.68rem;font-weight:700;min-width:30px;text-align:right;}
+.pc-g{color:var(--green);}.pc-b{color:var(--blue);}.pc-w{color:#fbbf24;}
+.dr-active{margin-top:auto;padding:.6rem;background:rgba(56,189,248,.06);border-radius:7px;border:1px solid rgba(56,189,248,.13);}
+.dra-lbl{font-size:.62rem;color:var(--muted);}
+.dra-num{font-size:1.05rem;font-weight:800;color:var(--text);}
+.dra-sub{font-size:.62rem;color:var(--green);}
+
+/* STATS STRIP */
+.stats-strip{background:linear-gradient(135deg,rgba(8,12,32,1) 0%,rgba(15,10,40,1) 50%,rgba(8,12,32,1) 100%);border-top:1px solid rgba(56,189,248,.1);border-bottom:1px solid rgba(56,189,248,.1);padding:2.2rem 0;overflow:hidden;}
+.stats-track{display:flex;gap:3.5rem;align-items:center;animation:trackScroll 22s linear infinite;width:max-content;}
+@keyframes trackScroll{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+.stats-strip:hover .stats-track{animation-play-state:paused;}
+.si{display:flex;align-items:center;gap:.7rem;white-space:nowrap;flex-shrink:0;}
+.si-num{font-size:1.55rem;font-weight:800;font-family:'Space Grotesk',sans-serif;background:linear-gradient(90deg,var(--blue),var(--violet));-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.si-lbl{font-size:.8rem;color:var(--muted);}
+.si-sep{width:3px;height:3px;border-radius:50%;background:rgba(255,255,255,.2);}
+
+/* HOW IT WORKS */
+.hiw-sec{background:var(--bg);}
+.hiw-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1.4rem;position:relative;}
+.hiw-connector{position:absolute;top:43px;left:calc(12.5% + 1rem);right:calc(12.5% + 1rem);height:1px;background:linear-gradient(90deg,rgba(56,189,248,.4),rgba(232,121,249,.4));z-index:0;}
+.hiw-step{position:relative;z-index:1;background:linear-gradient(155deg,rgba(12,20,55,.9),rgba(8,13,38,.72));border:1px solid rgba(56,189,248,.1);border-radius:18px;padding:1.9rem 1.4rem;text-align:center;transition:all .25s;}
+.hiw-step:hover{border-color:rgba(56,189,248,.32);transform:translateY(-5px);box-shadow:0 20px 50px rgba(0,0,0,.4),var(--glow-b);}
+.hiw-num{width:48px;height:48px;border-radius:50%;background:linear-gradient(135deg,var(--purple),var(--blue));color:#fff;font-weight:800;font-size:1.08rem;font-family:'Space Grotesk',sans-serif;display:flex;align-items:center;justify-content:center;margin:0 auto 1.15rem;box-shadow:0 0 18px rgba(124,58,237,.45);}
+.hiw-step h3{font-size:.95rem;font-weight:700;color:var(--text);margin-bottom:.45rem;}
+.hiw-step p{font-size:.83rem;line-height:1.65;}
+
+/* COVERAGE */
+.cov-sec{background:var(--bg2);}
+.cov-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.1rem;}
+.cov-card{background:rgba(10,15,40,.7);border:1px solid rgba(56,189,248,.1);border-radius:13px;padding:1.3rem;display:flex;align-items:center;gap:.9rem;transition:all .2s;}
+.cov-card:hover{border-color:rgba(56,189,248,.3);transform:translateX(4px);box-shadow:0 8px 28px rgba(0,0,0,.3);}
+.cov-ico{width:38px;height:38px;flex-shrink:0;border-radius:9px;background:rgba(56,189,248,.1);display:flex;align-items:center;justify-content:center;color:var(--blue);}
+.cov-card h4{font-size:.88rem;font-weight:700;color:var(--text);}
+.cov-card p{font-size:.75rem;color:var(--muted);}
+
+/* FAQ */
+.faq-sec{background:var(--bg);}
+.faq-wrap{max-width:840px;margin:0 auto;}
+.faq-item{border:1px solid rgba(56,189,248,.1);border-radius:11px;overflow:hidden;margin-bottom:.8rem;background:rgba(10,15,40,.7);transition:border-color .2s;}
+.faq-item.open{border-color:rgba(56,189,248,.32);}
+.faq-q{width:100%;text-align:left;background:none;border:none;padding:1.15rem 1.4rem;font-size:.93rem;font-weight:600;color:var(--text);cursor:pointer;display:flex;justify-content:space-between;align-items:center;font-family:'Outfit',sans-serif;gap:1rem;}
+.faq-ico{width:19px;height:19px;color:var(--blue);flex-shrink:0;transition:transform .25s;}
+.faq-item.open .faq-ico{transform:rotate(180deg);}
+.faq-a{max-height:0;overflow:hidden;transition:max-height .38s ease,padding .3s;padding:0 1.4rem;font-size:.87rem;line-height:1.75;}
+.faq-item.open .faq-a{max-height:280px;padding-bottom:1.3rem;}
+
+/* CTA */
+.cta-sec{background:linear-gradient(135deg,rgba(8,10,32,.97) 0%,rgba(18,8,42,.97) 50%,rgba(8,18,42,.97) 100%);border-top:1px solid rgba(56,189,248,.07);border-bottom:1px solid rgba(56,189,248,.07);position:relative;overflow:hidden;padding:7rem 0;}
+.cta-sec::before{content:'';position:absolute;top:-120px;left:50%;transform:translateX(-50%);width:900px;height:900px;border-radius:50%;background:radial-gradient(circle,rgba(124,58,237,.14) 0%,rgba(56,189,248,.07) 40%,transparent 70%);pointer-events:none;}
+.cta-inner{text-align:center;position:relative;z-index:1;}
+.cta-inner h2{font-size:3.1rem;font-weight:900;letter-spacing:-.045em;color:var(--text);margin-bottom:1rem;font-family:'Space Grotesk',sans-serif;line-height:1.12;}
+.cta-inner h2 span{background:linear-gradient(90deg,var(--cyan),var(--violet),var(--magenta));-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.cta-inner p{font-size:1.04rem;color:var(--body);max-width:520px;margin:0 auto 2.7rem;line-height:1.72;}
+.cta-btns{display:flex;justify-content:center;gap:.95rem;flex-wrap:wrap;}
+
+/* FOOTER */
+.site-footer{background:rgba(2,4,14,1);border-top:1px solid rgba(255,255,255,.04);padding:5rem 0 2.4rem;}
+.footer-grid{display:grid;grid-template-columns:1.8fr 1fr 1fr 1fr;gap:3rem;margin-bottom:3.8rem;}
+.footer-desc{font-size:.84rem;line-height:1.68;color:rgba(255,255,255,.3);margin-top:.75rem;max-width:285px;}
+.footer-h{font-size:.71rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:rgba(255,255,255,.45);margin-bottom:1.15rem;}
+.footer-list{list-style:none;display:flex;flex-direction:column;gap:.65rem;}
+.footer-list a{text-decoration:none;color:rgba(255,255,255,.28);font-size:.83rem;transition:color .15s;}
+.footer-list a:hover{color:var(--blue);}
+.footer-bottom{border-top:1px solid rgba(255,255,255,.05);padding-top:1.6rem;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;font-size:.78rem;color:rgba(255,255,255,.18);}
+.footer-links{display:flex;gap:1.5rem;}
+.footer-links a{color:rgba(255,255,255,.18);text-decoration:none;font-size:.78rem;transition:color .15s;}
+.footer-links a:hover{color:var(--blue);}
+
+/* RESPONSIVE */
+@media(max-width:1100px){.feat-cards,.hiw-grid{grid-template-columns:repeat(2,1fr)}.hiw-connector{display:none}.db-right{display:none}.db-layout{grid-template-columns:155px 1fr}.cov-grid{grid-template-columns:repeat(2,1fr)}.footer-grid{grid-template-columns:1fr 1fr;gap:2rem}}
+@media(max-width:860px){.hero-wrap{grid-template-columns:1fr}.hero-img-right{min-height:45vw}.hero-left-col{padding:3.5rem 2.5rem 3rem}.hero-title{font-size:2.8rem}}
+@media(max-width:560px){.hero-title{font-size:2.2rem}.hero-btns{flex-direction:column}.hf{display:none}.center .sec-h{font-size:2rem}.cta-inner h2{font-size:2.3rem}}
+@media(max-width:640px){.nav-links{display:none;position:absolute;top:70px;left:0;right:0;background:rgba(5,8,22,.97);border-bottom:1px solid rgba(56,189,248,.1);flex-direction:column;padding:1.4rem;gap:1.2rem}.nav-links.open{display:flex}.mob-btn{display:flex}.feat-cards,.hiw-grid,.cov-grid{grid-template-columns:1fr}.hero-title{font-size:2.7rem}.footer-grid{grid-template-columns:1fr}.sec-pad{padding:5rem 0}}
+</style>
+</head>
+<body>
+<div class="bg-grad" aria-hidden="true"></div>
+<div class="dot-grid" aria-hidden="true"></div>
+<canvas id="bg-canvas" aria-hidden="true"></canvas>
+<div class="page">
+
+<!-- NAVBAR -->
+<header class="site-header" id="site-header">
+  <div class="nav-inner">
+    <a href="{{ url_for('main.index') }}" class="brand">
+      <div class="brand-ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.3"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg></div>
+      <span class="brand-name">Assure<span class="brand-x">X</span></span>
+      <span class="brand-tag">Claim Engine</span>
+    </a>
+    <ul class="nav-links" id="nav-menu">
+      <li><a href="#features">Features</a></li>
+      <li><a href="#how-it-works">How It Works</a></li>
+      <li><a href="#coverage">Coverage</a></li>
+      <li><a href="#faq">FAQ</a></li>
+    </ul>
+    <div class="nav-ctas">
+      <a href="{{ url_for('auth.login_view') }}" class="btn btn-demo btn-sm">Sign In</a>
+      <a href="{{ url_for('auth.register_view') }}" class="btn btn-primary btn-sm">Start Free &rarr;</a>
+      <button class="mob-btn" id="mob-btn" aria-label="Menu"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
+    </div>
+  </div>
+</header>
+
+<!-- HERO -->
+<section class="hero" id="hero">
+  <div class="hero-wrap">
+    <!-- LEFT: content -->
+    <div class="hero-left-col">
+      <div class="hero-chip"><span class="hero-dot"></span>AI-Powered Claims Engine</div>
+      <h1 class="hero-title">
+        <span class="w1">Claims Handled</span>
+        <span class="w2">in Seconds,</span>
+        <span class="w3">Not Days.</span>
+      </h1>
+      <p class="hero-sub">AssureX uses dual AI models, intelligent OCR, and policy rules to validate electronics warranty claims with 99.2% accuracy — automatically, in under 60 seconds.</p>
+      <div class="hero-btns">
+        <a href="{{ url_for('auth.register_view') }}" class="btn btn-primary btn-lg">Get Started Free <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></a>
+        <a href="#how-it-works" class="btn btn-demo btn-lg"><span class="star-dec">✦</span> Watch Demo <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></a>
+      </div>
+      <div class="trust-badges">
+        <div class="tb"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Free 14-day trial</div>
+        <div class="tb"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>No credit card</div>
+        <div class="tb"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Full audit trail</div>
+      </div>
+    </div>
+
+    <!-- RIGHT: contained image with floating cards -->
+    <div class="hero-img-right">
+      <div class="hero-img-glow"></div>
+      <img src="{{ url_for('static', filename='images/hero-ai.jpg') }}" alt="AI-powered warranty intelligence" loading="eager">
+      <div class="hf hf-tl">
+        <div class="hf-ico ico-b"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
+        <div><div class="hf-name">OCR Engine</div><div class="hf-sub">99.2% Accuracy</div></div>
+      </div>
+      <div class="hf hf-tr">
+        <div class="hf-ico ico-p"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg></div>
+        <div><div class="hf-name">Dual AI Models</div><div class="hf-sub">Real-time Analysis</div></div>
+      </div>
+      <div class="hf hf-bl">
+        <div class="hf-ico ico-c"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+        <div><div class="hf-name">Policy Engine</div><div class="hf-sub">Auto-Enforced</div></div>
+      </div>
+      <div class="hf hf-br">
+        <div class="hf-ico ico-g"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div>
+        <div><div class="hf-name">Zero Fraud</div><div class="hf-sub">Secure by Design</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TRUSTED BY -->
+<div class="trusted-sec">
+  <div class="trusted-row">
+    <span class="trusted-lbl">Trusted by</span>
+    <div class="trusted-sep"></div>
+    <div class="trusted-logos">
+      <!-- Duplicated for seamless infinite marquee loop -->
+      <div class="marquee-track">
+        <span class="t-logo">◆ Apple Care</span>
+        <span class="t-logo">◆ Samsung</span>
+        <span class="t-logo">◆ Sony</span>
+        <span class="t-logo">◆ Lenovo</span>
+        <span class="t-logo">◆ HP Inc.</span>
+        <span class="t-logo">◆ ASUS</span>
+        <span class="t-logo">◆ Dell</span>
+        <span class="t-logo">◆ Apple Care</span>
+        <span class="t-logo">◆ Samsung</span>
+        <span class="t-logo">◆ Sony</span>
+        <span class="t-logo">◆ Lenovo</span>
+        <span class="t-logo">◆ HP Inc.</span>
+        <span class="t-logo">◆ ASUS</span>
+        <span class="t-logo">◆ Dell</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- FEATURES -->
+<section class="sec-pad feat-sec" id="features">
+  <div class="container">
+    <div class="center reveal">
+      <div class="sec-tag"><span class="stag-dot"></span>Platform Capabilities</div>
+      <h2 class="sec-h">Everything you need to<br><span class="grad-text">validate warranty claims</span></h2>
+      <p class="sub-txt">Powerful. Fast. Accurate.</p>
+      <div class="divider-glow"></div>
+    </div>
+    <div class="feat-cards">
+      <div class="fc reveal"><div class="fc-ico fci-b"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/></svg></div><h3>Intelligent Receipt OCR</h3><p>Extract serial numbers, purchase dates, and prices from any invoice with 99.2% accuracy — zero manual entry needed.</p><div class="fc-arrow"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></div></div>
+      <div class="fc reveal"><div class="fc-ico fci-p"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg></div><h3>Dual-Engine AI Validation</h3><p>Two independent neural networks analyze damage photos — dual consensus eliminates model bias and hallucinations every time.</p><div class="fc-arrow"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></div></div>
+      <div class="fc reveal"><div class="fc-ico fci-c"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg></div><h3>Policy Auto-Enforcement</h3><p>Manufacturer warranty rules applied mathematically — expired warranties always rejected, exclusions enforced with zero drift or exceptions.</p><div class="fc-arrow"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></div></div>
+      <div class="fc reveal"><div class="fc-ico fci-g"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div><h3>Enterprise RBAC Security</h3><p>Zero-trust four-role access control — Customers, Technicians, Reviewers, Admins. Cryptographic audit trails and CSRF protection built in.</p><div class="fc-arrow"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- DASHBOARD MOCKUP -->
+<section class="sec-pad dash-sec" id="dashboard">
+  <div class="container">
+    <div class="center reveal">
+      <div class="sec-tag"><span class="stag-dot"></span>Live Platform</div>
+      <h2 class="sec-h">Your claim operations<br><span class="grad-text">at a glance</span></h2>
+      <p class="sub-txt">Purpose-built dashboards for every role — real-time claim status, AI decisions, and audit records in one place.</p>
+    </div>
+    <div class="dash-wrap reveal">
+      <div class="dash-mockup">
+        <div class="br-bar">
+          <div class="br-dots"><span class="bd bd-r"></span><span class="bd bd-y"></span><span class="bd bd-g"></span></div>
+          <div class="br-url">app.assurex.ai/dashboard</div>
+        </div>
+        <div class="db-layout">
+          <div class="db-sidebar">
+            <div class="db-logo"><div class="db-logo-ico"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div><span class="db-logo-txt">AssureX</span></div>
+            <div class="db-nav active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>Dashboard</div>
+            <div class="db-nav"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>Products</div>
+            <div class="db-nav"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/></svg>My Claims</div>
+            <div class="db-nav"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>Warranties</div>
+            <div class="db-nav"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4"/></svg>Settings</div>
+            <div class="db-usage"><div class="db-u-lbl">Claims This Month</div><div class="db-u-num">72%</div><div class="db-u-bar"><div class="db-u-fill"></div></div></div>
+          </div>
+          <div class="db-main">
+            <div class="db-hdr"><span class="db-title">Claim Activity</span><span class="db-period">Last 7 Days</span></div>
+            <div class="db-chart-box">
+              <div class="db-ch-hdr"><div><div class="db-accuracy">99.2%<span class="db-delta">&#8593; +0.6%</span></div><div class="db-acc-lbl">OCR Accuracy</div></div></div>
+              <svg class="chart-svg" viewBox="0 0 300 80" preserveAspectRatio="none">
+                <defs><linearGradient id="cg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#38bdf8" stop-opacity="0.28"/><stop offset="100%" stop-color="#38bdf8" stop-opacity="0"/></linearGradient></defs>
+                <line x1="0" y1="20" x2="300" y2="20" stroke="rgba(255,255,255,.04)" stroke-width="1"/>
+                <line x1="0" y1="40" x2="300" y2="40" stroke="rgba(255,255,255,.04)" stroke-width="1"/>
+                <line x1="0" y1="60" x2="300" y2="60" stroke="rgba(255,255,255,.04)" stroke-width="1"/>
+                <path d="M0,68 C25,62 45,50 70,46 C90,42 110,55 135,42 C155,30 175,22 205,14 C225,9 255,6 300,2 L300,80 L0,80 Z" fill="url(#cg)"/>
+                <path d="M0,68 C25,62 45,50 70,46 C90,42 110,55 135,42 C155,30 175,22 205,14 C225,9 255,6 300,2" stroke="#38bdf8" stroke-width="2" fill="none" stroke-linecap="round"/>
+                <circle cx="70" cy="46" r="3" fill="#38bdf8"/><circle cx="135" cy="42" r="3" fill="#38bdf8"/><circle cx="205" cy="14" r="3" fill="#a78bfa"/><circle cx="300" cy="2" r="4" fill="#38bdf8"/>
+              </svg>
+            </div>
+            <div class="db-stats">
+              <div class="ds"><div class="ds-num">24.8K</div><div class="ds-lbl">Total Requests</div><div class="ds-d">&#8593; 24.5%</div></div>
+              <div class="ds"><div class="ds-num">99.85%</div><div class="ds-lbl">Success Rate</div><div class="ds-d">&#8593; 0.6%</div></div>
+              <div class="ds"><div class="ds-num">58ms</div><div class="ds-lbl">Avg Decision</div><div class="ds-d">&#8595; 12%</div></div>
+            </div>
+          </div>
+          <div class="db-right">
+            <div class="dr-title">Recent Claims</div>
+            <input class="dr-search" placeholder="Search claims..." readonly>
+            <div class="dr-list">
+              <div class="dr-item"><div class="dr-ic" style="background:rgba(56,189,248,.15);font-size:.65rem;">💻</div><span class="dr-name">MacBook Pro M3</span><span class="dr-badge b-ok">Approved</span><span class="dr-pct pc-g">98.7%</span></div>
+              <div class="dr-item"><div class="dr-ic" style="background:rgba(124,58,237,.15);font-size:.65rem;">📱</div><span class="dr-name">Galaxy S24 Ultra</span><span class="dr-badge b-ok">Approved</span><span class="dr-pct pc-g">97.2%</span></div>
+              <div class="dr-item"><div class="dr-ic" style="background:rgba(74,222,128,.15);font-size:.65rem;">🖥️</div><span class="dr-name">Sony Bravia XR</span><span class="dr-badge b-warn">Review</span><span class="dr-pct pc-w">95.1%</span></div>
+              <div class="dr-item"><div class="dr-ic" style="background:rgba(56,189,248,.15);font-size:.65rem;">⌚</div><span class="dr-name">Apple Watch Ultra</span><span class="dr-badge b-info">Processing</span><span class="dr-pct pc-b">94.3%</span></div>
+            </div>
+            <div class="dr-active"><div class="dra-lbl">Active Warranties</div><div class="dra-num">18.6K</div><div class="dra-sub">&#8593; 18.9% this month</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- STATS STRIP -->
+<div class="stats-strip">
+  <div class="stats-track">
+    <div class="si"><span class="si-num">&lt;60s</span><span class="si-lbl">Claim Decision</span></div><div class="si-sep"></div>
+    <div class="si"><span class="si-num">99.2%</span><span class="si-lbl">OCR Accuracy</span></div><div class="si-sep"></div>
+    <div class="si"><span class="si-num">2&times; AI</span><span class="si-lbl">Dual Models</span></div><div class="si-sep"></div>
+    <div class="si"><span class="si-num">4 Roles</span><span class="si-lbl">RBAC Portals</span></div><div class="si-sep"></div>
+    <div class="si"><span class="si-num">100%</span><span class="si-lbl">Audit Coverage</span></div><div class="si-sep"></div>
+    <div class="si"><span class="si-num">0</span><span class="si-lbl">Fraud Slip-Throughs</span></div><div class="si-sep"></div>
+    <div class="si"><span class="si-num">&lt;60s</span><span class="si-lbl">Claim Decision</span></div><div class="si-sep"></div>
+    <div class="si"><span class="si-num">99.2%</span><span class="si-lbl">OCR Accuracy</span></div><div class="si-sep"></div>
+    <div class="si"><span class="si-num">2&times; AI</span><span class="si-lbl">Dual Models</span></div><div class="si-sep"></div>
+    <div class="si"><span class="si-num">4 Roles</span><span class="si-lbl">RBAC Portals</span></div><div class="si-sep"></div>
+    <div class="si"><span class="si-num">100%</span><span class="si-lbl">Audit Coverage</span></div><div class="si-sep"></div>
+    <div class="si"><span class="si-num">0</span><span class="si-lbl">Fraud Slip-Throughs</span></div>
+  </div>
+</div>
+
+<!-- HOW IT WORKS -->
+<section class="sec-pad hiw-sec" id="how-it-works">
+  <div class="container">
+    <div class="center reveal">
+      <div class="sec-tag"><span class="stag-dot"></span>The Workflow</div>
+      <h2 class="sec-h">How <span class="grad-text">AssureX Works</span></h2>
+      <p class="sub-txt">Four intelligent steps from device registration to instant claim decision.</p>
+    </div>
+    <div class="hiw-grid">
+      <div class="hiw-connector"></div>
+      <div class="hiw-step reveal"><div class="hiw-num">01</div><h3>Register Device</h3><p>Add your electronics with serial number and purchase invoice. AssureX auto-generates your manufacturer warranty certificate and tracks coverage dynamically.</p></div>
+      <div class="hiw-step reveal"><div class="hiw-num">02</div><h3>Submit a Claim</h3><p>Describe the hardware fault, upload receipt and damage photos. OCR processes all documents instantly — no manual data entry required.</p></div>
+      <div class="hiw-step reveal"><div class="hiw-num">03</div><h3>AI Engine Analyzes</h3><p>Two independent AI models examine damage evidence. OCR verifies all document data. Manufacturer policy exclusions checked automatically in milliseconds.</p></div>
+      <div class="hiw-step reveal"><div class="hiw-num">04</div><h3>Instant Decision</h3><p>Valid claims approved for Service Centre repair in under 60 seconds. Complex cases escalate to human Claim Reviewers with immutable audit trail.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- COVERAGE -->
+<section class="sec-pad cov-sec" id="coverage">
+  <div class="container">
+    <div class="center reveal">
+      <div class="sec-tag"><span class="stag-dot"></span>Device Coverage</div>
+      <h2 class="sec-h">All major <span class="grad-text">electronics supported</span></h2>
+      <p class="sub-txt">AssureX handles warranty validation across every category of modern consumer electronics.</p>
+    </div>
+    <div class="cov-grid">
+      <div class="cov-card reveal"><div class="cov-ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg></div><div><h4>Laptops &amp; Ultrabooks</h4><p>MacBook, ThinkPad, XPS, HP Spectre</p></div></div>
+      <div class="cov-card reveal"><div class="cov-ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg></div><div><h4>Smartphones &amp; Tablets</h4><p>iPhone, Galaxy, Pixel, iPad, Android</p></div></div>
+      <div class="cov-card reveal"><div class="cov-ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="15" rx="2"/><polyline points="17 2 12 7 7 2"/></svg></div><div><h4>4K / OLED Displays</h4><p>Smart TVs, monitors, pro screens</p></div></div>
+      <div class="cov-card reveal"><div class="cov-ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 18v-6a9 9 0 0 1 18 0v6"/><path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"/></svg></div><div><h4>Audio &amp; Headphones</h4><p>Speakers, soundbars, earbuds, HiFi</p></div></div>
+      <div class="cov-card reveal"><div class="cov-ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="8" rx="2"/><rect x="2" y="14" width="20" height="8" rx="2"/></svg></div><div><h4>Desktop Computers</h4><p>Gaming PCs, workstations, all-in-ones</p></div></div>
+      <div class="cov-card reveal"><div class="cov-ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 14 14"/></svg></div><div><h4>Wearables &amp; Smart Home</h4><p>Smartwatches, routers, cameras, IoT</p></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section class="sec-pad faq-sec" id="faq">
+  <div class="container">
+    <div class="center reveal">
+      <div class="sec-tag"><span class="stag-dot"></span>Common Questions</div>
+      <h2 class="sec-h">Frequently asked <span class="grad-text">questions</span></h2>
+    </div>
+    <div class="faq-wrap">
+      <div class="faq-item open reveal"><button class="faq-q"><span>How does AssureX validate a warranty claim?</span><svg class="faq-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="6 9 12 15 18 9"/></svg></button><div class="faq-a">AssureX uses a three-layer pipeline: OCR extracts and verifies all data from uploaded receipts, two independent AI models analyze damage photos, then the system checks against the exact manufacturer warranty policy. All three layers must pass for auto-approval.</div></div>
+      <div class="faq-item reveal"><button class="faq-q"><span>What electronics can I register on AssureX?</span><svg class="faq-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="6 9 12 15 18 9"/></svg></button><div class="faq-a">Laptops, desktops, smartphones, tablets, 4K televisions, monitors, audio equipment, smart home devices, and wearables. Each device is registered with serial number, purchase date, and warranty period tracked dynamically.</div></div>
+      <div class="faq-item reveal"><button class="faq-q"><span>Why does AssureX use two AI models instead of one?</span><svg class="faq-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="6 9 12 15 18 9"/></svg></button><div class="faq-a">A single AI model can hallucinate or carry bias. Two independent neural networks analyze damage photos separately — when both agree, the claim auto-processes. Disagreement routes to a human Claim Reviewer. Dual-consensus dramatically improves accuracy.</div></div>
+      <div class="faq-item reveal"><button class="faq-q"><span>What happens if my warranty is expired?</span><svg class="faq-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="6 9 12 15 18 9"/></svg></button><div class="faq-a">AssureX calculates warranty status dynamically. Warranties within 30 days of expiry are flagged "Nearing Expiry." Expired warranties cannot be approved under standard terms — Administrators can review and extend coverage with proper authorization.</div></div>
+      <div class="faq-item reveal"><button class="faq-q"><span>How do Service Centre Technicians use AssureX?</span><svg class="faq-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="6 9 12 15 18 9"/></svg></button><div class="faq-a">Technicians have a dedicated portal to look up any device by serial number or warranty UID — instant status before accepting any repair job. Claim Reviewers get a full inspection workspace with OCR output, AI findings, and policy data side by side.</div></div>
+      <div class="faq-item reveal"><button class="faq-q"><span>Is AssureX secure?</span><svg class="faq-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="6 9 12 15 18 9"/></svg></button><div class="faq-a">Yes. Zero-trust RBAC ensures customers only see their own data. All sessions are CSRF-protected, passwords bcrypt-hashed, and every action creates an immutable audit log. Serial numbers are cryptographically hashed to prevent duplicate fraud rings.</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-sec">
+  <div class="container">
+    <div class="cta-inner reveal">
+      <h2>The future of claims is here.<br>File with <span>AssureX.</span></h2>
+      <p>Register your electronics today, get full warranty coverage tracking, and let AI validate your claims in seconds — not days.</p>
+      <div class="cta-btns">
+        <a href="{{ url_for('auth.register_view') }}" class="btn btn-white btn-lg">Start Free Trial &rarr;</a>
+        <a href="{{ url_for('auth.login_view') }}" class="btn btn-ghost btn-lg">Sign In to Portal</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="site-footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div>
+        <div style="display:flex;align-items:center;gap:.65rem;">
+          <div style="width:30px;height:30px;background:linear-gradient(135deg,#7c3aed,#38bdf8);border-radius:8px;display:flex;align-items:center;justify-content:center;box-shadow:0 0 12px rgba(56,189,248,.4);"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.3"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+          <span style="font-family:'Space Grotesk',sans-serif;font-size:1.3rem;font-weight:800;color:#fff;letter-spacing:-.03em;">Assure<span style="background:linear-gradient(90deg,#38bdf8,#e879f9);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">X</span></span>
+        </div>
+        <p class="footer-desc">AI-Powered Warranty Claim Validation for consumer electronics. Intelligent. Instant. Unfakeable.</p>
+      </div>
+      <div><div class="footer-h">Platform</div><ul class="footer-list"><li><a href="#hero">Home</a></li><li><a href="#features">Features</a></li><li><a href="#how-it-works">How It Works</a></li><li><a href="#coverage">Coverage</a></li><li><a href="#faq">FAQ</a></li></ul></div>
+      <div><div class="footer-h">Portals</div><ul class="footer-list"><li><a href="{{ url_for('auth.login_view') }}">Customer Portal</a></li><li><a href="{{ url_for('auth.login_view') }}">Service Centre</a></li><li><a href="{{ url_for('auth.login_view') }}">Claim Reviewer</a></li><li><a href="{{ url_for('auth.login_view') }}">Administrator</a></li></ul></div>
+      <div><div class="footer-h">Security</div><ul class="footer-list"><li><span style="color:rgba(255,255,255,.25);font-size:.82rem;">TLS 256-Bit Encrypted</span></li><li><span style="color:rgba(255,255,255,.25);font-size:.82rem;">Zero-Trust RBAC</span></li><li><span style="color:rgba(255,255,255,.25);font-size:.82rem;">Immutable Audit Log</span></li><li><span style="color:rgba(255,255,255,.25);font-size:.82rem;">CSRF Protection</span></li></ul></div>
+    </div>
+    <div class="footer-bottom">
+      <span>&copy; 2026 AssureX Claim Engine &mdash; AI Warranty Validation</span>
+      <div class="footer-links"><a href="{{ url_for('auth.login_view') }}">Sign In</a><a href="{{ url_for('auth.register_view') }}">Register</a></div>
+    </div>
+  </div>
+</footer>
+</div>
+
+<script>
+/* BG PARTICLES */
+(function(){
+  const c=document.getElementById('bg-canvas');if(!c)return;
+  c.width=window.innerWidth;c.height=window.innerHeight;
+  const ctx=c.getContext('2d');
+  const cols=['56,189,248','124,58,237','232,121,249','34,211,238','167,139,250'];
+  const P=Array.from({length:80},()=>({x:Math.random()*c.width,y:Math.random()*c.height,r:Math.random()*1.4+.4,vx:(Math.random()-.5)*.18,vy:(Math.random()-.5)*.18,op:Math.random()*.12+.03,col:cols[Math.floor(Math.random()*cols.length)]}));
+  function draw(){ctx.clearRect(0,0,c.width,c.height);P.forEach(p=>{p.x+=p.vx;p.y+=p.vy;if(p.x<0)p.x=c.width;if(p.x>c.width)p.x=0;if(p.y<0)p.y=c.height;if(p.y>c.height)p.y=0;ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);ctx.fillStyle=`rgba(${p.col},${p.op})`;ctx.fill();});requestAnimationFrame(draw);}
+  draw();
+  window.addEventListener('resize',()=>{c.width=window.innerWidth;c.height=window.innerHeight;});
+})();
+
+/* THREE.JS NEURAL NETWORK VISUALIZATION */
+(function(){
+  const canvas=document.getElementById('hero-canvas');
+  if(!canvas||typeof THREE==='undefined')return;
+  const W=canvas.offsetWidth||540,H=canvas.offsetHeight||540;
+  const scene=new THREE.Scene();
+  const cam=new THREE.PerspectiveCamera(55,W/H,.1,100);
+  cam.position.set(0,.3,6);
+  const renderer=new THREE.WebGLRenderer({canvas,alpha:true,antialias:true});
+  renderer.setPixelRatio(Math.min(devicePixelRatio,2));
+  renderer.setSize(W,H);renderer.setClearColor(0x000000,0);
+  const mainGrp=new THREE.Group();scene.add(mainGrp);
+  /* Fibonacci sphere nodes */
+  const N=52,R=2.0,nodePos=[];
+  const ga=Math.PI*(3-Math.sqrt(5));
+  for(let i=0;i<N;i++){const y=1-(i/(N-1))*2,r=Math.sqrt(1-y*y),t=ga*i;nodePos.push(new THREE.Vector3(Math.cos(t)*r*R,y*R,Math.sin(t)*r*R));}
+  /* Lines */
+  const lv=[];let lc=0;
+  for(let i=0;i<N&&lc<140;i++)for(let j=i+1;j<N&&lc<140;j++)if(nodePos[i].distanceTo(nodePos[j])<1.25){const a=nodePos[i],b=nodePos[j];lv.push(a.x,a.y,a.z,b.x,b.y,b.z);lc++;}
+  const lGeo=new THREE.BufferGeometry();lGeo.setAttribute('position',new THREE.BufferAttribute(new Float32Array(lv),3));
+  mainGrp.add(new THREE.LineSegments(lGeo,new THREE.LineBasicMaterial({color:0x38bdf8,transparent:true,opacity:.28,blending:THREE.AdditiveBlending,depthWrite:false})));
+  /* Blue nodes */
+  const na=new Float32Array(N*3);nodePos.forEach((p,i)=>{na[i*3]=p.x;na[i*3+1]=p.y;na[i*3+2]=p.z;});
+  const nGeo=new THREE.BufferGeometry();nGeo.setAttribute('position',new THREE.BufferAttribute(na,3));
+  mainGrp.add(new THREE.Points(nGeo,new THREE.PointsMaterial({color:0x7dd3fc,size:.07,transparent:true,opacity:1,blending:THREE.AdditiveBlending,depthWrite:false,sizeAttenuation:true})));
+  /* Magenta accents */
+  const ma=[];for(let i=0;i<N;i+=7)ma.push(nodePos[i].x,nodePos[i].y,nodePos[i].z);
+  const mGeo=new THREE.BufferGeometry();mGeo.setAttribute('position',new THREE.BufferAttribute(new Float32Array(ma),3));
+  mainGrp.add(new THREE.Points(mGeo,new THREE.PointsMaterial({color:0xe879f9,size:.13,transparent:true,opacity:.9,blending:THREE.AdditiveBlending,depthWrite:false,sizeAttenuation:true})));
+  /* Violet accents */
+  const va=[];for(let i=3;i<N;i+=11)va.push(nodePos[i].x,nodePos[i].y,nodePos[i].z);
+  const vGeo=new THREE.BufferGeometry();vGeo.setAttribute('position',new THREE.BufferAttribute(new Float32Array(va),3));
+  mainGrp.add(new THREE.Points(vGeo,new THREE.PointsMaterial({color:0xa78bfa,size:.1,transparent:true,opacity:.85,blending:THREE.AdditiveBlending,depthWrite:false,sizeAttenuation:true})));
+  /* Inner glow sphere */
+  mainGrp.add(new THREE.Points(new THREE.SphereGeometry(.65,24,24),new THREE.PointsMaterial({color:0xa855f7,size:.025,transparent:true,opacity:.65,blending:THREE.AdditiveBlending,depthWrite:false})));
+  /* Center sprites */
+  const sp1=new THREE.Sprite(new THREE.SpriteMaterial({color:0x9333ea,transparent:true,opacity:.5,blending:THREE.AdditiveBlending,depthWrite:false}));sp1.scale.set(2.5,2.5,1);scene.add(sp1);
+  const sp2=new THREE.Sprite(new THREE.SpriteMaterial({color:0x38bdf8,transparent:true,opacity:.18,blending:THREE.AdditiveBlending,depthWrite:false}));sp2.scale.set(5,5,1);scene.add(sp2);
+  /* Orbiting rings */
+  const rData=[{r:2.55,t:.012,rx:1.2,ry:0,rz:.4,sp:.007,col:0x38bdf8,op:.52},{r:2.2,t:.009,rx:.5,ry:.4,rz:1.0,sp:-.010,col:0xa78bfa,op:.42},{r:2.88,t:.007,rx:.3,ry:1.0,rz:.2,sp:.005,col:0x22d3ee,op:.3}];
+  const rings=rData.map(d=>{const m=new THREE.Mesh(new THREE.TorusGeometry(d.r,d.t,2,200),new THREE.MeshBasicMaterial({color:d.col,transparent:true,opacity:d.op,blending:THREE.AdditiveBlending,depthWrite:false}));m.rotation.set(d.rx,d.ry,d.rz);scene.add(m);return{m,sp:d.sp};});
+  /* Platform */
+  const plat=new THREE.Mesh(new THREE.CylinderGeometry(2.0,2.35,.04,64),new THREE.MeshBasicMaterial({color:0x0284c7,transparent:true,opacity:.2,blending:THREE.AdditiveBlending,depthWrite:false}));plat.position.y=-2.45;scene.add(plat);
+  const platRings=[];
+  [.35,.7,1.05,1.42,1.8].forEach((r,i)=>{const m=new THREE.Mesh(new THREE.TorusGeometry(r,.005,2,64),new THREE.MeshBasicMaterial({color:0x38bdf8,transparent:true,opacity:.65-i*.08,blending:THREE.AdditiveBlending,depthWrite:false}));m.rotation.x=Math.PI/2;m.position.y=-2.42;scene.add(m);platRings.push(m);});
+  /* Beams */
+  [0,1,2,3,4,5].forEach(i=>{const a=(i/6)*Math.PI*2,bx=Math.cos(a)*1.5,bz=Math.sin(a)*1.5;const m=new THREE.Mesh(new THREE.CylinderGeometry(.007,.022,2.1,4),new THREE.MeshBasicMaterial({color:0x38bdf8,transparent:true,opacity:.15,blending:THREE.AdditiveBlending,depthWrite:false}));m.position.set(bx,-1.25,bz);scene.add(m);});
+  /* BG particles */
+  const bgA=new Float32Array(360);for(let i=0;i<360;i++)bgA[i]=(Math.random()-.5)*14;
+  const bgGeo=new THREE.BufferGeometry();bgGeo.setAttribute('position',new THREE.BufferAttribute(bgA,3));
+  scene.add(new THREE.Points(bgGeo,new THREE.PointsMaterial({color:0x60a5fa,size:.03,transparent:true,opacity:.45,blending:THREE.AdditiveBlending,depthWrite:false})));
+  /* Animate */
+  let t=0;
+  function animate(){requestAnimationFrame(animate);t+=.0075;mainGrp.rotation.y=t*.32;mainGrp.rotation.x=Math.sin(t*.18)*.11;rings.forEach(({m,sp})=>{m.rotation.z+=sp;m.rotation.y+=sp*.22;});plat.rotation.y=t*.18;platRings.forEach((r,i)=>{r.rotation.z=t*(i%2===0?.07:-.055);});sp1.material.opacity=.45+Math.sin(t*1.4)*.15;sp1.scale.setScalar(2.2+Math.sin(t*1.1)*.28);sp2.material.opacity=.14+Math.sin(t*.8)*.06;renderer.render(scene,cam);}
+  animate();
+  window.addEventListener('resize',()=>{const nW=canvas.offsetWidth,nH=canvas.offsetHeight;if(!nW||!nH)return;cam.aspect=nW/nH;cam.updateProjectionMatrix();renderer.setSize(nW,nH);});
+})();
+
+/* VANILLA TILT */
+window.addEventListener('load',function(){
+  if(typeof VanillaTilt==='undefined')return;
+  VanillaTilt.init(document.querySelectorAll('.fc,.hiw-step,.cov-card'),{max:8,speed:400,glare:true,'max-glare':.06,perspective:1000,gyroscope:false});
+});
+
+/* RIPPLE */
+document.addEventListener('click',function(e){
+  const btn=e.target.closest('.btn');if(!btn)return;
+  const r=document.createElement('span');r.className='ripple';
+  const rect=btn.getBoundingClientRect(),sz=Math.max(rect.width,rect.height)*2;
+  r.style.cssText=`width:${sz}px;height:${sz}px;left:${e.clientX-rect.left-sz/2}px;top:${e.clientY-rect.top-sz/2}px`;
+  btn.appendChild(r);setTimeout(()=>r.remove(),700);
+});
+
+/* NAVBAR SCROLL */
+window.addEventListener('scroll',function(){document.getElementById('site-header').classList.toggle('scrolled',window.scrollY>40);});
+
+/* FAQ + NAV + SCROLL REVEAL */
+document.addEventListener('DOMContentLoaded',function(){
+  document.querySelectorAll('.faq-item').forEach(function(it){
+    it.querySelector('.faq-q').addEventListener('click',function(){
+      const was=it.classList.contains('open');
+      document.querySelectorAll('.faq-item').forEach(x=>x.classList.remove('open'));
+      if(!was)it.classList.add('open');
+    });
+  });
+  const mob=document.getElementById('mob-btn'),nav=document.getElementById('nav-menu');
+  if(mob&&nav)mob.addEventListener('click',()=>nav.classList.toggle('open'));
+  document.querySelectorAll('a[href^="#"]').forEach(function(a){
+    a.addEventListener('click',function(e){
+      const t=document.querySelector(this.getAttribute('href'));
+      if(t){e.preventDefault();t.scrollIntoView({behavior:'smooth',block:'start'});}
+    });
+  });
+  const obs=new IntersectionObserver(entries=>{entries.forEach(en=>{if(en.isIntersecting){en.target.classList.add('visible');obs.unobserve(en.target);}});},{threshold:.1});
+  document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));
+});
+</script>
+</body>
+</html>

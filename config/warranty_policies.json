@@ -1,0 +1,76 @@
+{
+  "_comment": "AssureX Warranty Policy Configuration. Defines coverage rules per product category.",
+  "version": "1.0",
+  "default_policy": {
+    "max_claim_age_months": 36,
+    "covered_damage_types": ["Physical Damage", "Water Damage", "Electrical Fault", "Manufacturing Defect"],
+    "excluded_damage_types": ["Accidental Damage", "User Negligence", "Theft"],
+    "minimum_product_age_months": 0,
+    "max_claims_per_product": 3,
+    "require_receipt": true,
+    "require_damage_photo": false,
+    "auto_reject_if_expired": true
+  },
+  "categories": {
+    "Electronics": {
+      "display_name": "Consumer Electronics",
+      "max_claim_age_months": 24,
+      "covered_damage_types": ["Electrical Fault", "Manufacturing Defect", "Screen Damage", "Battery Failure"],
+      "excluded_damage_types": ["Physical Damage", "Water Damage", "Accidental Drop", "User Negligence"],
+      "minimum_product_age_months": 0,
+      "max_claims_per_product": 2,
+      "require_receipt": true,
+      "require_damage_photo": true,
+      "auto_reject_if_expired": true,
+      "notes": "Electronics are covered for manufacturing defects and electrical failures only."
+    },
+    "Appliances": {
+      "display_name": "Home Appliances",
+      "max_claim_age_months": 60,
+      "covered_damage_types": ["Manufacturing Defect", "Electrical Fault", "Mechanical Failure", "Parts Failure"],
+      "excluded_damage_types": ["Physical Damage", "Water Damage", "Misuse", "User Negligence"],
+      "minimum_product_age_months": 0,
+      "max_claims_per_product": 3,
+      "require_receipt": true,
+      "require_damage_photo": false,
+      "auto_reject_if_expired": true,
+      "notes": "Home appliances include coverage for mechanical and electrical defects up to 5 years."
+    },
+    "Mobile": {
+      "display_name": "Mobile Devices",
+      "max_claim_age_months": 12,
+      "covered_damage_types": ["Battery Failure", "Manufacturing Defect", "Display Fault"],
+      "excluded_damage_types": ["Physical Damage", "Water Damage", "Screen Crack", "Accidental Damage", "Theft"],
+      "minimum_product_age_months": 0,
+      "max_claims_per_product": 1,
+      "require_receipt": true,
+      "require_damage_photo": true,
+      "auto_reject_if_expired": true,
+      "notes": "Mobile devices: 1-year warranty covering defects only. Physical and water damage excluded."
+    },
+    "Furniture": {
+      "display_name": "Furniture & Fixtures",
+      "max_claim_age_months": 36,
+      "covered_damage_types": ["Manufacturing Defect", "Structural Failure", "Material Defect"],
+      "excluded_damage_types": ["Normal Wear", "Accidental Damage", "Staining", "User Modification"],
+      "minimum_product_age_months": 0,
+      "max_claims_per_product": 2,
+      "require_receipt": true,
+      "require_damage_photo": true,
+      "auto_reject_if_expired": true,
+      "notes": "Furniture coverage: structural and material defects for up to 3 years."
+    },
+    "Automotive": {
+      "display_name": "Automotive Parts",
+      "max_claim_age_months": 24,
+      "covered_damage_types": ["Manufacturing Defect", "Mechanical Failure", "Material Defect"],
+      "excluded_damage_types": ["Accident Damage", "Corrosion", "Normal Wear", "Misuse"],
+      "minimum_product_age_months": 0,
+      "max_claims_per_product": 2,
+      "require_receipt": true,
+      "require_damage_photo": true,
+      "auto_reject_if_expired": true,
+      "notes": "Automotive parts covered for manufacturing defects and mechanical failure up to 2 years."
+    }
+  }
+}

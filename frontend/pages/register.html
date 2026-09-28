@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Create Account — AssureX Claim Engine</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800;900&family=Space+Grotesk:wght@600;700;800&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+html,body{height:100%;font-family:'Inter',sans-serif;-webkit-font-smoothing:antialiased;}
+
+/* ── VIDEO BACKGROUND ── */
+.vid-bg{position:fixed;inset:0;z-index:0;}
+.vid-bg video{width:100%;height:100%;object-fit:cover;display:block;}
+.vid-bg::after{
+  content:'';position:absolute;inset:0;
+  background:rgba(4,6,20,.78);
+  backdrop-filter:blur(2px);
+}
+
+/* ── STAR CANVAS ── */
+#star-canvas{position:fixed;inset:0;z-index:1;pointer-events:none;}
+
+/* ── PAGE ── */
+.page{
+  position:relative;z-index:2;
+  min-height:100vh;
+  display:flex;align-items:center;justify-content:center;
+  padding:2rem 1.5rem;
+}
+
+/* ── WIDE GLASS FORM ── */
+.auth-box{width:100%;max-width:500px;}
+
+.auth-brand{text-align:center;margin-bottom:1.2rem;}
+.auth-logo{
+  display:inline-flex;align-items:center;justify-content:center;
+  width:44px;height:44px;
+  background:linear-gradient(135deg,#7c3aed,#38bdf8);
+  border-radius:12px;
+  box-shadow:0 0 20px rgba(56,189,248,.5),0 0 40px rgba(124,58,237,.26);
+  margin-bottom:.5rem;
+  animation:logoP 3s ease-in-out infinite;
+}
+@keyframes logoP{
+  0%,100%{box-shadow:0 0 20px rgba(56,189,248,.5),0 0 40px rgba(124,58,237,.26)}
+  50%{box-shadow:0 0 32px rgba(56,189,248,.72),0 0 60px rgba(124,58,237,.42)}
+}
+.auth-name{font-family:'Space Grotesk',sans-serif;font-size:1.45rem;font-weight:800;letter-spacing:-.04em;color:#fff;}
+.auth-x{background:linear-gradient(90deg,#38bdf8,#e879f9);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.auth-sub{font-size:.72rem;color:rgba(255,255,255,.3);margin-top:.12rem;}
+
+/* Glass card */
+.auth-card{
+  background:rgba(5,8,25,.68);
+  border:1px solid rgba(56,189,248,.15);
+  border-radius:20px;
+  padding:1.8rem 2rem 1.6rem;
+  backdrop-filter:blur(36px);-webkit-backdrop-filter:blur(36px);
+  box-shadow:0 28px 70px rgba(0,0,0,.58),inset 0 1px 0 rgba(255,255,255,.06),0 0 0 1px rgba(124,58,237,.06);
+  position:relative;overflow:hidden;
+  animation:cardIn .7s cubic-bezier(.22,1,.36,1) both;
+}
+@keyframes cardIn{from{opacity:0;transform:translateY(22px) scale(.97)}to{opacity:1;transform:none}}
+.auth-card::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:1.5px;
+  background:linear-gradient(90deg,transparent,#38bdf8 35%,#e879f9 65%,transparent);
+  animation:tl 3s ease-in-out infinite;
+}
+@keyframes tl{0%,100%{opacity:.4}50%{opacity:1}}
+
+.auth-h{font-family:'Space Grotesk',sans-serif;font-size:1.1rem;font-weight:800;color:#fff;margin-bottom:.15rem;}
+.auth-p{font-size:.76rem;color:rgba(255,255,255,.32);margin-bottom:1.1rem;}
+
+/* Admin banner */
+.admin-banner{
+  display:flex;align-items:flex-start;gap:.5rem;
+  padding:.58rem .85rem;margin-bottom:.85rem;
+  background:rgba(124,58,237,.11);border:1px solid rgba(124,58,237,.28);border-radius:8px;
+  font-size:.76rem;color:rgba(255,255,255,.65);
+}
+
+/* Alerts */
+.alert{padding:.58rem .85rem;border-radius:8px;font-size:.76rem;margin-bottom:.8rem;display:flex;align-items:center;gap:.4rem;}
+.alert-error{background:rgba(239,68,68,.12);border:1px solid rgba(239,68,68,.3);color:#fca5a5;}
+.alert-success{background:rgba(74,222,128,.1);border:1px solid rgba(74,222,128,.28);color:#86efac;}
+.alert-info{background:rgba(56,189,248,.1);border:1px solid rgba(56,189,248,.22);color:#bae6fd;}
+
+/* Single column layout */
+.card-cols{display:block;}
+
+/* Role section (left col) */
+.role-head{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:rgba(255,255,255,.3);margin-bottom:.55rem;}
+.role-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:.45rem;margin-bottom:.6rem;}
+.rc{
+  background:rgba(5,8,22,.6);border:1px solid rgba(56,189,248,.1);
+  border-radius:10px;padding:.6rem .65rem;cursor:pointer;
+  position:relative;transition:all .2s;
+}
+.rc:hover{border-color:rgba(56,189,248,.3);background:rgba(56,189,248,.07);}
+.rc.active{border-color:rgba(56,189,248,.48);background:rgba(56,189,248,.1);box-shadow:0 0 12px rgba(56,189,248,.13);}
+.rc.role-disabled{opacity:.32;cursor:not-allowed;pointer-events:none;}
+.rc-ico{font-size:.95rem;margin-bottom:.22rem;}
+.rc-name{font-size:.72rem;font-weight:700;color:#fff;margin-bottom:.08rem;}
+.rc-desc{font-size:.6rem;color:rgba(255,255,255,.3);line-height:1.3;}
+.rc-badge{display:inline-block;font-size:.55rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;padding:.08rem .38rem;border-radius:3px;margin-top:.28rem;}
+.rc-badge.pub{background:rgba(74,222,128,.14);color:#4ade80;border:1px solid rgba(74,222,128,.22);}
+.rc-badge.adm{background:rgba(232,121,249,.11);color:#e879f9;border:1px solid rgba(232,121,249,.2);}
+
+.role-policy{
+  display:flex;align-items:flex-start;gap:.42rem;
+  padding:.5rem .7rem;
+  background:rgba(56,189,248,.05);border:1px solid rgba(56,189,248,.11);border-radius:8px;
+  font-size:.68rem;color:rgba(255,255,255,.4);line-height:1.45;
+}
+
+/* Form fields (right col) */
+.fg{margin-bottom:.7rem;}
+.fl{display:block;font-size:.72rem;font-weight:600;color:rgba(255,255,255,.46);margin-bottom:.26rem;}
+.iw{position:relative;}
+.iw svg{position:absolute;left:.75rem;top:50%;transform:translateY(-50%);color:rgba(255,255,255,.2);pointer-events:none;transition:color .2s;width:13px;height:13px;}
+.ic{
+  width:100%;padding:.65rem .85rem .65rem 2.2rem;
+  background:rgba(4,7,22,.72);
+  border:1px solid rgba(56,189,248,.1);
+  border-radius:9px;color:#fff;
+  font-size:.85rem;font-family:'Inter',sans-serif;
+  transition:all .2s;
+}
+.ic::placeholder{color:rgba(255,255,255,.16);}
+.ic:focus{outline:none;border-color:#38bdf8;background:rgba(4,7,22,.9);box-shadow:0 0 0 2px rgba(56,189,248,.1),0 0 12px rgba(56,189,248,.11);}
+.iw:focus-within svg{color:#38bdf8;}
+.form-2col{display:grid;grid-template-columns:1fr 1fr;gap:.65rem;}
+
+/* Submit */
+.btn-sub{
+  width:100%;padding:.78rem;
+  background:linear-gradient(135deg,#7c3aed 0%,#6366f1 52%,#38bdf8 100%);
+  background-size:200% 200%;
+  color:#fff;border:none;border-radius:10px;
+  font-size:.88rem;font-weight:700;font-family:'Outfit',sans-serif;
+  letter-spacing:.03em;cursor:pointer;
+  position:relative;overflow:hidden;
+  box-shadow:0 4px 20px rgba(124,58,237,.58),0 0 0 1.5px rgba(167,139,250,.24);
+  animation:glow 2.8s ease-in-out infinite;
+  transition:transform .18s;
+  margin-top:.3rem;
+}
+.btn-sub::before{
+  content:'◆';position:absolute;left:.75rem;top:50%;
+  transform:translateY(-50%) scale(.66);font-size:.58rem;
+  color:rgba(255,255,255,.48);animation:spin 4s linear infinite;
+}
+.btn-sub::after{
+  content:'';position:absolute;top:0;left:-60%;width:35%;height:100%;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.2),transparent);
+  animation:shim 2.8s 1s linear infinite;
+}
+@keyframes glow{
+  0%,100%{box-shadow:0 4px 20px rgba(124,58,237,.58),0 0 0 1.5px rgba(167,139,250,.24)}
+  50%{box-shadow:0 8px 34px rgba(124,58,237,.84),0 0 24px rgba(99,102,241,.44),0 0 0 2px rgba(167,139,250,.46)}
+}
+@keyframes spin{to{transform:translateY(-50%) scale(.66) rotate(360deg)}}
+@keyframes shim{0%{left:-60%}100%{left:120%}}
+.btn-sub:hover{transform:translateY(-2px) scale(1.015);}
+.btn-sub:active{transform:translateY(1px);}
+
+/* Ripple */
+.rip{position:absolute;border-radius:50%;background:rgba(255,255,255,.2);transform:scale(0);animation:rgo .6s linear;pointer-events:none;}
+@keyframes rgo{to{transform:scale(5);opacity:0}}
+
+.auth-div{display:flex;align-items:center;gap:.65rem;margin:.9rem 0 .6rem;color:rgba(255,255,255,.1);font-size:.66rem;}
+.auth-div::before,.auth-div::after{content:'';flex:1;height:1px;background:rgba(255,255,255,.07);}
+.auth-foot{text-align:center;font-size:.76rem;color:rgba(255,255,255,.32);}
+.auth-foot a{color:#38bdf8;text-decoration:none;font-weight:600;}
+.auth-foot a:hover{color:#7dd3fc;}
+
+/* Back button */
+.back-btn{
+  display:inline-flex;align-items:center;gap:.4rem;
+  font-size:.76rem;font-weight:600;color:rgba(255,255,255,.45);
+  text-decoration:none;
+  margin-bottom:1rem;
+  padding:.32rem .7rem;
+  border-radius:8px;
+  border:1px solid rgba(255,255,255,.1);
+  background:rgba(255,255,255,.04);
+  transition:all .2s;
+  backdrop-filter:blur(8px);
+}
+.back-btn:hover{color:#fff;border-color:rgba(56,189,248,.35);background:rgba(56,189,248,.07);}
+.back-btn svg{transition:transform .2s;}
+.back-btn:hover svg{transform:translateX(-3px);}
+
+@media(max-width:640px){
+  html,body{overflow:auto;}
+  .page{height:auto;padding:2rem 1rem;}
+  .card-cols{grid-template-columns:1fr;}
+  .role-grid{grid-template-columns:repeat(4,1fr);}
+  .form-2col{grid-template-columns:1fr;}
+}
+</style>
+</head>
+<body>
+
+{% set is_admin = current_user.is_authenticated and current_user.role == 'Administrator' %}
+{% set active_role = selected_role or 'Customer' %}
+
+<!-- VIDEO BACKGROUND -->
+<div class="vid-bg">
+  <video autoplay muted loop playsinline preload="auto">
+    <source src="{{ url_for('static', filename='videos/auth-bg.mp4') }}" type="video/mp4">
+  </video>
+</div>
+
+<!-- Star particles canvas -->
+<canvas id="star-canvas"></canvas>
+
+<div class="page">
+  <div class="auth-box">
+
+    <div class="auth-brand">
+      <div class="auth-logo">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.3"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg>
+      </div>
+      <div class="auth-name">Assure<span class="auth-x">X</span></div>
+      <div class="auth-sub">AI-Powered Warranty Claim Engine</div>
+    </div>
+
+    <div style="text-align:center;margin-bottom:.7rem;">
+      <a href="{{ url_for('main.index') }}" class="back-btn">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+        Back to Home
+      </a>
+    </div>
+
+    <div class="auth-card">
+      <h2 class="auth-h">Create your account</h2>
+      <p class="auth-p">Choose your role and fill in your details</p>
+
+      {% if current_user.is_authenticated and current_user.role == 'Administrator' %}
+      <div class="admin-banner">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        <span><strong>Admin Active</strong> — all roles available.</span>
+      </div>
+      {% endif %}
+
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+          {% for category, message in messages %}
+            <div class="alert alert-{{ 'error' if category in ['error','danger'] else ('success' if category == 'success' else 'info') }}">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+              {{ message }}
+            </div>
+          {% endfor %}
+        {% endif %}
+      {% endwith %}
+
+      <form method="POST" action="{{ url_for('auth.register') }}" id="register-form">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+        <input type="hidden" name="role" id="role-hidden" value="{{ active_role }}"/>
+
+        <div class="card-cols">
+
+          <!-- LEFT: Role selector -->
+          <div>
+            <div class="role-head">Select Role</div>
+            <div class="role-grid">
+              <div class="rc {% if active_role == 'Customer' %}active{% endif %}" onclick="selectRole('Customer')" id="role-Customer">
+                <i class="bi bi-person-circle rc-ico"></i>
+                <div class="rc-name">Customer</div>
+                <div class="rc-desc">Submit claims</div>
+                <span class="rc-badge pub">Public</span>
+              </div>
+              <div class="rc {% if active_role == 'Service Centre Employee' %}active{% endif %} {% if not is_admin %}role-disabled{% endif %}" onclick="selectRole('Service Centre Employee')" id="role-Service Centre Employee">
+                <i class="bi bi-tools rc-ico"></i>
+                <div class="rc-name">Service</div>
+                <div class="rc-desc">Process items</div>
+                <span class="rc-badge adm">Admin</span>
+              </div>
+              <div class="rc {% if active_role == 'Claim Reviewer' %}active{% endif %} {% if not is_admin %}role-disabled{% endif %}" onclick="selectRole('Claim Reviewer')" id="role-Claim Reviewer">
+                <div class="rc-ico">⚖️</div>
+                <div class="rc-name">Reviewer</div>
+                <div class="rc-desc">Review AI</div>
+                <span class="rc-badge adm">Admin</span>
+              </div>
+              <div class="rc {% if active_role == 'Administrator' %}active{% endif %} {% if not is_admin %}role-disabled{% endif %}" onclick="selectRole('Administrator')" id="role-Administrator">
+                <i class="bi bi-shield-lock rc-ico"></i>
+                <div class="rc-name">Admin</div>
+                <div class="rc-desc">Full access</div>
+                <span class="rc-badge adm">Admin</span>
+              </div>
+            </div>
+            {% if not is_admin %}
+            <div class="role-policy">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:#38bdf8;flex-shrink:0;margin-top:1px;"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+              <span>Public signup is <strong style="color:rgba(255,255,255,.6)">Customer</strong> only. Other roles need Admin.</span>
+            </div>
+            {% endif %}
+          </div>
+
+          <!-- RIGHT: Form fields -->
+          <div>
+            <div class="form-2col">
+              <div class="fg">
+                <label class="fl" for="name">Full Name</label>
+                <div class="iw">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                  <input type="text" id="name" name="name" class="ic" placeholder="Your full name" value="{{ name or '' }}" required>
+                </div>
+              </div>
+              <div class="fg">
+                <label class="fl" for="phone">Phone Number</label>
+                <div class="iw">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.36 2 2 0 0 1 3.59 1h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.6a16 16 0 0 0 5.9 5.9l.92-.92a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                  <input type="text" id="phone" name="phone" class="ic" placeholder="+1 234 567 8900" value="{{ phone or '' }}" required>
+                </div>
+              </div>
+            </div>
+
+            <div class="fg">
+              <label class="fl" for="email">Email Address</label>
+              <div class="iw">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                <input type="email" id="email" name="email" class="ic" placeholder="name@example.com" value="{{ email or '' }}" required>
+              </div>
+            </div>
+
+            <div class="form-2col">
+              <div class="fg">
+                <label class="fl" for="password">Password</label>
+                <div class="iw">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                  <input type="password" id="password" name="password" class="ic" placeholder="••••••••" required>
+                </div>
+              </div>
+              <div class="fg">
+                <label class="fl" for="confirm_password">Confirm Password</label>
+                <div class="iw">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                  <input type="password" id="confirm_password" name="confirm_password" class="ic" placeholder="••••••••" required>
+                </div>
+              </div>
+            </div>
+
+            <button type="submit" class="btn-sub" id="reg-btn">
+              {% if is_admin %}Create Account as Administrator{% else %}Create Customer Account{% endif %} &rarr;
+            </button>
+          </div>
+
+        </div><!-- /card-cols -->
+      </form>
+
+      <div class="auth-div">or</div>
+      <div class="auth-foot">Already have an account? <a href="{{ url_for('auth.login_view') }}">Sign In</a></div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+var isAdmin = {{ 'true' if is_admin else 'false' }};
+function selectRole(role){
+  if(!isAdmin && role !== 'Customer') return;
+  document.getElementById('role-hidden').value = role;
+  document.querySelectorAll('.rc').forEach(function(el){ el.classList.remove('active'); });
+  var t = document.getElementById('role-' + role);
+  if(t) t.classList.add('active');
+  var btn = document.getElementById('reg-btn');
+  if(btn) btn.innerHTML = (isAdmin ? 'Create Account as Administrator' : 'Create ' + role + ' Account') + ' &rarr;';
+}
+
+/* ── FLOATING STAR PARTICLES ── */
+(function(){
+  var c = document.getElementById('star-canvas');
+  if(!c) return;
+  var ctx = c.getContext('2d');
+  var W, H, stars = [];
+
+  function resize(){
+    W = c.width = window.innerWidth;
+    H = c.height = window.innerHeight;
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  for(var i = 0; i < 90; i++){
+    stars.push({
+      x: Math.random() * window.innerWidth,
+      y: Math.random() * window.innerHeight,
+      r: Math.random() * 1.6 + 0.3,
+      opacity: Math.random() * 0.7 + 0.1,
+      speed: Math.random() * 0.35 + 0.08,
+      drift: (Math.random() - 0.5) * 0.28,
+      twinkle: Math.random() * Math.PI * 2,
+      twinkleSpeed: Math.random() * 0.04 + 0.01,
+      color: Math.random() > 0.6 ? 'rgba(56,189,248,' : Math.random() > 0.5 ? 'rgba(167,139,250,' : 'rgba(232,121,249,'
+    });
+  }
+
+  function draw(){
+    ctx.clearRect(0, 0, W, H);
+    stars.forEach(function(s){
+      s.twinkle += s.twinkleSpeed;
+      var alpha = s.opacity * (0.5 + 0.5 * Math.sin(s.twinkle));
+      var grd = ctx.createRadialGradient(s.x, s.y, 0, s.x, s.y, s.r * 3);
+      grd.addColorStop(0, s.color + alpha + ')');
+      grd.addColorStop(1, s.color + '0)');
+      ctx.beginPath();
+      ctx.arc(s.x, s.y, s.r * 3, 0, Math.PI * 2);
+      ctx.fillStyle = grd;
+      ctx.fill();
+      ctx.beginPath();
+      ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+      ctx.fillStyle = s.color + alpha + ')';
+      ctx.fill();
+      s.y -= s.speed;
+      s.x += s.drift;
+      if(s.y < -6){ s.y = H + 6; s.x = Math.random() * W; }
+      if(s.x < -6) s.x = W + 6;
+      if(s.x > W + 6) s.x = -6;
+    });
+    requestAnimationFrame(draw);
+  }
+  draw();
+})();
+
+/* Ripple */
+document.getElementById('reg-btn').addEventListener('click', function(e){
+  var r = document.createElement('span'); r.className = 'rip';
+  var rect = this.getBoundingClientRect(), sz = Math.max(rect.width, rect.height) * 2;
+  r.style.cssText = 'width:'+sz+'px;height:'+sz+'px;left:'+(e.clientX-rect.left-sz/2)+'px;top:'+(e.clientY-rect.top-sz/2)+'px';
+  this.appendChild(r); setTimeout(function(){ r.remove(); }, 700);
+});
+</script>
+</body>
+</html>

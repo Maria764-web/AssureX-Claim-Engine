@@ -1,0 +1,318 @@
+{% extends "base.html" %}
+
+{% block title %}My Profile - AssureX Claim Engine{% endblock %}
+
+{% block content %}
+<div class="profile-wrapper">
+    <div class="header-nav">
+        <a href="{{ url_for('main.customer_dashboard') }}" class="back-link">&larr; Back to Dashboard</a>
+    </div>
+
+    <div class="profile-grid">
+        <!-- Editable Profile Details -->
+        <div class="profile-card">
+            <div class="card-header">
+                <div>
+                    <span class="card-badge">Personal Information</span>
+                    <h2 class="card-title">My Profile Details</h2>
+                    <p class="card-subtitle">Manage your personal contact details and profile preferences.</p>
+                </div>
+            </div>
+
+            <form method="POST" action="{{ url_for('auth.update_profile') }}" id="profile-form">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+
+                <div class="form-group">
+                    <label for="name">Full Name *</label>
+                    <input 
+                        type="text" 
+                        id="name" 
+                        name="name" 
+                        class="input-control" 
+                        value="{{ user.name }}" 
+                        required
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="phone">Phone Number (Optional)</label>
+                    <input 
+                        type="tel" 
+                        id="phone" 
+                        name="phone" 
+                        class="input-control" 
+                        placeholder="+1 555-0199" 
+                        value="{{ user.phone or '' }}"
+                    >
+                    <div class="input-hint">Used for SMS warranty claim notifications and service center alerts.</div>
+                </div>
+
+                <div class="form-group">
+                    <label>Email Address (Account Identifier)</label>
+                    <input 
+                        type="email" 
+                        class="input-control disabled" 
+                        value="{{ user.email }}" 
+                        disabled 
+                        readonly
+                    >
+                    <div class="input-hint">Primary account email is locked for security. Contact admin for changes.</div>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary" id="save-profile-btn">
+                        Save Profile Changes
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Account Security & Role Information -->
+        <div class="profile-card">
+            <div class="card-header">
+                <div>
+                    <span class="card-badge">Security & Access</span>
+                    <h2 class="card-title">Account Governance</h2>
+                    <p class="card-subtitle">Cryptographic identity and role authorizations.</p>
+                </div>
+            </div>
+
+            <div class="security-meta-list">
+                <div class="security-meta-item">
+                    <span class="meta-label">Public User UID</span>
+                    <span class="meta-value mono">{{ user.user_uid }}</span>
+                </div>
+                <div class="security-meta-item">
+                    <span class="meta-label">System Role</span>
+                    <span class="meta-value">
+                        <span class="role-pill">{{ user.role }}</span>
+                    </span>
+                </div>
+                <div class="security-meta-item">
+                    <span class="meta-label">Account Status</span>
+                    <span class="meta-value status-active">● Active & Verified</span>
+                </div>
+                <div class="security-meta-item">
+                    <span class="meta-label">Authentication Method</span>
+                    <span class="meta-value">Flask-Login Session (Scrypt Hashed)</span>
+                </div>
+                <div class="security-meta-item">
+                    <span class="meta-label">Account Created</span>
+                    <span class="meta-value">{{ user.created_at.strftime('%B %d, %Y - %H:%M UTC') if user.created_at else 'Active' }}</span>
+                </div>
+            </div>
+
+            <div class="security-notice">
+                <i class="bi bi-shield-lock notice-icon"></i>
+                <div class="notice-text">
+                    <strong>Zero-Trust IDOR Protection Active</strong>
+                    <p>All hardware queries and warranty operations are strictly scoped to your verified account token.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .profile-wrapper {
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+    }
+
+    .header-nav {
+        margin-bottom: 0.5rem;
+    }
+
+    .back-link {
+        color: var(--accent);
+        text-decoration: none;
+        font-size: 0.9rem;
+        font-weight: 500;
+    }
+
+    .back-link:hover {
+        text-decoration: underline;
+    }
+
+    .profile-grid {
+        display: grid;
+        grid-template-columns: 1.2fr 1fr;
+        gap: 1.75rem;
+    }
+
+    @media (max-width: 860px) {
+        .profile-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    .profile-card {
+        background: var(--card-bg);
+        border: 1px solid var(--card-border);
+        border-radius: 1rem;
+        padding: 2rem;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.25);
+    }
+
+    .card-header {
+        margin-bottom: 1.5rem;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid rgba(56, 189, 248, 0.12);
+    }
+
+    .card-badge {
+        display: inline-block;
+        background: rgba(56, 189, 248, 0.1);
+        border: 1px solid rgba(56, 189, 248, 0.25);
+        color: var(--accent);
+        font-size: 0.72rem;
+        font-weight: 600;
+        padding: 0.2rem 0.6rem;
+        border-radius: 1rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        margin-bottom: 0.4rem;
+    }
+
+    .card-title {
+        font-size: 1.35rem;
+        font-weight: 700;
+        color: #ffffff;
+    }
+
+    .card-subtitle {
+        color: var(--text-muted);
+        font-size: 0.85rem;
+        margin-top: 0.2rem;
+    }
+
+    .form-group {
+        margin-bottom: 1.25rem;
+    }
+
+    label {
+        display: block;
+        font-size: 0.85rem;
+        font-weight: 500;
+        color: #cbd5e1;
+        margin-bottom: 0.4rem;
+    }
+
+    .input-control {
+        width: 100%;
+        padding: 0.75rem 1rem;
+        background: rgba(10, 15, 26, 0.8);
+        border: 1px solid #27354a;
+        border-radius: 0.6rem;
+        color: #ffffff;
+        font-size: 0.95rem;
+        font-family: 'Inter', sans-serif;
+        transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .input-control:focus {
+        outline: none;
+        border-color: var(--accent);
+        box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.15);
+    }
+
+    .input-control.disabled {
+        background: rgba(15, 23, 42, 0.5);
+        color: #64748b;
+        border-color: #1e293b;
+        cursor: not-allowed;
+    }
+
+    .input-hint {
+        font-size: 0.75rem;
+        color: var(--text-muted);
+        margin-top: 0.35rem;
+    }
+
+    .form-actions {
+        margin-top: 1.75rem;
+        padding-top: 1.25rem;
+        border-top: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    /* Security Meta List */
+    .security-meta-list {
+        display: flex;
+        flex-direction: column;
+        gap: 0.85rem;
+    }
+
+    .security-meta-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding-bottom: 0.75rem;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+        font-size: 0.88rem;
+    }
+
+    .security-meta-item:last-child {
+        border-bottom: none;
+    }
+
+    .meta-label {
+        color: var(--text-muted);
+    }
+
+    .meta-value {
+        color: #f1f5f9;
+        font-weight: 500;
+    }
+
+    .meta-value.mono {
+        font-family: monospace;
+        color: var(--accent);
+    }
+
+    .role-pill {
+        background: rgba(56, 189, 248, 0.12);
+        color: var(--accent);
+        padding: 0.2rem 0.65rem;
+        border-radius: 1rem;
+        font-size: 0.75rem;
+        font-weight: 600;
+        border: 1px solid rgba(56, 189, 248, 0.25);
+    }
+
+    .status-active {
+        color: #4ade80;
+        font-weight: 600;
+    }
+
+    .security-notice {
+        margin-top: 1.5rem;
+        background: rgba(10, 15, 26, 0.6);
+        border: 1px solid rgba(56, 189, 248, 0.15);
+        border-radius: 0.75rem;
+        padding: 1rem;
+        display: flex;
+        gap: 0.75rem;
+        align-items: flex-start;
+    }
+
+    .notice-icon {
+        font-size: 1.25rem;
+    }
+
+    .notice-text strong {
+        font-size: 0.85rem;
+        color: #ffffff;
+        display: block;
+        margin-bottom: 0.2rem;
+    }
+
+    .notice-text p {
+        font-size: 0.78rem;
+        color: var(--text-muted);
+        line-height: 1.4;
+    }
+</style>
+{% endblock %}

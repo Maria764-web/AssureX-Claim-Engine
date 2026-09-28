@@ -1,0 +1,443 @@
+{% extends "base.html" %}
+
+{% block title %}{{ product.product_name }} - Product Details - AssureX{% endblock %}
+
+{% block content %}
+<div class="product-detail-wrapper">
+    <!-- Back Navigation Bar -->
+    <div class="detail-header-nav">
+        <a href="{{ url_for('products.list_products') }}" class="back-link">&larr; Back to My Products</a>
+        <a href="{{ url_for('main.customer_dashboard') }}" class="back-link">Dashboard &rarr;</a>
+    </div>
+
+    <!-- Hero Card -->
+    <div class="hero-card">
+        <div class="hero-main">
+            <span class="hero-badge">Hardware Asset</span>
+            <h1 class="hero-title">{{ product.product_name }}</h1>
+            <p class="hero-subtitle">{{ product.brand }} &bull; Model Number: {{ product.model }}</p>
+        </div>
+        <div class="hero-identifiers">
+            <div class="uid-box">
+                <span class="uid-label">Product UID</span>
+                <span class="uid-value">{{ product.product_uid }}</span>
+            </div>
+            {% if product.warranties %}
+                {% set w = product.warranties[0] %}
+                <span class="status-badge status-{{ 'active' if w.warranty_status == 'Active' else ('nearing' if w.warranty_status == 'Nearing Expiry' else 'expired') }}">
+                    ● {{ w.warranty_status }}
+                </span>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- 2-Column Info Grid -->
+    <div class="detail-grid">
+        <!-- Left: Product Specifications -->
+        <div class="info-card">
+            <div class="card-header">
+                <h2 class="card-title">Device Specifications</h2>
+                <span class="card-icon">📱</span>
+            </div>
+
+            <div class="spec-list">
+                <div class="spec-item">
+                    <span class="spec-name">Product Name</span>
+                    <span class="spec-data">{{ product.product_name }}</span>
+                </div>
+                <div class="spec-item">
+                    <span class="spec-name">Brand</span>
+                    <span class="spec-data">{{ product.brand }}</span>
+                </div>
+                <div class="spec-item">
+                    <span class="spec-name">Model</span>
+                    <span class="spec-data">{{ product.model }}</span>
+                </div>
+                <div class="spec-item">
+                    <span class="spec-name">Serial Number</span>
+                    <span class="spec-data mono highlight">{{ product.serial_number }}</span>
+                </div>
+                <div class="spec-item">
+                    <span class="spec-name">Product UID</span>
+                    <span class="spec-data mono">{{ product.product_uid }}</span>
+                </div>
+                <div class="spec-item">
+                    <span class="spec-name">Purchase Date</span>
+                    <span class="spec-data">{{ product.purchase_date.strftime('%B %d, %Y') }}</span>
+                </div>
+                <div class="spec-item">
+                    <span class="spec-name">Purchase Price</span>
+                    <span class="spec-data">${{ "%.2f"|format(product.purchase_price) if product.purchase_price else "0.00" }} USD</span>
+                </div>
+                <div class="spec-item">
+                    <span class="spec-name">Authorized Retailer</span>
+                    <span class="spec-data">{{ product.retailer }}</span>
+                </div>
+                <div class="spec-item">
+                    <span class="spec-name">Registration Date</span>
+                    <span class="spec-data">{{ product.created_at.strftime('%b %d, %Y - %H:%M UTC') }}</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right: Warranty Coverage Certificate -->
+        <div class="info-card">
+            <div class="card-header">
+                <h2 class="card-title">Warranty Coverage</h2>
+                <i class="bi bi-shield card-icon"></i>
+            </div>
+
+            {% if product.warranties %}
+                {% set warranty = product.warranties[0] %}
+                <div class="spec-list">
+                    <div class="spec-item">
+                        <span class="spec-name">Warranty UID</span>
+                        <span class="spec-data mono highlight">{{ warranty.warranty_uid }}</span>
+                    </div>
+                    <div class="spec-item">
+                        <span class="spec-name">Policy Provider</span>
+                        <span class="spec-data">{{ warranty.warranty_provider }}</span>
+                    </div>
+                    <div class="spec-item">
+                        <span class="spec-name">Warranty Status</span>
+                        <span class="spec-data">
+                            <span class="status-badge-inline status-{{ 'active' if warranty.warranty_status == 'Active' else ('nearing' if warranty.warranty_status == 'Nearing Expiry' else 'expired') }}">
+                                {{ warranty.warranty_status }}
+                            </span>
+                        </span>
+                    </div>
+                    <div class="spec-item">
+                        <span class="spec-name">Coverage Start Date</span>
+                        <span class="spec-data">{{ warranty.start_date.strftime('%B %d, %Y') }}</span>
+                    </div>
+                    <div class="spec-item">
+                        <span class="spec-name">Coverage Expiry Date</span>
+                        <span class="spec-data">{{ warranty.expiry_date.strftime('%B %d, %Y') }}</span>
+                    </div>
+                    <div class="spec-item">
+                        <span class="spec-name">Policy Duration</span>
+                        <span class="spec-data">{{ product.warranty_length }} Months</span>
+                    </div>
+                </div>
+
+                <div class="clause-box">
+                    <div class="clause-title">Covered Items & Defects</div>
+                    <div class="clause-body">{{ warranty.covered_items }}</div>
+                </div>
+
+                <div class="clause-box clause-exclusions">
+                    <div class="clause-title">Policy Exclusions</div>
+                    <div class="clause-body">{{ warranty.exclusions }}</div>
+                </div>
+
+                <div style="margin-top: 1.25rem; display: flex; justify-content: flex-end;">
+                    <a href="{{ url_for('warranties.get_warranty', warranty_id=warranty.id) }}" class="btn btn-primary btn-sm" id="btn-view-full-warranty">
+                        View Full Warranty Certificate &rarr;
+                    </a>
+                </div>
+            {% else %}
+                <div class="empty-clause">
+                    <p>No warranty policy record found for this product.</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Claim Engine Step 5A Action Card -->
+    <div class="claim-action-card">
+        <div class="claim-action-left">
+            <div class="step-badge">AssureX Claim Engine &bull; Step 5A Active</div>
+            <h3 class="claim-action-title">Need to file a repair or warranty claim?</h3>
+            <p class="claim-action-subtitle">Initiate a formal claim for this device with fault details and upload supporting evidence documents.</p>
+        </div>
+        <div class="claim-action-right">
+            <a href="{{ url_for('claims.create_claim_view', product_id=product.id) }}" class="btn btn-primary" id="btn-submit-claim">
+                <i class="bi bi-shield-plus"></i> File Warranty Claim
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .product-detail-wrapper {
+        display: flex;
+        flex-direction: column;
+        gap: 1.75rem;
+    }
+
+    .detail-header-nav {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .back-link {
+        color: var(--accent);
+        text-decoration: none;
+        font-size: 0.9rem;
+        font-weight: 500;
+        transition: color 0.2s;
+    }
+
+    .back-link:hover {
+        text-decoration: underline;
+    }
+
+    /* Hero Card */
+    .hero-card {
+        background: linear-gradient(135deg, rgba(15, 23, 42, 0.95), rgba(30, 41, 59, 0.7));
+        border: 1px solid var(--card-border);
+        border-radius: 1rem;
+        padding: 2rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 1.5rem;
+        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.4);
+    }
+
+    .hero-badge {
+        display: inline-block;
+        background: rgba(56, 189, 248, 0.1);
+        border: 1px solid rgba(56, 189, 248, 0.25);
+        color: var(--accent);
+        font-size: 0.72rem;
+        font-weight: 600;
+        padding: 0.2rem 0.6rem;
+        border-radius: 1rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        margin-bottom: 0.4rem;
+    }
+
+    .hero-title {
+        font-size: 2rem;
+        font-weight: 700;
+        color: #ffffff;
+    }
+
+    .hero-subtitle {
+        color: var(--text-muted);
+        font-size: 0.95rem;
+        margin-top: 0.25rem;
+    }
+
+    .hero-identifiers {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        flex-wrap: wrap;
+    }
+
+    .uid-box {
+        background: rgba(10, 15, 26, 0.8);
+        border: 1px solid rgba(56, 189, 248, 0.2);
+        padding: 0.6rem 1rem;
+        border-radius: 0.65rem;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .uid-label {
+        font-size: 0.68rem;
+        color: var(--text-muted);
+        text-transform: uppercase;
+    }
+
+    .uid-value {
+        font-family: monospace;
+        font-size: 1rem;
+        font-weight: 700;
+        color: var(--accent);
+    }
+
+    /* Detail Grid */
+    .detail-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1.5rem;
+    }
+
+    @media (max-width: 860px) {
+        .detail-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    .info-card {
+        background: var(--card-bg);
+        border: 1px solid var(--card-border);
+        border-radius: 1rem;
+        padding: 1.75rem;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.25);
+    }
+
+    .card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.25rem;
+        padding-bottom: 0.75rem;
+        border-bottom: 1px solid rgba(56, 189, 248, 0.12);
+    }
+
+    .card-title {
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: #ffffff;
+    }
+
+    .card-icon {
+        font-size: 1.25rem;
+    }
+
+    .spec-list {
+        display: flex;
+        flex-direction: column;
+        gap: 0.65rem;
+    }
+
+    .spec-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.5rem 0;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+        font-size: 0.88rem;
+    }
+
+    .spec-item:last-child {
+        border-bottom: none;
+    }
+
+    .spec-name {
+        color: var(--text-muted);
+    }
+
+    .spec-data {
+        color: #f1f5f9;
+        font-weight: 500;
+    }
+
+    .spec-data.mono {
+        font-family: monospace;
+    }
+
+    .spec-data.highlight {
+        color: var(--accent);
+    }
+
+    /* Clause Boxes */
+    .clause-box {
+        margin-top: 1rem;
+        background: rgba(10, 15, 26, 0.6);
+        border: 1px solid rgba(56, 189, 248, 0.15);
+        border-radius: 0.65rem;
+        padding: 0.85rem 1rem;
+    }
+
+    .clause-title {
+        font-size: 0.78rem;
+        font-weight: 600;
+        color: var(--accent);
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        margin-bottom: 0.35rem;
+    }
+
+    .clause-body {
+        font-size: 0.82rem;
+        color: #cbd5e1;
+        line-height: 1.5;
+    }
+
+    .clause-exclusions {
+        border-color: rgba(239, 68, 68, 0.2);
+    }
+
+    .clause-exclusions .clause-title {
+        color: #f87171;
+    }
+
+    /* Status Badges */
+    .status-badge {
+        font-size: 0.8rem;
+        font-weight: 600;
+        padding: 0.4rem 0.85rem;
+        border-radius: 2rem;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+    }
+
+    .status-badge-inline {
+        font-size: 0.75rem;
+        font-weight: 600;
+        padding: 0.2rem 0.6rem;
+        border-radius: 1rem;
+        text-transform: uppercase;
+    }
+
+    .status-active {
+        background: rgba(34, 197, 94, 0.15);
+        color: #4ade80;
+        border: 1px solid rgba(34, 197, 94, 0.3);
+    }
+
+    .status-nearing {
+        background: rgba(245, 158, 11, 0.15);
+        color: #fbbf24;
+        border: 1px solid rgba(245, 158, 11, 0.3);
+    }
+
+    .status-expired {
+        background: rgba(239, 68, 68, 0.15);
+        color: #f87171;
+        border: 1px solid rgba(239, 68, 68, 0.3);
+    }
+
+    /* Claim Action Card */
+    .claim-action-card {
+        background: rgba(15, 23, 42, 0.7);
+        border: 1px solid rgba(56, 189, 248, 0.15);
+        border-radius: 1rem;
+        padding: 1.5rem 2rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 1.25rem;
+    }
+
+    .step-badge {
+        font-size: 0.72rem;
+        font-weight: 600;
+        color: var(--accent);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        margin-bottom: 0.3rem;
+    }
+
+    .claim-action-title {
+        font-size: 1.15rem;
+        font-weight: 600;
+        color: #ffffff;
+    }
+
+    .claim-action-subtitle {
+        font-size: 0.85rem;
+        color: var(--text-muted);
+        margin-top: 0.2rem;
+    }
+
+    .btn-disabled {
+        background: rgba(255, 255, 255, 0.05);
+        color: var(--text-muted);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        cursor: not-allowed;
+        opacity: 0.8;
+    }
+</style>
+{% endblock %}

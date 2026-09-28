@@ -1,0 +1,284 @@
+{% extends "base.html" %}
+
+{% block title %}My Registered Products - AssureX Claim Engine{% endblock %}
+
+{% block content %}
+<div class="products-page-wrapper">
+    <!-- Header with Action Button -->
+    <div class="page-header">
+        <div>
+            <span class="header-badge">Product Inventory</span>
+            <h1 class="page-title">My Registered Products</h1>
+            <p class="page-subtitle">Manage registered hardware devices, inspect warranty coverage, and submit claims.</p>
+        </div>
+        <div>
+            <a href="{{ url_for('products.register_product_view') }}" class="btn btn-primary" id="btn-register-new-product">
+                + Register New Product
+            </a>
+        </div>
+    </div>
+
+    <!-- Products Grid or Empty State -->
+    {% if products %}
+        <div class="products-grid">
+            {% for product in products %}
+                <div class="product-card" id="product-card-{{ product.id }}">
+                    <div class="card-top">
+                        <div class="product-identifiers">
+                            <span class="product-uid-tag">{{ product.product_uid }}</span>
+                            {% if product.warranties %}
+                                {% set w = product.warranties[0] %}
+                                <span class="warranty-status-pill status-{{ 'active' if w.warranty_status == 'Active' else ('nearing' if w.warranty_status == 'Nearing Expiry' else 'expired') }}">
+                                    {{ w.warranty_status }}
+                                </span>
+                            {% else %}
+                                <span class="warranty-status-pill status-expired">No Warranty</span>
+                            {% endif %}
+                        </div>
+
+                        <h2 class="product-title">{{ product.product_name }}</h2>
+                        <p class="product-subtitle">{{ product.brand }} &bull; {{ product.model }}</p>
+
+                        <div class="product-specs-list">
+                            <div class="spec-row">
+                                <span class="spec-label">Serial Number</span>
+                                <span class="spec-value mono">{{ product.serial_number }}</span>
+                            </div>
+                            <div class="spec-row">
+                                <span class="spec-label">Purchase Date</span>
+                                <span class="spec-value">{{ product.purchase_date.strftime('%b %d, %Y') }}</span>
+                            </div>
+                            <div class="spec-row">
+                                <span class="spec-label">Retailer</span>
+                                <span class="spec-value">{{ product.retailer }}</span>
+                            </div>
+                            <div class="spec-row">
+                                <span class="spec-label">Purchase Price</span>
+                                <span class="spec-value">${{ "%.2f"|format(product.purchase_price) if product.purchase_price else "0.00" }}</span>
+                            </div>
+                            <div class="spec-row">
+                                <span class="spec-label">Warranty Term</span>
+                                <span class="spec-value">{{ product.warranty_length }} Months</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card-bottom">
+                        <a href="{{ url_for('products.get_product', product_id=product.id) }}" class="btn btn-secondary btn-full" id="view-product-{{ product.id }}">
+                            View Product &rarr;
+                        </a>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="empty-inventory-card">
+            <div class="empty-icon">📦</div>
+            <h2>No Products Registered Yet</h2>
+            <p>You have not cataloged any hardware devices in your AssureX account. Register your first device to activate warranty coverage.</p>
+            <a href="{{ url_for('products.register_product_view') }}" class="btn btn-primary" id="btn-empty-register" style="margin-top: 1.25rem;">
+                + Register Your First Product
+            </a>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .products-page-wrapper {
+        display: flex;
+        flex-direction: column;
+        gap: 2rem;
+    }
+
+    .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 1rem;
+        background: linear-gradient(135deg, rgba(15, 23, 42, 0.95), rgba(30, 41, 59, 0.6));
+        border: 1px solid var(--card-border);
+        border-radius: 1rem;
+        padding: 1.75rem 2rem;
+    }
+
+    .header-badge {
+        display: inline-block;
+        background: rgba(56, 189, 248, 0.1);
+        border: 1px solid rgba(56, 189, 248, 0.25);
+        color: var(--accent);
+        font-size: 0.72rem;
+        font-weight: 600;
+        padding: 0.2rem 0.6rem;
+        border-radius: 1rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        margin-bottom: 0.4rem;
+    }
+
+    .page-title {
+        font-size: 1.75rem;
+        font-weight: 700;
+        color: #ffffff;
+    }
+
+    .page-subtitle {
+        color: var(--text-muted);
+        font-size: 0.92rem;
+        margin-top: 0.25rem;
+    }
+
+    /* Products Grid */
+    .products-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+        gap: 1.5rem;
+    }
+
+    .product-card {
+        background: var(--card-bg);
+        border: 1px solid var(--card-border);
+        border-radius: 1rem;
+        padding: 1.5rem;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        gap: 1.25rem;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.25);
+        transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .product-card:hover {
+        transform: translateY(-3px);
+        border-color: rgba(56, 189, 248, 0.4);
+        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.4);
+    }
+
+    .card-top {
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+
+    .product-identifiers {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .product-uid-tag {
+        font-family: monospace;
+        background: rgba(56, 189, 248, 0.12);
+        color: var(--accent);
+        font-size: 0.8rem;
+        font-weight: 600;
+        padding: 0.2rem 0.55rem;
+        border-radius: 0.4rem;
+        border: 1px solid rgba(56, 189, 248, 0.25);
+    }
+
+    .warranty-status-pill {
+        font-size: 0.72rem;
+        font-weight: 600;
+        padding: 0.2rem 0.6rem;
+        border-radius: 1rem;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+    }
+
+    .status-active {
+        background: rgba(34, 197, 94, 0.15);
+        color: #4ade80;
+        border: 1px solid rgba(34, 197, 94, 0.3);
+    }
+
+    .status-nearing {
+        background: rgba(245, 158, 11, 0.15);
+        color: #fbbf24;
+        border: 1px solid rgba(245, 158, 11, 0.3);
+    }
+
+    .status-expired {
+        background: rgba(239, 68, 68, 0.15);
+        color: #f87171;
+        border: 1px solid rgba(239, 68, 68, 0.3);
+    }
+
+    .product-title {
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: #ffffff;
+        line-height: 1.3;
+    }
+
+    .product-subtitle {
+        font-size: 0.85rem;
+        color: var(--text-muted);
+    }
+
+    .product-specs-list {
+        background: rgba(10, 15, 26, 0.6);
+        border: 1px solid rgba(56, 189, 248, 0.1);
+        border-radius: 0.65rem;
+        padding: 0.75rem 1rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+        margin-top: 0.5rem;
+    }
+
+    .spec-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 0.85rem;
+    }
+
+    .spec-label {
+        color: var(--text-muted);
+    }
+
+    .spec-value {
+        color: #f1f5f9;
+        font-weight: 500;
+    }
+
+    .spec-value.mono {
+        font-family: monospace;
+    }
+
+    .btn-full {
+        width: 100%;
+        justify-content: center;
+    }
+
+    /* Empty State */
+    .empty-inventory-card {
+        background: var(--card-bg);
+        border: 1px dashed rgba(56, 189, 248, 0.25);
+        border-radius: 1rem;
+        padding: 3.5rem 2rem;
+        text-align: center;
+    }
+
+    .empty-icon {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+    }
+
+    .empty-inventory-card h2 {
+        font-size: 1.35rem;
+        color: #ffffff;
+        margin-bottom: 0.5rem;
+    }
+
+    .empty-inventory-card p {
+        color: var(--text-muted);
+        font-size: 0.95rem;
+        max-width: 480px;
+        margin: 0 auto;
+    }
+</style>
+{% endblock %}

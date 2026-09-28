@@ -1,0 +1,322 @@
+{% extends "base.html" %}
+
+{% block title %}Claim Evaluation Result - AssureX Claim Engine{% endblock %}
+
+{% block extra_css %}
+<style>
+    .result-hero {
+        text-align: center;
+        padding: 2.5rem 1.5rem;
+        margin-bottom: 2rem;
+        border-radius: 1.25rem;
+        border: 1px solid var(--card-border);
+        background: var(--card-bg);
+    }
+    .decision-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.6rem;
+        font-size: 1.5rem;
+        font-weight: 700;
+        padding: 0.65rem 2rem;
+        border-radius: 2rem;
+        margin-bottom: 1rem;
+    }
+    .badge-approved { background: var(--success-bg); color: #4ade80; border: 1px solid var(--success); }
+    .badge-rejected { background: var(--danger-bg); color: #f87171; border: 1px solid var(--danger); }
+    .badge-manual { background: var(--warning-bg); color: #fbbf24; border: 1px solid var(--warning); }
+    .badge-pending { background: rgba(148,163,184,0.15); color: #94a3b8; border: 1px solid #475569; }
+
+    .confidence-bar-wrap { background: rgba(255,255,255,0.06); border-radius: 99px; height: 10px; overflow: hidden; }
+    .confidence-bar-fill { height: 100%; border-radius: 99px; transition: width 0.8s ease; }
+    .fill-valid { background: linear-gradient(90deg, #22c55e, #4ade80); }
+    .fill-invalid { background: linear-gradient(90deg, #ef4444, #f87171); }
+    .fill-manual { background: linear-gradient(90deg, #f59e0b, #fbbf24); }
+
+    .section-card {
+        background: var(--card-bg);
+        border: 1px solid var(--card-border);
+        border-radius: 1rem;
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+    .section-title {
+        font-size: 1.05rem;
+        font-weight: 700;
+        color: #fff;
+        margin-bottom: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        border-bottom: 1px solid rgba(255,255,255,0.06);
+        padding-bottom: 0.75rem;
+    }
+    .rule-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0.6rem 0;
+        border-bottom: 1px solid rgba(255,255,255,0.04);
+        gap: 1rem;
+    }
+    .rule-row:last-child { border-bottom: none; }
+    .rule-name { font-size: 0.9rem; color: #cbd5e1; flex: 1; }
+    .rule-details { font-size: 0.8rem; color: var(--text-muted); margin-top: 0.15rem; }
+    .status-pill {
+        font-size: 0.78rem;
+        font-weight: 600;
+        padding: 0.25rem 0.75rem;
+        border-radius: 1rem;
+        white-space: nowrap;
+    }
+    .pill-passed { background: var(--success-bg); color: #4ade80; }
+    .pill-failed { background: var(--danger-bg); color: #f87171; }
+    .pill-warning { background: var(--warning-bg); color: #fbbf24; }
+    .pill-inconclusive { background: rgba(148,163,184,0.15); color: #94a3b8; }
+    .info-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; }
+    .info-item { background: rgba(15,23,42,0.6); border-radius: 0.75rem; padding: 1rem 1.25rem; border: 1px solid #1e293b; }
+    .info-label { font-size: 0.72rem; text-transform: uppercase; color: var(--text-muted); letter-spacing: 0.05em; }
+    .info-value { font-size: 1rem; font-weight: 600; color: #fff; margin-top: 0.25rem; }
+    .action-row { display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center; margin-top: 1.5rem; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div style="max-width: 900px; margin: 0 auto;">
+
+    {% if claim %}
+    <!-- Decision Hero -->
+    <div class="result-hero">
+        {% set decision = claim.final_decision or claim.claim_status %}
+        {% if decision == 'Approved' %}
+            <div class="decision-badge badge-approved">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                Likely Valid
+            </div>
+            <p style="color: var(--text-muted); font-size: 0.95rem;">Your warranty claim has been verified and approved by our evaluation engine.</p>
+        {% elif decision == 'Rejected' %}
+            <div class="decision-badge badge-rejected">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                Likely Invalid
+            </div>
+            <p style="color: var(--text-muted); font-size: 0.95rem;">Your claim did not meet the required warranty coverage criteria.</p>
+        {% elif decision == 'Manual Review' %}
+            <div class="decision-badge badge-manual">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                Manual Review Required
+            </div>
+            <p style="color: var(--text-muted); font-size: 0.95rem;">Your claim requires additional review by our team. You will be notified of the outcome.</p>
+        {% else %}
+            <div class="decision-badge badge-pending">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                Evaluation Pending
+            </div>
+            <p style="color: var(--text-muted); font-size: 0.95rem;">Your claim has been submitted and is being evaluated.</p>
+        {% endif %}
+
+        <div style="margin-top: 1rem; font-family: monospace; font-size: 0.85rem; color: var(--accent);">
+            Claim Reference: <strong>{{ claim.claim_uid }}</strong>
+        </div>
+    </div>
+
+    <!-- Plain-Language Summary -->
+    {% if explanation and explanation.reasons %}
+    <div class="section-card" style="border-color: rgba(56,189,248,0.25);">
+        <div class="section-title">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+            What This Means — Plain Language Summary
+        </div>
+        <ul style="list-style:none; padding:0; margin:0; display:flex; flex-direction:column; gap:0.5rem;">
+            {% for reason in explanation.reasons %}
+            <li style="display:flex; gap:0.6rem; align-items:flex-start; font-size:0.88rem; color:#cbd5e1;">
+                <span style="color:var(--accent); flex-shrink:0; margin-top:0.1rem;">&#9656;</span>
+                {{ reason }}
+            </li>
+            {% endfor %}
+        </ul>
+        <div style="margin-top:1rem; display:flex; gap:1.5rem; flex-wrap:wrap; font-size:0.8rem; color:var(--text-muted);">
+            <span>Rules passed: <strong style="color:#4ade80;">{{ explanation.passed_rules_count }}</strong></span>
+            <span>Rules failed: <strong style="color:#f87171;">{{ explanation.failed_rules_count }}</strong></span>
+            {% if explanation.ai_prediction %}
+            <span>AI prediction: <strong style="color:#fff;">{{ explanation.ai_prediction }}</strong></span>
+            {% if explanation.ai_confidence %}
+            <span>AI confidence: <strong style="color:var(--accent);">{{ (explanation.ai_confidence * 100)|round(1) }}%</strong></span>
+            {% endif %}
+            {% endif %}
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Claim Info -->
+    <div class="section-card">
+        <div class="section-title">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            Claim Details
+        </div>
+        <div class="info-grid">
+            <div class="info-item">
+                <div class="info-label">Claim Status</div>
+                <div class="info-value">{{ claim.claim_status }}</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">Damage Type</div>
+                <div class="info-value">{{ claim.damage_type or '—' }}</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">Fault Date</div>
+                <div class="info-value">{{ claim.fault_date.strftime('%d %b %Y') if claim.fault_date else '—' }}</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">Product Age</div>
+                <div class="info-value">{{ claim.product_age or '—' }} months</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">Documents</div>
+                <div class="info-value">{{ claim.documents | length }} submitted</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">Submitted</div>
+                <div class="info-value">{{ claim.submission_date.strftime('%d %b %Y') if claim.submission_date else '—' }}</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Rule Engine Results -->
+    {% if claim.rule_results %}
+    <div class="section-card">
+        <div class="section-title">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+            Warranty Rule Checks
+            <span style="margin-left: auto; font-size: 0.8rem; color: var(--text-muted); font-weight: 400;">
+                {{ claim.rule_results | selectattr('rule_status', 'equalto', 'Passed') | list | length }} passed /
+                {{ claim.rule_results | selectattr('rule_status', 'equalto', 'Failed') | list | length }} failed
+            </span>
+        </div>
+        {% for rule in claim.rule_results %}
+        <div class="rule-row">
+            <div>
+                <div class="rule-name">{{ rule.rule_name }}</div>
+                <div class="rule-details">{{ rule.details or rule.rule_result or '' }}</div>
+            </div>
+            {% if rule.rule_status == 'Passed' %}
+                <span class="status-pill pill-passed">Passed</span>
+            {% elif rule.rule_status == 'Failed' %}
+                <span class="status-pill pill-failed">Failed</span>
+            {% elif rule.rule_status == 'Warning' %}
+                <span class="status-pill pill-warning">Warning</span>
+            {% else %}
+                <span class="status-pill pill-inconclusive">{{ rule.rule_status }}</span>
+            {% endif %}
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- AI Prediction -->
+    {% if claim.predictions %}
+    {% set pred = claim.predictions | sort(attribute='id') | last %}
+    <div class="section-card">
+        <div class="section-title">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14"/></svg>
+            AI Model Prediction
+            <span style="margin-left:auto; font-size:0.8rem; color:var(--text-muted); font-weight:400;">{{ pred.model_name }}</span>
+        </div>
+        <div style="margin-bottom: 1.25rem; font-size: 0.9rem; color: #cbd5e1;">
+            The AI model classified this claim as:
+            <strong style="color: {% if pred.predicted_class == 'Valid' %}#4ade80{% elif pred.predicted_class == 'Invalid' %}#f87171{% else %}#fbbf24{% endif %};">
+                {{ pred.predicted_class }}
+            </strong>
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 0.85rem;">
+            <!-- Valid -->
+            <div>
+                <div style="display:flex; justify-content:space-between; margin-bottom:0.3rem; font-size:0.85rem;">
+                    <span style="color:#4ade80;">Valid</span>
+                    <span style="color:#4ade80;">{{ (pred.valid_confidence * 100) | round(1) }}%</span>
+                </div>
+                <div class="confidence-bar-wrap">
+                    <div class="confidence-bar-fill fill-valid" style="width: {{ (pred.valid_confidence * 100) | round(1) }}%;"></div>
+                </div>
+            </div>
+            <!-- Invalid -->
+            <div>
+                <div style="display:flex; justify-content:space-between; margin-bottom:0.3rem; font-size:0.85rem;">
+                    <span style="color:#f87171;">Invalid</span>
+                    <span style="color:#f87171;">{{ (pred.invalid_confidence * 100) | round(1) }}%</span>
+                </div>
+                <div class="confidence-bar-wrap">
+                    <div class="confidence-bar-fill fill-invalid" style="width: {{ (pred.invalid_confidence * 100) | round(1) }}%;"></div>
+                </div>
+            </div>
+            <!-- Manual Review -->
+            <div>
+                <div style="display:flex; justify-content:space-between; margin-bottom:0.3rem; font-size:0.85rem;">
+                    <span style="color:#fbbf24;">Manual Review</span>
+                    <span style="color:#fbbf24;">{{ (pred.manual_review_confidence * 100) | round(1) }}%</span>
+                </div>
+                <div class="confidence-bar-wrap">
+                    <div class="confidence-bar-fill fill-manual" style="width: {{ (pred.manual_review_confidence * 100) | round(1) }}%;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Decision Explanation -->
+    {% if claim.decision_reasoning or claim.reviewer_notes %}
+    <div class="section-card">
+        <div class="section-title">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            Decision Explanation
+        </div>
+        {% if claim.decision_reasoning %}
+        <div style="margin-bottom: 1rem;">
+            <div style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted); margin-bottom: 0.5rem;">Automated Evaluation Reasoning</div>
+            <p style="font-size: 0.88rem; color: #cbd5e1; line-height: 1.6; background: rgba(15,23,42,0.6); padding: 1rem; border-radius: 0.5rem; border: 1px solid #1e293b;">
+                {{ claim.decision_reasoning }}
+            </p>
+        </div>
+        {% endif %}
+        {% if claim.reviewer_notes %}
+        <div>
+            <div style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted); margin-bottom: 0.5rem;">Reviewer Notes</div>
+            <p style="font-size: 0.88rem; color: #cbd5e1; line-height: 1.6; background: rgba(15,23,42,0.6); padding: 1rem; border-radius: 0.5rem; border: 1px solid #1e293b;">
+                {{ claim.reviewer_notes }}
+            </p>
+        </div>
+        {% endif %}
+    </div>
+    {% endif %}
+
+    <!-- Actions -->
+    <div class="action-row">
+        <a href="{{ url_for('claims.list_claims') }}" class="btn btn-secondary">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+            Back to My Claims
+        </a>
+        <a href="{{ url_for('claims.get_claim', claim_id=claim.id) }}" class="btn btn-secondary">
+            View Full Claim
+        </a>
+        {% if claim.final_decision %}
+        <a href="{{ url_for('reports.download_claim_report', claim_id=claim.id) }}" class="btn btn-secondary" target="_blank">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Download Report
+        </a>
+        {% endif %}
+        {% if current_user.role in ['Claim Reviewer', 'Administrator'] %}
+        <a href="{{ url_for('reviewer.get_claim_for_review', claim_id=claim.id) }}" class="btn btn-primary">
+            Review This Claim
+        </a>
+        {% endif %}
+    </div>
+
+    {% else %}
+    <div style="text-align:center; padding: 3rem; color: var(--text-muted);">
+        <p>Claim data not available.</p>
+        <a href="{{ url_for('claims.list_claims') }}" class="btn btn-secondary" style="margin-top:1rem;">Back to Claims</a>
+    </div>
+    {% endif %}
+
+</div>
+{% endblock %}

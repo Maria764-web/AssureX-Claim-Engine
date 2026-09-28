@@ -1,0 +1,226 @@
+{% extends "base.html" %}
+
+{% block title %}Manual Review - {{ claim.claim_uid }} - AssureX{% endblock %}
+
+{% block extra_css %}
+<style>
+    .review-card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 1rem; padding: 1.75rem; margin-bottom: 1.5rem; }
+    .review-card h2 { font-size: 1.05rem; font-weight: 700; color: #fff; margin-bottom: 1.25rem; display: flex; align-items: center; gap: 0.5rem; padding-bottom: 0.75rem; border-bottom: 1px solid rgba(255,255,255,0.06); }
+    .form-group { margin-bottom: 1.25rem; }
+    .form-label { font-size: 0.85rem; font-weight: 600; color: #cbd5e1; display: block; margin-bottom: 0.5rem; }
+    .form-control { width: 100%; background: rgba(15,23,42,0.8); border: 1px solid rgba(255,255,255,0.12); border-radius: 0.6rem; color: #fff; font-family: 'Outfit', sans-serif; font-size: 0.92rem; padding: 0.75rem 1rem; outline: none; transition: border-color 0.2s; }
+    .form-control:focus { border-color: var(--accent); }
+    select.form-control option { background: #0f172a; }
+    textarea.form-control { resize: vertical; min-height: 120px; }
+    .action-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; }
+    @media (max-width: 600px) { .action-grid { grid-template-columns: 1fr; } }
+    .action-card { background: rgba(15,23,42,0.6); border: 2px solid transparent; border-radius: 0.9rem; padding: 1.25rem; cursor: pointer; transition: all 0.2s; }
+    .action-card:hover { border-color: var(--accent); background: rgba(56,189,248,0.06); }
+    .action-card.selected { border-color: var(--accent); background: rgba(56,189,248,0.08); }
+    .action-card-icon { font-size: 1.5rem; margin-bottom: 0.5rem; }
+    .action-card-title { font-size: 0.95rem; font-weight: 700; color: #fff; margin-bottom: 0.25rem; }
+    .action-card-desc { font-size: 0.8rem; color: var(--text-muted); }
+    .info-row { display: flex; justify-content: space-between; padding: 0.45rem 0; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 0.88rem; }
+    .info-row:last-child { border-bottom: none; }
+    .info-key { color: var(--text-muted); }
+    .info-val { color: #fff; font-weight: 500; }
+    .submit-btn { width: 100%; padding: 0.9rem; font-size: 1rem; font-weight: 700; border: none; border-radius: 0.75rem; cursor: pointer; font-family: 'Outfit', sans-serif; background: linear-gradient(135deg, var(--primary), var(--accent)); color: #fff; transition: all 0.2s; }
+    .submit-btn:hover { opacity: 0.9; transform: translateY(-1px); }
+    .submit-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div style="max-width: 900px; margin: 0 auto;">
+
+    <!-- Header -->
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.75rem; flex-wrap:wrap; gap:1rem;">
+        <div>
+            <h1 style="font-size:1.75rem; font-weight:700; color:#fff;">Manual Review</h1>
+            <p style="color:var(--text-muted); font-size:0.88rem; margin-top:0.2rem;">
+                Reviewing claim <span style="font-family:monospace; color:var(--accent);">{{ claim.claim_uid }}</span>
+            </p>
+        </div>
+        <a href="{{ url_for('reviewer.get_claim_for_review', claim_id=claim.id) }}" class="btn btn-secondary" style="font-size:0.88rem;">
+            ← Full Review View
+        </a>
+    </div>
+
+    <!-- Claim Quick Summary -->
+    <div class="review-card">
+        <h2>
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            Claim Summary
+        </h2>
+        <div class="info-row"><span class="info-key">Claim UID</span><span class="info-val" style="font-family:monospace;">{{ claim.claim_uid }}</span></div>
+        <div class="info-row"><span class="info-key">Current Status</span><span class="info-val">{{ claim.claim_status }}</span></div>
+        <div class="info-row"><span class="info-key">Damage Type</span><span class="info-val">{{ claim.damage_type or '—' }}</span></div>
+        <div class="info-row"><span class="info-key">Fault Date</span><span class="info-val">{{ claim.fault_date.strftime('%d %b %Y') if claim.fault_date else '—' }}</span></div>
+        <div class="info-row"><span class="info-key">Product Age</span><span class="info-val">{{ claim.product_age or '—' }} months</span></div>
+        <div class="info-row"><span class="info-key">Documents Submitted</span><span class="info-val">{{ claim.documents | length }}</span></div>
+
+        {% if summary and summary.rule_summary %}
+        <div class="info-row">
+            <span class="info-key">Rule Checks</span>
+            <span class="info-val">
+                <span style="color:#4ade80;">{{ summary.rule_summary.passed }} passed</span> /
+                <span style="color:#f87171;">{{ summary.rule_summary.failed }} failed</span>
+            </span>
+        </div>
+        {% endif %}
+
+        {% if summary and summary.latest_prediction %}
+        {% set p = summary.latest_prediction %}
+        <div class="info-row">
+            <span class="info-key">AI Prediction</span>
+            <span class="info-val" style="color:{% if p.predicted_class == 'Valid' %}#4ade80{% elif p.predicted_class == 'Invalid' %}#f87171{% else %}#fbbf24{% endif %};">
+                {{ p.predicted_class }} ({{ (p.valid_confidence * 100) | round(1) }}% valid)
+            </span>
+        </div>
+        {% endif %}
+
+        <div style="margin-top:1rem; padding-top:1rem; border-top:1px solid rgba(255,255,255,0.06);">
+            <div style="font-size:0.8rem; color:var(--text-muted); margin-bottom:0.4rem;">Fault Description</div>
+            <div style="font-size:0.88rem; color:#cbd5e1; line-height:1.65;">{{ claim.fault_description or '—' }}</div>
+        </div>
+    </div>
+
+    <!-- Decision Form -->
+    <div class="review-card" id="decision-card">
+        <h2>
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            Choose Your Decision
+        </h2>
+
+            <div class="action-grid" style="margin-bottom:1.5rem;">
+                <div class="action-card" onclick="selectAction('approve', this)" id="card-approve">
+                    <i class="bi bi-check-circle-fill action-card-icon" style="color:#22c55e;"></i>
+                    <div class="action-card-title">Approve Claim</div>
+                    <div class="action-card-desc">Claim meets all warranty coverage criteria. Approve for processing.</div>
+                </div>
+                <div class="action-card" onclick="selectAction('reject', this)" id="card-reject">
+                    <i class="bi bi-x-circle-fill action-card-icon" style="color:#ef4444;"></i>
+                    <div class="action-card-title">Reject Claim</div>
+                    <div class="action-card-desc">Claim does not meet warranty requirements. Must include a reason in notes.</div>
+                </div>
+                <div class="action-card" onclick="selectAction('request_info', this)" id="card-request_info">
+                    <i class="bi bi-chat-left-text-fill action-card-icon" style="color:#38bdf8;"></i>
+                    <div class="action-card-title">Request More Info</div>
+                    <div class="action-card-desc">Ask the customer to submit additional documents or clarifications. Notes required.</div>
+                </div>
+                <div class="action-card" onclick="selectAction('escalate', this)" id="card-escalate">
+                    <i class="bi bi-arrow-up-right-circle-fill action-card-icon" style="color:#f59e0b;"></i>
+                    <div class="action-card-title">Escalate Claim</div>
+                    <div class="action-card-desc">Escalate to senior reviewer or compliance team for further assessment. Notes required.</div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label" for="notes">Reviewer Notes <span id="notes-required" style="color:#f87171; display:none;">*</span></label>
+                <textarea name="notes" id="notes" class="form-control" placeholder="Provide justification for your decision, policy references, or instructions for the customer..."></textarea>
+            </div>
+
+            <div id="action-warning" style="display:none; background:var(--warning-bg); border:1px solid var(--warning); border-radius:0.6rem; padding:0.75rem 1rem; font-size:0.88rem; color:#fbbf24; margin-bottom:1rem;">
+                Please select a decision above before submitting.
+            </div>
+        </div>
+
+    <!-- Sticky submit bar — always visible at bottom -->
+    <div style="position:fixed; bottom:0; left:0; right:0; z-index:999; background:rgba(10,15,30,0.97); border-top:1px solid rgba(139,92,246,0.3); padding:1rem 1.5rem; display:flex; align-items:center; gap:1rem; backdrop-filter:blur(12px);">
+        <span id="sticky-action-label" style="font-size:0.85rem; color:#94a3b8; flex:1;">Select a decision above to continue.</span>
+        <button type="button" onclick="submitReview()" class="submit-btn" id="submit-btn" style="width:auto; min-width:200px; padding:0.75rem 1.5rem;">
+            Submit Review Decision
+        </button>
+    </div>
+    <!-- Spacer so page content isn't hidden behind sticky bar -->
+    <div style="height:80px;"></div>
+
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+let selectedAction = '';
+const DECIDE_URL = "{{ url_for('reviewer.apply_decision', claim_id=claim.id) }}";
+
+const actionLabels = {
+    approve:      '✅ Ready to Approve',
+    reject:       '❌ Ready to Reject — notes required',
+    request_info: '💬 Ready to Request Info — notes required',
+    escalate:     '⬆ Ready to Escalate — notes required'
+};
+
+const noteMessages = {
+    reject:       'Reject karne ke liye notes mein reason likhein (kam az kam 10 characters).',
+    request_info: 'Kya info chahiye woh notes mein likhein (kam az kam 10 characters).',
+    escalate:     'Escalate karne ki wajah notes mein likhein (kam az kam 10 characters).'
+};
+
+const confirmMessages = {
+    approve:      'Approve this claim? Customer will be notified.',
+    reject:       'Reject this claim? This cannot be easily undone.',
+    request_info: 'Request additional information from the customer?',
+    escalate:     'Escalate this claim for further review?'
+};
+
+function selectAction(action, el) {
+    document.querySelectorAll('.action-card').forEach(c => c.classList.remove('selected'));
+    el.classList.add('selected');
+    selectedAction = action;
+    document.getElementById('action-warning').style.display = 'none';
+
+    document.getElementById('notes-required').style.display = action !== 'approve' ? 'inline' : 'none';
+
+    const label = document.getElementById('sticky-action-label');
+    if (label) label.textContent = actionLabels[action] || '';
+}
+
+async function submitReview() {
+    if (!selectedAction) {
+        document.getElementById('action-warning').style.display = 'block';
+        document.getElementById('decision-card').scrollIntoView({behavior:'smooth'});
+        return;
+    }
+
+    if (selectedAction !== 'approve') {
+        const notes = document.getElementById('notes').value.trim();
+        if (!notes || notes.length < 10) {
+            alert(noteMessages[selectedAction]);
+            document.getElementById('notes').focus();
+            return;
+        }
+    }
+
+    if (!confirm(confirmMessages[selectedAction])) return;
+
+    const btn = document.getElementById('submit-btn');
+    btn.disabled = true;
+    btn.textContent = 'Submitting...';
+
+    try {
+        const res = await fetch(DECIDE_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                action: selectedAction,
+                notes:  document.getElementById('notes').value.trim()
+            })
+        });
+
+        const data = await res.json();
+
+        if (data.success) {
+            window.location.href = "{{ url_for('reviewer.dashboard') }}";
+        } else {
+            alert('Error: ' + (data.message || 'Something went wrong.'));
+            btn.disabled = false;
+            btn.textContent = 'Submit Review Decision';
+        }
+    } catch (e) {
+        alert('Network error. Please try again.');
+        btn.disabled = false;
+        btn.textContent = 'Submit Review Decision';
+    }
+}
+</script>
+{% endblock %}

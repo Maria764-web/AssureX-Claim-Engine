@@ -1,0 +1,930 @@
+{% extends "base.html" %}
+
+{% block title %}Customer Dashboard - AssureX Claim Engine{% endblock %}
+
+{% block content %}
+<div class="dashboard-wrapper">
+
+    <!-- Welcome Header Banner -->
+    <div class="welcome-banner">
+        <canvas id="dash-canvas"></canvas>
+        <div class="banner-content">
+            <div class="user-greeting">
+                <span class="greeting-badge"><span class="live-dot"></span> Customer Portal</span>
+                <h1 class="greeting-h1">Welcome back, <span class="greeting-name">{{ user.name }}</span></h1>
+                <p class="greeting-subtitle">Monitor your registered devices, warranty coverage status, and warranty claim operations.</p>
+            </div>
+            <div class="account-pill-group">
+                <div class="account-pill">
+                    <span class="pill-label">Account Status</span>
+                    <span class="pill-value status-active"><span class="pulse-ring"></span>● Active</span>
+                </div>
+                <div class="account-pill">
+                    <span class="pill-label">User UID</span>
+                    <span class="pill-value mono">{{ user.user_uid }}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Live Database Summary Cards -->
+    <div class="metrics-grid">
+        <div class="metric-card">
+            <div class="metric-header">
+                <span class="metric-icon">📦</span>
+                <span class="metric-label">Registered Products</span>
+            </div>
+            <div class="metric-value" data-target="{{ total_products }}">{{ total_products }}</div>
+            <div class="metric-footer">Total hardware assets</div>
+        </div>
+
+        <div class="metric-card metric-active">
+            <div class="metric-header">
+                <i class="bi bi-shield-check metric-icon"></i>
+                <span class="metric-label">Active Warranties</span>
+            </div>
+            <div class="metric-value text-success" data-target="{{ active_warranties }}">{{ active_warranties }}</div>
+            <div class="metric-footer">Fully covered under policy</div>
+        </div>
+
+        <div class="metric-card metric-warning">
+            <div class="metric-header">
+                <span class="metric-icon">⏳</span>
+                <span class="metric-label">Nearing Expiry</span>
+            </div>
+            <div class="metric-value text-warning" data-target="{{ nearing_warranties }}">{{ nearing_warranties }}</div>
+            <div class="metric-footer">Expires within 30 days</div>
+        </div>
+
+        <div class="metric-card metric-danger">
+            <div class="metric-header">
+                <i class="bi bi-shield-x metric-icon"></i>
+                <span class="metric-label">Expired Warranties</span>
+            </div>
+            <div class="metric-value text-danger" data-target="{{ expired_warranties }}">{{ expired_warranties }}</div>
+            <div class="metric-footer">Coverage expired</div>
+        </div>
+
+        <div class="metric-card metric-claim">
+            <div class="metric-header">
+                <span class="metric-icon">📑</span>
+                <span class="metric-label">Warranty Claims</span>
+            </div>
+            <div class="metric-value text-accent" data-target="{{ total_claims }}">{{ total_claims }}</div>
+            <div class="metric-footer">{{ submitted_claims }} Submitted &bull; {{ draft_claims }} Draft</div>
+        </div>
+    </div>
+
+    <!-- Main Grid: Quick Actions & Recent Products -->
+    <div class="dashboard-grid">
+        <!-- Left / Primary Column: Recent Products -->
+        <div class="main-column">
+            <div class="section-card">
+                <div class="section-header">
+                    <div>
+                        <h2 class="section-title">Recent Registered Products</h2>
+                        <p class="section-subtitle">Your most recently cataloged devices and warranty certificates.</p>
+                    </div>
+                    {% if products %}
+                        <a href="{{ url_for('products.list_products') }}" class="btn-link">View All ({{ total_products }}) &rarr;</a>
+                    {% endif %}
+                </div>
+
+                {% if recent_products %}
+                    <div class="product-cards-list">
+                        {% for product in recent_products %}
+                            <div class="product-item-card">
+                                <div class="product-item-header">
+                                    <div>
+                                        <div class="product-item-uid">{{ product.product_uid }}</div>
+                                        <h3 class="product-item-name">{{ product.product_name }}</h3>
+                                        <div class="product-item-sub">{{ product.brand }} &bull; Model: {{ product.model }}</div>
+                                    </div>
+                                    {% if product.warranties %}
+                                        {% set w = product.warranties[0] %}
+                                        <span class="status-badge status-{{ 'active' if w.warranty_status == 'Active' else ('nearing' if w.warranty_status == 'Nearing Expiry' else 'expired') }}">
+                                            {{ w.warranty_status }}
+                                        </span>
+                                    {% else %}
+                                        <span class="status-badge status-expired">No Warranty</span>
+                                    {% endif %}
+                                </div>
+
+                                <div class="product-item-meta">
+                                    <div class="meta-field">
+                                        <span class="field-label">Serial Number</span>
+                                        <span class="field-value mono">{{ product.serial_number }}</span>
+                                    </div>
+                                    <div class="meta-field">
+                                        <span class="field-label">Purchase Date</span>
+                                        <span class="field-value">{{ product.purchase_date.strftime('%b %d, %Y') }}</span>
+                                    </div>
+                                    <div class="meta-field">
+                                        <span class="field-label">Retailer</span>
+                                        <span class="field-value">{{ product.retailer }}</span>
+                                    </div>
+                                    <div class="meta-field">
+                                        <span class="field-label">Coverage</span>
+                                        <span class="field-value">{{ product.warranty_length }} Months</span>
+                                    </div>
+                                </div>
+
+                                <div class="product-item-actions">
+                                    <a href="{{ url_for('products.get_product', product_id=product.id) }}" class="btn btn-secondary btn-sm" id="view-prod-{{ product.id }}">
+                                        View Details &rarr;
+                                    </a>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="empty-state-card">
+                        <div class="empty-icon">📦</div>
+                        <h3>No Products Registered Yet</h3>
+                        <p>Register your first product to activate manufacturer warranty coverage and access the claim engine.</p>
+                        <a href="{{ url_for('products.register_product_view') }}" class="btn btn-primary" id="first-register-btn" style="margin-top: 1rem;">
+                            + Register Your First Product
+                        </a>
+                    </div>
+                {% endif %}
+            </div>
+
+            <!-- Warranty Claims Section -->
+            <div class="section-card" style="margin-top: 1.5rem;" id="claims-section">
+                <div class="section-header">
+                    <div>
+                        <h2 class="section-title">Warranty Claims</h2>
+                        <p class="section-subtitle">Track registered warranty claims, fault details, and uploaded evidence documents.</p>
+                    </div>
+                    <a href="{{ url_for('claims.create_claim_view') }}" class="btn btn-primary btn-sm" id="btn-create-new-claim">
+                        + File New Claim
+                    </a>
+                </div>
+
+                {% if claims %}
+                    <div class="product-cards-list">
+                        {% for claim in claims %}
+                            <div class="product-item-card" id="claim-card-{{ claim.id }}">
+                                <div class="product-item-header">
+                                    <div>
+                                        <div class="product-item-uid">{{ claim.claim_uid }}</div>
+                                        <h3 class="product-item-name">
+                                            {% if claim.product %}{{ claim.product.product_name }}{% else %}Product #{{ claim.product_id }}{% endif %}
+                                        </h3>
+                                        <div class="product-item-sub">
+                                            {% if claim.product %}{{ claim.product.brand }} &bull; Model: {{ claim.product.model }}{% endif %}
+                                        </div>
+                                    </div>
+                                    <span class="status-badge status-{{ 'active' if claim.claim_status == 'Submitted' else ('warning' if claim.claim_status == 'Draft' else 'info') }}">
+                                        ● {{ claim.claim_status }}
+                                    </span>
+                                </div>
+
+                                <div class="product-item-meta">
+                                    <div class="meta-field">
+                                        <span class="field-label">Damage Type</span>
+                                        <span class="field-value">{{ claim.damage_type or 'Not specified' }}</span>
+                                    </div>
+                                    <div class="meta-field">
+                                        <span class="field-label">Fault Date</span>
+                                        <span class="field-value">{{ claim.fault_date.strftime('%b %d, %Y') if claim.fault_date else 'N/A' }}</span>
+                                    </div>
+                                    <div class="meta-field">
+                                        <span class="field-label">Submission Date</span>
+                                        <span class="field-value">{{ claim.submission_date.strftime('%b %d, %Y') if claim.submission_date else 'Draft' }}</span>
+                                    </div>
+                                    <div class="meta-field">
+                                        <span class="field-label">Evidence Uploads</span>
+                                        <span class="field-value mono">{{ claim.documents|length }} Documents</span>
+                                    </div>
+                                </div>
+
+                                <div style="margin-top: 0.75rem; font-size: 0.88rem; color: #cbd5e1; line-height: 1.4; background: rgba(0,0,0,0.25); padding: 0.6rem 0.85rem; border-radius: 0.4rem; border-left: 3px solid var(--accent);">
+                                    <strong style="color: var(--accent);">Fault Summary:</strong> {{ claim.fault_description|truncate(120) }}
+                                </div>
+
+                                <div class="product-item-actions">
+                                    <a href="{{ url_for('claims.get_claim', claim_id=claim.id) }}" class="btn btn-secondary btn-sm" id="view-claim-{{ claim.id }}">
+                                        View Claim &amp; Evidence &rarr;
+                                    </a>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="empty-state-card">
+                        <i class="bi bi-shield empty-icon"></i>
+                        <h3>No Warranty Claims Filed Yet</h3>
+                        <p>If you experience hardware faults or defects on any of your registered devices, start a claim and attach supporting receipts and photos.</p>
+                        <a href="{{ url_for('claims.create_claim_view') }}" class="btn btn-primary" id="first-claim-btn" style="margin-top: 1rem;">
+                            + File Your First Claim
+                        </a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Right / Sidebar Column: Quick Actions & Account Info -->
+        <div class="side-column">
+            <!-- Quick Actions Panel -->
+            <div class="section-card quick-actions-card">
+                <h2 class="section-title" style="font-size: 1.15rem; margin-bottom: 1rem;">Quick Actions</h2>
+                <div class="actions-list">
+                    <a href="{{ url_for('claims.create_claim_view') }}" class="action-btn action-primary" id="quick-action-claim">
+                        <span class="action-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" viewBox="0 0 16 16">
+                                <path d="M5.338 1.59a61.44 61.44 0 0 0-2.837.856.481.481 0 0 0-.328.39c-.554 4.157.726 7.19 2.253 9.188a10.725 10.725 0 0 0 2.287 2.233c.346.244.652.42.893.533.12.057.218.095.293.118a.55.55 0 0 0 .101.025.615.615 0 0 0 .1-.025c.076-.023.174-.061.294-.118.24-.113.547-.29.893-.533a10.726 10.726 0 0 0 2.287-2.233c1.527-1.997 2.807-5.031 2.253-9.188a.48.48 0 0 0-.328-.39c-.651-.213-1.75-.56-2.837-.855C9.552 1.29 8.531 1.067 8 1.067c-.53 0-1.552.223-2.662.524zM8 1c.745 0 1.488.164 2.086.328l.689.19c.968.261 1.879.553 2.485.766.556.205.93.71.999 1.29.594 4.468-.759 7.73-2.444 9.934a11.777 11.777 0 0 1-2.52 2.45 7.19 7.19 0 0 1-1.048.625c-.28.132-.581.24-.842.24s-.562-.108-.842-.24a7.19 7.19 0 0 1-1.048-.625 11.777 11.777 0 0 1-2.52-2.45C1.087 11.358-.266 8.096.327 3.628c.07-.58.443-1.085.999-1.29A59.613 59.613 0 0 1 5.915 1.52C6.513 1.164 7.255 1 8 1z"/>
+                                <path d="M8 4.5a.5.5 0 0 1 .5.5v1.5H10a.5.5 0 0 1 0 1H8.5V9a.5.5 0 0 1-1 0V7.5H6a.5.5 0 0 1 0-1h1.5V5a.5.5 0 0 1 .5-.5z"/>
+                            </svg>
+                        </span>
+                        <div class="action-info">
+                            <span class="action-title">File Warranty Claim</span>
+                            <span class="action-desc">Submit fault details &amp; evidence documents</span>
+                        </div>
+                    </a>
+                    <a href="{{ url_for('products.register_product_view') }}" class="action-btn" id="quick-action-register">
+                        <div class="action-icon">+</div>
+                        <div class="action-info">
+                            <span class="action-title">Register Product</span>
+                            <span class="action-desc">Add a new device to your account</span>
+                        </div>
+                    </a>
+                    <a href="{{ url_for('products.list_products') }}" class="action-btn" id="quick-action-products">
+                        <i class="bi bi-box-seam action-icon"></i>
+                        <div class="action-info">
+                            <span class="action-title">View My Products</span>
+                            <span class="action-desc">Browse full registered product inventory</span>
+                        </div>
+                    </a>
+                    <a href="{{ url_for('warranties.list_warranties') }}" class="action-btn" id="quick-action-warranties">
+                        <i class="bi bi-shield action-icon"></i>
+                        <div class="action-info">
+                            <span class="action-title">My Warranties</span>
+                            <span class="action-desc">Track active policy coverage &amp; certificates</span>
+                        </div>
+                    </a>
+                    <a href="{{ url_for('auth.profile_view') }}" class="action-btn" id="quick-action-profile">
+                        <i class="bi bi-person-circle action-icon"></i>
+                        <div class="action-info">
+                            <span class="action-title">View Profile</span>
+                            <span class="action-desc">Manage account and contact info</span>
+                        </div>
+                    </a>
+                    <a href="{{ url_for('auth.logout') }}" class="action-btn action-danger" id="quick-action-logout">
+                        <span class="action-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" viewBox="0 0 16 16">
+                                <path fill-rule="evenodd" d="M10 12.5a.5.5 0 0 1-.5.5h-8a.5.5 0 0 1-.5-.5v-9a.5.5 0 0 1 .5-.5h8a.5.5 0 0 1 .5.5v2a.5.5 0 0 0 1 0v-2A1.5 1.5 0 0 0 9.5 2h-8A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14h8a1.5 1.5 0 0 0 1.5-1.5v-2a.5.5 0 0 0-1 0v2z"/>
+                                <path fill-rule="evenodd" d="M15.854 8.354a.5.5 0 0 0 0-.708l-3-3a.5.5 0 0 0-.708.708L14.293 7.5H5.5a.5.5 0 0 0 0 1h8.793l-2.147 2.146a.5.5 0 0 0 .708.708l3-3z"/>
+                            </svg>
+                        </span>
+                        <div class="action-info">
+                            <span class="action-title">Sign Out</span>
+                            <span class="action-desc">Safely end your session</span>
+                        </div>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Account Summary Card -->
+            <div class="section-card account-summary-card">
+                <h2 class="section-title" style="font-size: 1.15rem; margin-bottom: 1rem;">Account Information</h2>
+                <div class="account-rows">
+                    <div class="account-row">
+                        <span class="account-label">Full Name</span>
+                        <span class="account-val">{{ user.name }}</span>
+                    </div>
+                    <div class="account-row">
+                        <span class="account-label">Email</span>
+                        <span class="account-val">{{ user.email }}</span>
+                    </div>
+                    <div class="account-row">
+                        <span class="account-label">Account Role</span>
+                        <span class="account-val role-badge-inline">{{ user.role }}</span>
+                    </div>
+                    <div class="account-row">
+                        <span class="account-label">Account Status</span>
+                        <span class="account-val text-success font-semibold">Active</span>
+                    </div>
+                    <div class="account-row">
+                        <span class="account-label">Member Since</span>
+                        <span class="account-val">{{ user.created_at.strftime('%b %d, %Y') if user.created_at else 'Active' }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+/* ════════════════════════════════
+   DASHBOARD — 3D ENHANCED THEME
+   ════════════════════════════════ */
+.dashboard-wrapper{display:flex;flex-direction:column;gap:1.75rem;}
+
+/* Welcome Banner */
+.welcome-banner{
+  position:relative;overflow:hidden;
+  background:linear-gradient(135deg,rgba(5,8,22,.98) 0%,rgba(8,14,35,.95) 100%);
+  border:1px solid rgba(56,189,248,.18);
+  border-radius:1rem;padding:1.75rem 2rem;
+  box-shadow:0 10px 35px rgba(0,0,0,.6),0 0 60px rgba(56,189,248,.04),inset 0 1px 0 rgba(56,189,248,.1);
+}
+/* Three.js canvas behind banner content */
+#dash-canvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:0;}
+.banner-content{position:relative;z-index:1;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1.25rem;}
+
+/* Animated top border on banner */
+.welcome-banner::after{
+  content:'';position:absolute;top:0;left:0;right:0;height:2px;
+  background:linear-gradient(90deg,transparent 0%,#38bdf8 40%,#e879f9 60%,transparent 100%);
+  animation:bannerLine 4s ease-in-out infinite;
+}
+@keyframes bannerLine{0%,100%{opacity:.6;background-position:0%}50%{opacity:1;background-position:100%}}
+
+/* Live dot */
+.live-dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:#4ade80;margin-right:.35rem;position:relative;top:-.5px;animation:liveP 1.5s ease-in-out infinite;}
+@keyframes liveP{0%,100%{box-shadow:0 0 0 0 rgba(74,222,128,.7)}70%{box-shadow:0 0 0 5px transparent}}
+
+.greeting-badge{display:inline-flex;align-items:center;background:rgba(56,189,248,.1);border:1px solid rgba(56,189,248,.25);color:#38bdf8;font-size:.72rem;font-weight:600;padding:.2rem .65rem;border-radius:1rem;text-transform:uppercase;letter-spacing:.05em;margin-bottom:.4rem;}
+.greeting-h1{font-size:1.8rem;font-weight:800;letter-spacing:-.02em;color:#f1f5f9;line-height:1.2;font-family:'Space Grotesk','Outfit',sans-serif;}
+.greeting-name{background:linear-gradient(90deg,#38bdf8,#a78bfa,#e879f9);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:nameSh 5s ease-in-out infinite;}
+@keyframes nameSh{0%,100%{filter:drop-shadow(0 0 0 transparent)}50%{filter:drop-shadow(0 0 12px rgba(56,189,248,.5))}}
+.greeting-subtitle{color:rgba(255,255,255,.5);font-size:.9rem;margin-top:.25rem;}
+
+/* Pulse ring on active status */
+.pulse-ring{display:inline-block;width:7px;height:7px;border-radius:50%;background:#4ade80;margin-right:.3rem;position:relative;animation:liveP 1.5s ease-in-out infinite;}
+
+.account-pill-group{display:flex;gap:.75rem;flex-wrap:wrap;}
+.account-pill{background:rgba(5,8,22,.8);border:1px solid rgba(56,189,248,.15);border-radius:.65rem;padding:.6rem 1rem;display:flex;flex-direction:column;gap:.15rem;backdrop-filter:blur(8px);}
+.pill-label{font-size:.7rem;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:.05em;}
+.pill-value{font-size:.85rem;font-weight:600;color:#fff;}
+.pill-value.mono{font-family:monospace;color:#38bdf8;}
+.status-active{color:#4ade80;}
+
+/* ═ Metrics Grid ═ */
+.metrics-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:1.25rem;}
+
+.metric-card{
+  background:rgba(8,13,32,.88);border:1px solid rgba(56,189,248,.14);border-radius:.9rem;padding:1.35rem;
+  display:flex;flex-direction:column;justify-content:space-between;
+  box-shadow:0 6px 24px rgba(0,0,0,.45),inset 0 1px 0 rgba(56,189,248,.07);
+  transition:transform .22s,border-color .22s,box-shadow .25s;
+  backdrop-filter:blur(12px);
+  position:relative;overflow:hidden;cursor:default;
+  animation:mcIn .6s cubic-bezier(.22,1,.36,1) both;
+}
+.metric-card:nth-child(1){animation-delay:.05s}.metric-card:nth-child(2){animation-delay:.1s}
+.metric-card:nth-child(3){animation-delay:.15s}.metric-card:nth-child(4){animation-delay:.2s}
+.metric-card:nth-child(5){animation-delay:.25s}
+@keyframes mcIn{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}
+
+/* Sweep scan line */
+.metric-card::before{content:'';position:absolute;top:0;left:0;right:0;height:1.5px;background:linear-gradient(90deg,transparent,var(--scan-col,#38bdf8) 50%,transparent);opacity:0;transition:opacity .3s;}
+.metric-card:hover::before{opacity:.8;}
+/* Corner glow */
+.metric-card::after{content:'';position:absolute;top:-40px;right:-40px;width:100px;height:100px;border-radius:50%;background:radial-gradient(circle,var(--glow-col,rgba(56,189,248,.1)) 0%,transparent 65%);pointer-events:none;transition:opacity .3s;opacity:0;}
+.metric-card:hover::after{opacity:1;}
+
+.metric-card:hover{transform:translateY(-5px) scale(1.01);border-color:rgba(56,189,248,.38);box-shadow:0 18px 45px rgba(0,0,0,.55),0 0 30px rgba(56,189,248,.1),inset 0 1px 0 rgba(56,189,248,.12);}
+
+.metric-active {border-left:3px solid rgba(34,197,94,.55);--scan-col:#4ade80;--glow-col:rgba(34,197,94,.12);}
+.metric-warning{border-left:3px solid rgba(245,158,11,.55);--scan-col:#fbbf24;--glow-col:rgba(245,158,11,.12);}
+.metric-danger {border-left:3px solid rgba(239,68,68,.55);--scan-col:#f87171;--glow-col:rgba(239,68,68,.12);}
+.metric-claim  {border-left:3px solid rgba(56,189,248,.55);}
+.metric-active:hover {box-shadow:0 18px 45px rgba(0,0,0,.55),0 0 25px rgba(34,197,94,.15);}
+.metric-warning:hover{box-shadow:0 18px 45px rgba(0,0,0,.55),0 0 25px rgba(245,158,11,.15);}
+.metric-danger:hover {box-shadow:0 18px 45px rgba(0,0,0,.55),0 0 25px rgba(239,68,68,.15);}
+.metric-claim:hover  {box-shadow:0 18px 45px rgba(0,0,0,.55),0 0 25px rgba(56,189,248,.15);}
+
+.metric-header{display:flex;align-items:center;gap:.55rem;}
+.metric-icon{font-size:1.15rem;filter:drop-shadow(0 0 8px rgba(56,189,248,.4));}
+.metric-label{font-size:.78rem;font-weight:600;color:rgba(255,255,255,.45);text-transform:uppercase;letter-spacing:.05em;}
+.metric-value{font-size:2.5rem;font-weight:900;color:#fff;margin:.65rem 0 .3rem;line-height:1;font-family:'Space Grotesk','Outfit',sans-serif;transition:transform .15s;}
+.metric-card:hover .metric-value{transform:scale(1.07) translateY(-1px);}
+.metric-footer{font-size:.76rem;color:rgba(255,255,255,.35);}
+.text-success{color:#4ade80;}.text-warning{color:#fbbf24;}.text-danger{color:#f87171;}.text-accent{color:#38bdf8;}
+.font-semibold{font-weight:600;}
+
+/* ═ Dashboard Grid ═ */
+.dashboard-grid{display:grid;grid-template-columns:1fr 340px;gap:1.5rem;align-items:start;}
+@media(max-width:960px){.dashboard-grid{grid-template-columns:1fr;}}
+
+/* Section Cards */
+.section-card{
+  background:rgba(8,13,32,.85);border:1px solid rgba(56,189,248,.12);border-radius:.9rem;padding:1.5rem;
+  box-shadow:0 4px 18px rgba(0,0,0,.35);
+  transition:border-color .25s,box-shadow .25s;
+  position:relative;overflow:hidden;
+}
+.section-card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(56,189,248,.2) 50%,transparent);opacity:0;transition:opacity .3s;}
+.section-card:hover::before{opacity:1;}
+.section-card:hover{border-color:rgba(56,189,248,.22);box-shadow:0 8px 32px rgba(0,0,0,.5),0 0 20px rgba(56,189,248,.05);}
+
+.section-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:1.25rem;flex-wrap:wrap;gap:.75rem;}
+.section-title{font-size:1.25rem;font-weight:700;color:#fff;font-family:'Space Grotesk','Outfit',sans-serif;}
+.section-subtitle{font-size:.85rem;color:rgba(255,255,255,.38);margin-top:.2rem;}
+.btn-link{color:#38bdf8;text-decoration:none;font-size:.875rem;font-weight:600;transition:color .2s;}
+.btn-link:hover{text-decoration:underline;}
+
+/* Product Cards */
+.product-cards-list{display:flex;flex-direction:column;gap:1rem;}
+.product-item-card{
+  background:rgba(5,8,22,.75);border:1px solid rgba(56,189,248,.1);border-radius:.75rem;padding:1.25rem;
+  display:flex;flex-direction:column;gap:.85rem;
+  transition:all .22s;position:relative;overflow:hidden;
+}
+.product-item-card::after{content:'';position:absolute;top:0;left:0;bottom:0;width:2px;background:linear-gradient(180deg,transparent,#38bdf8,transparent);opacity:0;transition:opacity .25s;}
+.product-item-card:hover::after{opacity:.7;}
+.product-item-card:hover{border-color:rgba(56,189,248,.28);background:rgba(8,13,32,.9);transform:translateX(2px);}
+
+.product-item-header{display:flex;justify-content:space-between;align-items:flex-start;gap:.75rem;}
+.product-item-uid{font-family:monospace;font-size:.75rem;color:#38bdf8;font-weight:600;background:rgba(56,189,248,.1);padding:.15rem .45rem;border-radius:.35rem;display:inline-block;margin-bottom:.25rem;}
+.product-item-name{font-size:1.05rem;font-weight:700;color:#fff;}
+.product-item-sub{font-size:.82rem;color:rgba(255,255,255,.38);}
+
+.status-badge{
+  font-size:.73rem;font-weight:700;padding:.28rem .7rem;border-radius:1rem;
+  text-transform:uppercase;letter-spacing:.04em;white-space:nowrap;
+  display:inline-flex;align-items:center;gap:.3rem;position:relative;overflow:hidden;
+}
+/* shimmer sweep shared */
+.status-badge::after{
+  content:'';position:absolute;top:0;left:-80%;width:50%;height:100%;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.18),transparent);
+  border-radius:inherit;
+}
+
+/* ── Color-only (used by pill-value, account rows, etc.) ── */
+.status-active  { color:#4ade80; }
+.status-nearing { color:#fbbf24; }
+.status-expired { color:#f87171; }
+.status-warning { color:#fbbf24; }
+.status-info    { color:#7dd3fc; }
+
+/* ── Full badge treatment — only when paired with .status-badge ── */
+.status-badge.status-active{
+  background:rgba(34,197,94,.15);border:1px solid rgba(34,197,94,.35);
+  animation:badgeActive 2.6s ease-in-out infinite;
+}
+.status-badge.status-active::after{animation:badgeShim 3.5s 0.5s ease-in-out infinite;}
+@keyframes badgeActive{
+  0%,100%{box-shadow:0 0 0 0 rgba(74,222,128,0)}
+  50%    {box-shadow:0 0 10px 2px rgba(74,222,128,.3)}
+}
+
+.status-badge.status-nearing{
+  background:rgba(245,158,11,.15);border:1px solid rgba(245,158,11,.38);
+  animation:badgeWarn 1.7s ease-in-out infinite;
+}
+.status-badge.status-nearing::after{animation:badgeShim 2.8s 0.3s ease-in-out infinite;}
+@keyframes badgeWarn{
+  0%,100%{box-shadow:0 0 0 0 rgba(251,191,36,0);opacity:1;}
+  40%    {box-shadow:0 0 10px 2px rgba(251,191,36,.35);opacity:.88;}
+  80%    {box-shadow:0 0 4px 1px rgba(251,191,36,.18);opacity:.96;}
+}
+
+.status-badge.status-expired{
+  background:rgba(239,68,68,.15);border:1px solid rgba(239,68,68,.38);
+  animation:badgeExpired 3s ease-in-out infinite;
+}
+.status-badge.status-expired::after{animation:badgeShim 4s 1s ease-in-out infinite;}
+@keyframes badgeExpired{
+  0%,100%{box-shadow:0 0 4px 0 rgba(248,113,113,.2);}
+  50%    {box-shadow:0 0 14px 3px rgba(248,113,113,.45);}
+}
+
+.status-badge.status-warning{
+  background:rgba(245,158,11,.15);border:1px solid rgba(245,158,11,.3);
+  animation:badgeWarn 2.2s 0.4s ease-in-out infinite;
+}
+
+.status-badge.status-info{
+  background:rgba(56,189,248,.12);border:1px solid rgba(56,189,248,.28);
+  animation:badgeInfo 2.8s ease-in-out infinite;
+}
+.status-badge.status-info::after{animation:badgeShim 3.2s 0.8s ease-in-out infinite;}
+@keyframes badgeInfo{
+  0%,100%{box-shadow:0 0 0 0 rgba(56,189,248,0);}
+  50%    {box-shadow:0 0 9px 2px rgba(56,189,248,.28);}
+}
+
+@keyframes badgeShim{
+  0%   {left:-80%;opacity:0;}
+  20%  {opacity:1;}
+  50%  {left:130%;opacity:.9;}
+  100% {left:130%;opacity:0;}
+}
+
+/* Account status pill — clean green text only, no badge look */
+.pill-value.status-active{
+  color:#4ade80;
+  background:none;border:none;animation:none;padding:0;
+}
+
+.product-item-meta{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:.75rem;padding-top:.5rem;border-top:1px solid rgba(255,255,255,.05);}
+.meta-field{display:flex;flex-direction:column;gap:.1rem;}
+.field-label{font-size:.72rem;color:rgba(255,255,255,.35);text-transform:uppercase;}
+.field-value{font-size:.85rem;font-weight:500;color:#cbd5e1;}
+.field-value.mono{font-family:monospace;}
+.product-item-actions{display:flex;justify-content:flex-end;}
+
+/* ══════════════════════════════════
+   DASHBOARD BUTTON OVERHAUL
+   ══════════════════════════════════ */
+
+/* ── Primary Button (File Claim, Register, etc.) ── */
+.dashboard-wrapper .btn-primary,
+.dashboard-wrapper .btn.btn-primary {
+  background:linear-gradient(135deg,#7c3aed 0%,#6366f1 48%,#2563eb 100%);
+  background-size:200% 200%;
+  color:#fff;border:none;
+  border-radius:10px;
+  padding:.72rem 1.55rem;
+  font-size:.9rem;font-weight:700;
+  letter-spacing:.04em;
+  font-family:'Outfit',sans-serif;
+  position:relative;overflow:hidden;
+  cursor:pointer;
+  box-shadow:0 4px 18px rgba(124,58,237,.5),0 0 0 1.5px rgba(167,139,250,.22);
+  animation:dashBtnPulse 3s ease-in-out infinite;
+  transition:transform .18s,box-shadow .2s;
+}
+.dashboard-wrapper .btn-primary::before,
+.dashboard-wrapper .btn.btn-primary::before {
+  content:'◆';
+  position:absolute;left:.75rem;top:50%;
+  transform:translateY(-50%) scale(.62);
+  font-size:.58rem;color:rgba(255,255,255,.55);
+  animation:dashDiamond 4s linear infinite;
+  pointer-events:none;
+}
+.dashboard-wrapper .btn-primary::after,
+.dashboard-wrapper .btn.btn-primary::after {
+  content:'';
+  position:absolute;top:0;left:-65%;width:38%;height:100%;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.24),transparent);
+  animation:dashShim 3s 1.2s linear infinite;
+  pointer-events:none;
+}
+.dashboard-wrapper .btn-primary:hover,
+.dashboard-wrapper .btn.btn-primary:hover {
+  transform:translateY(-3px) scale(1.03);
+  box-shadow:0 10px 32px rgba(124,58,237,.75),0 0 28px rgba(99,102,241,.4),0 0 0 2px rgba(167,139,250,.5);
+}
+.dashboard-wrapper .btn-primary:active,
+.dashboard-wrapper .btn.btn-primary:active { transform:translateY(1px) scale(.98); }
+
+@keyframes dashBtnPulse{
+  0%,100%{box-shadow:0 4px 18px rgba(124,58,237,.5),0 0 0 1.5px rgba(167,139,250,.22);}
+  50%    {box-shadow:0 8px 34px rgba(124,58,237,.82),0 0 22px rgba(99,102,241,.42),0 0 0 2px rgba(167,139,250,.48);}
+}
+@keyframes dashDiamond{to{transform:translateY(-50%) scale(.62) rotate(360deg);}}
+@keyframes dashShim{0%{left:-65%}100%{left:120%}}
+
+/* ── Secondary Button (View Details, View Claim) ── */
+.dashboard-wrapper .btn-secondary,
+.dashboard-wrapper .btn.btn-secondary,
+.btn-sm {
+  background:rgba(5,10,28,.78);
+  color:#e2e8f0;
+  border:1px solid rgba(56,189,248,.22);
+  border-radius:10px;
+  font-weight:600;
+  font-size:.85rem;
+  padding:.48rem 1.1rem;
+  position:relative;overflow:hidden;
+  cursor:pointer;
+  transition:all .22s;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.05),0 2px 8px rgba(0,0,0,.3);
+}
+.dashboard-wrapper .btn-secondary::after,
+.dashboard-wrapper .btn.btn-secondary::after,
+.btn-sm::after {
+  content:'';
+  position:absolute;top:0;left:-65%;width:38%;height:100%;
+  background:linear-gradient(90deg,transparent,rgba(56,189,248,.18),transparent);
+  pointer-events:none;
+}
+.dashboard-wrapper .btn-secondary:hover,
+.dashboard-wrapper .btn.btn-secondary:hover,
+.btn-sm:hover {
+  background:rgba(56,189,248,.09);
+  border-color:rgba(56,189,248,.5);
+  color:#38bdf8;
+  transform:translateY(-2px);
+  box-shadow:0 6px 22px rgba(0,0,0,.4),0 0 16px rgba(56,189,248,.18);
+}
+.dashboard-wrapper .btn-secondary:hover::after,
+.dashboard-wrapper .btn.btn-secondary:hover::after,
+.btn-sm:hover::after { animation:dashShim .52s linear forwards; }
+.dashboard-wrapper .btn-secondary:active,
+.btn-sm:active { transform:translateY(1px); }
+
+/* ── btn-link (View All) ── */
+.btn-link{
+  color:#38bdf8;text-decoration:none;font-size:.875rem;font-weight:600;
+  position:relative;display:inline-flex;align-items:center;gap:.3rem;
+  padding:.3rem .6rem;border-radius:8px;
+  transition:all .2s;
+}
+.btn-link::after{
+  content:'';position:absolute;bottom:0;left:0;
+  width:0;height:1px;background:#38bdf8;
+  transition:width .25s;
+}
+.btn-link:hover{background:rgba(56,189,248,.07);color:#7dd3fc;}
+.btn-link:hover::after{width:100%;}
+
+/* Empty State */
+.empty-state-card{text-align:center;padding:2.5rem 1.5rem;border:1px dashed rgba(56,189,248,.18);border-radius:.75rem;background:rgba(5,8,22,.5);}
+.empty-icon{font-size:2.5rem;margin-bottom:.75rem;}
+.empty-state-card h3{font-size:1.1rem;color:#fff;margin-bottom:.35rem;}
+.empty-state-card p{font-size:.875rem;color:rgba(255,255,255,.38);max-width:420px;margin:0 auto;}
+
+/* Side Column */
+.side-column{display:flex;flex-direction:column;gap:1.5rem;}
+
+/* ── Quick Actions ── */
+.actions-list{display:flex;flex-direction:column;gap:.55rem;}
+.action-btn{
+  display:flex;align-items:center;gap:.85rem;
+  padding:.78rem 1rem;
+  background:rgba(5,10,28,.72);
+  border:1px solid rgba(56,189,248,.12);
+  border-radius:10px;
+  text-decoration:none;color:rgba(255,255,255,.8);
+  transition:all .22s;
+  position:relative;overflow:hidden;
+}
+/* left accent line */
+.action-btn::before{
+  content:'';position:absolute;left:0;top:15%;bottom:15%;
+  width:2.5px;border-radius:2px;
+  background:linear-gradient(180deg,transparent,#38bdf8,transparent);
+  opacity:0;transition:opacity .25s;
+}
+/* shimmer */
+.action-btn::after{
+  content:'';position:absolute;top:0;left:-65%;width:38%;height:100%;
+  background:linear-gradient(90deg,transparent,rgba(56,189,248,.1),transparent);
+  pointer-events:none;
+}
+.action-btn:hover{
+  background:rgba(56,189,248,.08);
+  border-color:rgba(56,189,248,.32);
+  transform:translateX(5px);
+  box-shadow:0 4px 18px rgba(0,0,0,.4),0 0 14px rgba(56,189,248,.1);
+}
+.action-btn:hover::before{opacity:1;}
+.action-btn:hover::after{animation:dashShim .55s linear forwards;}
+
+.action-icon{
+  width:36px;height:36px;border-radius:8px;
+  background:rgba(56,189,248,.1);color:#38bdf8;
+  display:flex;align-items:center;justify-content:center;
+  font-size:1.05rem;font-weight:700;flex-shrink:0;
+  transition:all .22s;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.08);
+}
+.action-btn:hover .action-icon{
+  background:rgba(56,189,248,.18);
+  box-shadow:0 0 14px rgba(56,189,248,.4),inset 0 1px 0 rgba(255,255,255,.12);
+  transform:scale(1.1);
+}
+.action-info{display:flex;flex-direction:column;}
+.action-title{font-size:.87rem;font-weight:700;color:#fff;}
+.action-desc{font-size:.72rem;color:rgba(255,255,255,.35);}
+
+/* Primary action (File Claim) */
+.action-primary{
+  border-color:rgba(99,102,241,.28);
+  background:rgba(99,102,241,.08);
+  animation:actionPrimaryPulse 3.5s ease-in-out infinite;
+}
+.action-primary::before{background:linear-gradient(180deg,transparent,#a78bfa,transparent);}
+.action-primary .action-icon{background:rgba(99,102,241,.18);color:#a78bfa;}
+.action-primary:hover .action-icon{background:rgba(99,102,241,.28);box-shadow:0 0 14px rgba(99,102,241,.5);}
+@keyframes actionPrimaryPulse{
+  0%,100%{box-shadow:0 0 0 0 rgba(99,102,241,0);}
+  50%    {box-shadow:0 0 16px 0 rgba(99,102,241,.2);}
+}
+
+/* Danger action (Sign Out) */
+.action-danger{border-color:rgba(239,68,68,.15);}
+.action-danger::before{background:linear-gradient(180deg,transparent,#f87171,transparent);}
+.action-danger .action-icon{background:rgba(239,68,68,.12);color:#f87171;}
+.action-danger:hover{
+  background:rgba(239,68,68,.08);
+  border-color:rgba(239,68,68,.35);
+  box-shadow:0 4px 18px rgba(0,0,0,.4),0 0 14px rgba(239,68,68,.12);
+}
+.action-danger:hover .action-icon{background:rgba(239,68,68,.22);box-shadow:0 0 14px rgba(239,68,68,.45);}
+
+/* ── Star burst particle (JS injected) ── */
+.star-pt{
+  position:absolute;pointer-events:none;z-index:999;
+  font-size:10px;line-height:1;
+  transform:translate(-50%,-50%);
+  transition:transform .6s cubic-bezier(.2,.8,.3,1),opacity .55s ease-out;
+  will-change:transform,opacity;
+}
+
+/* Account Summary */
+.account-rows{display:flex;flex-direction:column;gap:.7rem;}
+.account-row{display:flex;justify-content:space-between;align-items:center;padding-bottom:.6rem;border-bottom:1px solid rgba(255,255,255,.05);font-size:.85rem;}
+.account-row:last-child{border-bottom:none;padding-bottom:0;}
+.account-label{color:rgba(255,255,255,.4);}
+.account-val{color:#fff;font-weight:500;}
+.role-badge-inline{background:rgba(56,189,248,.1);color:#38bdf8;padding:.15rem .5rem;border-radius:.35rem;font-size:.75rem;font-weight:700;}
+
+/* Counter animation */
+@keyframes countUp{from{opacity:0;transform:translateY(8px) scale(.85)}to{opacity:1;transform:none}}
+.metric-value.counted{animation:countUp .55s cubic-bezier(.34,1.56,.64,1) both;}
+
+/* Reveal animations for section cards */
+.section-card.reveal{opacity:0;transform:translateY(20px);transition:opacity .6s ease,transform .6s ease;}
+.section-card.visible{opacity:1;transform:none;}
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
+<script>
+(function(){
+/* ══ THREE.JS BANNER CANVAS PARTICLE FIELD ══ */
+var canvas=document.getElementById('dash-canvas');
+if(!canvas||typeof THREE==='undefined') return;
+var W=canvas.offsetWidth||800;
+var H=canvas.offsetHeight||150;
+var scene=new THREE.Scene();
+var cam=new THREE.PerspectiveCamera(55,W/H,.1,100);
+cam.position.set(0,0,4.5);
+var renderer=new THREE.WebGLRenderer({canvas:canvas,alpha:true,antialias:true});
+renderer.setPixelRatio(Math.min(devicePixelRatio,2));
+renderer.setSize(W,H);
+renderer.setClearColor(0x000000,0);
+
+/* Network nodes spread across banner */
+var N=38;
+var pts=[];var pos=new Float32Array(N*3);
+for(var i=0;i<N;i++){
+  var x=(Math.random()-.5)*9;
+  var y=(Math.random()-.5)*3.5;
+  var z=(Math.random()-.5)*2;
+  pts.push(new THREE.Vector3(x,y,z));
+  pos[i*3]=x;pos[i*3+1]=y;pos[i*3+2]=z;
+}
+var pGeo=new THREE.BufferGeometry();pGeo.setAttribute('position',new THREE.BufferAttribute(pos,3));
+var mainPts=new THREE.Points(pGeo,new THREE.PointsMaterial({color:0x38bdf8,size:.055,transparent:true,opacity:.75,blending:THREE.AdditiveBlending,depthWrite:false}));
+scene.add(mainPts);
+
+/* Connecting lines between nearby nodes */
+var lVerts=[];var maxD=2.2;
+for(var a=0;a<N;a++){for(var b=a+1;b<N;b++){if(pts[a].distanceTo(pts[b])<maxD){lVerts.push(pts[a].x,pts[a].y,pts[a].z,pts[b].x,pts[b].y,pts[b].z);}}}
+var lGeo=new THREE.BufferGeometry();lGeo.setAttribute('position',new THREE.BufferAttribute(new Float32Array(lVerts),3));
+scene.add(new THREE.LineSegments(lGeo,new THREE.LineBasicMaterial({color:0x38bdf8,transparent:true,opacity:.08,blending:THREE.AdditiveBlending,depthWrite:false})));
+
+/* Accent magenta pts */
+var aMag=pts.filter(function(_,i){return i%5===0;});
+var aPos2=new Float32Array(aMag.length*3);
+aMag.forEach(function(p,i){aPos2[i*3]=p.x;aPos2[i*3+1]=p.y;aPos2[i*3+2]=p.z;});
+var aGeo2=new THREE.BufferGeometry();aGeo2.setAttribute('position',new THREE.BufferAttribute(aPos2,3));
+scene.add(new THREE.Points(aGeo2,new THREE.PointsMaterial({color:0xe879f9,size:.1,transparent:true,opacity:.8,blending:THREE.AdditiveBlending,depthWrite:false})));
+
+/* Right side mini sphere */
+var iGrp=new THREE.Group();iGrp.position.set(3.8,0,0);scene.add(iGrp);
+var sN=20;var sPos=new Float32Array(sN*3);
+for(var si=0;si<sN;si++){
+  var sp=Math.acos(1-2*(si+.5)/sN);var st=Math.PI*(1+Math.sqrt(5))*si;var sr=.85;
+  sPos[si*3]=Math.sin(sp)*Math.cos(st)*sr;sPos[si*3+1]=Math.sin(sp)*Math.sin(st)*sr;sPos[si*3+2]=Math.cos(sp)*sr;
+}
+var sGeo=new THREE.BufferGeometry();sGeo.setAttribute('position',new THREE.BufferAttribute(sPos,3));
+iGrp.add(new THREE.Points(sGeo,new THREE.PointsMaterial({color:0xa78bfa,size:.045,transparent:true,opacity:.7,blending:THREE.AdditiveBlending,depthWrite:false})));
+var tRing=new THREE.Mesh(new THREE.TorusGeometry(.95,.008,2,80),new THREE.MeshBasicMaterial({color:0x38bdf8,transparent:true,opacity:.4,blending:THREE.AdditiveBlending,depthWrite:false}));
+tRing.rotation.x=.8;iGrp.add(tRing);
+
+var t=0;
+function animate(){
+  requestAnimationFrame(animate);t+=.008;
+  mainPts.rotation.y=t*.04;
+  iGrp.rotation.y=t*.35;iGrp.rotation.x=Math.sin(t*.2)*.1;
+  tRing.rotation.z+=.012;
+  renderer.render(scene,cam);
+}
+animate();
+
+window.addEventListener('resize',function(){
+  var nW=canvas.offsetWidth,nH=canvas.offsetHeight;
+  if(!nW||!nH)return;
+  cam.aspect=nW/nH;cam.updateProjectionMatrix();renderer.setSize(nW,nH);
+});
+})();
+
+/* ══ ANIMATED NUMBER COUNTERS ══ */
+(function(){
+  function easeOutCubic(t){return 1-Math.pow(1-t,3);}
+  function animateCounter(el){
+    var target=parseInt(el.dataset.target,10);
+    if(isNaN(target))return;
+    el.classList.add('counted');
+    var duration=900,start=performance.now();
+    function tick(now){
+      var elapsed=now-start,progress=Math.min(elapsed/duration,1);
+      el.textContent=Math.round(easeOutCubic(progress)*target);
+      if(progress<1)requestAnimationFrame(tick);else el.textContent=target;
+    }
+    requestAnimationFrame(tick);
+  }
+  document.querySelectorAll('.metric-value').forEach(function(el){
+    var val=parseInt(el.textContent.trim(),10);
+    if(!isNaN(val)){el.dataset.target=val;el.textContent='0';}
+  });
+  if('IntersectionObserver' in window){
+    var obs=new IntersectionObserver(function(entries){
+      entries.forEach(function(entry){
+        if(entry.isIntersecting){animateCounter(entry.target);obs.unobserve(entry.target);}
+      });
+    },{threshold:.15});
+    document.querySelectorAll('.metric-value[data-target]').forEach(function(el){obs.observe(el);});
+  } else{
+    document.querySelectorAll('.metric-value[data-target]').forEach(animateCounter);
+  }
+})();
+
+/* ══ SECTION CARD REVEAL ══ */
+(function(){
+  document.querySelectorAll('.section-card').forEach(function(el){el.classList.add('reveal');});
+  if('IntersectionObserver' in window){
+    var obs=new IntersectionObserver(function(entries){
+      entries.forEach(function(e){if(e.isIntersecting){e.target.classList.add('visible');obs.unobserve(e.target);}});
+    },{threshold:.06});
+    document.querySelectorAll('.section-card.reveal').forEach(function(el){obs.observe(el);});
+  } else{
+    document.querySelectorAll('.section-card').forEach(function(el){el.classList.add('visible');});
+  }
+})();
+
+/* ══ STAR BURST + RIPPLE ON ALL BUTTONS ══ */
+(function(){
+  var SYMS = ['★','✦','◆','✶','✧','⬦','✴'];
+
+  function starBurst(e, el){
+    var rect = el.getBoundingClientRect();
+    var cx = e.clientX - rect.left;
+    var cy = e.clientY - rect.top;
+
+    var isPrimary = el.classList.contains('btn-primary') || el.classList.contains('action-primary');
+    var isDanger  = el.classList.contains('action-danger');
+    var cols = isDanger
+      ? ['#f87171','#fbbf24','#fca5a5','#fb7185']
+      : isPrimary
+        ? ['#a78bfa','#38bdf8','#e879f9','#c4b5fd','#818cf8']
+        : ['#38bdf8','#22d3ee','#7dd3fc','#a5f3fc','#a78bfa'];
+
+    var count = 11;
+    for(var i = 0; i < count; i++){
+      var star = document.createElement('span');
+      star.className = 'star-pt';
+      star.textContent = SYMS[i % SYMS.length];
+
+      var angle = (i / count) * 360 + (Math.random() - 0.5) * 28;
+      var dist  = 38 + Math.random() * 38;
+      var dx    = Math.cos(angle * Math.PI / 180) * dist;
+      var dy    = Math.sin(angle * Math.PI / 180) * dist;
+      var col   = cols[i % cols.length];
+      var sz    = 9 + Math.random() * 9;
+
+      star.style.cssText = 'left:'+cx+'px;top:'+cy+'px;font-size:'+sz+'px;color:'+col+';text-shadow:0 0 7px '+col+';';
+      el.appendChild(star);
+
+      /* trigger transition on next frame */
+      (function(s, ddx, ddy){
+        requestAnimationFrame(function(){
+          requestAnimationFrame(function(){
+            s.style.transform = 'translate(calc(-50% + '+ddx+'px),calc(-50% + '+ddy+'px)) scale(.4) rotate('+(Math.random()*280)+'deg)';
+            s.style.opacity = '0';
+          });
+        });
+        setTimeout(function(){ s.remove(); }, 680);
+      })(star, dx, dy);
+    }
+
+    /* ripple ring */
+    var rip = document.createElement('span');
+    rip.className = 'ripple-effect';
+    var sz2 = Math.max(rect.width, rect.height) * 2;
+    var rc  = isDanger ? 'rgba(239,68,68,.18)' : isPrimary ? 'rgba(124,58,237,.22)' : 'rgba(56,189,248,.15)';
+    rip.style.cssText = 'width:'+sz2+'px;height:'+sz2+'px;left:'+(cx - sz2/2)+'px;top:'+(cy - sz2/2)+'px;background:'+rc+';';
+    el.appendChild(rip);
+    setTimeout(function(){ rip.remove(); }, 700);
+  }
+
+  /* Attach to all dashboard buttons */
+  document.querySelectorAll(
+    '.dashboard-wrapper .btn-primary, .dashboard-wrapper .btn-secondary, .dashboard-wrapper .btn, .action-btn, .btn-sm'
+  ).forEach(function(btn){
+    btn.addEventListener('click', function(e){ starBurst(e, btn); });
+  });
+})();
+</script>
+{% endblock %}

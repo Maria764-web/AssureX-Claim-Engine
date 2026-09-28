@@ -1,0 +1,52 @@
+{
+  "total_records": 1500,
+  "train_records": 1049,
+  "validation_records": 226,
+  "test_records": 225,
+  "split_ratio": "70/15/15",
+  "random_state": 42,
+  "target_column": "Claim_Decision",
+  "features": [
+    "Claim_ID",
+    "Product_Category",
+    "Product_Age_Months",
+    "Warranty_Duration_Months",
+    "Warranty_Status",
+    "Receipt_Available",
+    "Warranty_Card_Available",
+    "Damage_Photo_Available",
+    "Serial_Number_Status",
+    "Damage_Covered",
+    "Contradiction_Detected",
+    "Missing_Document",
+    "Document_Quality_Score",
+    "Damage_Severity_Score",
+    "Previous_Repair_Count",
+    "Claim_Amount"
+  ],
+  "classes": [
+    "Invalid",
+    "Manual Review",
+    "Valid"
+  ],
+  "class_distribution_full": {
+    "Manual Review": 500,
+    "Valid": 500,
+    "Invalid": 500
+  },
+  "class_distribution_train": {
+    "Manual Review": 350,
+    "Invalid": 350,
+    "Valid": 349
+  },
+  "class_distribution_val": {
+    "Valid": 76,
+    "Manual Review": 75,
+    "Invalid": 75
+  },
+  "class_distribution_test": {
+    "Invalid": 75,
+    "Manual Review": 75,
+    "Valid": 75
+  }
+}

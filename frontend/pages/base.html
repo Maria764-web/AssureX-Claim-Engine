@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}AssureX Claim Engine{% endblock %}</title>
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Global 3D Styles -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <!-- GSAP -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js" defer></script>
+    <!-- Vanilla Tilt -->
+    <script src="https://cdn.jsdelivr.net/npm/vanilla-tilt@1.8.1/dist/vanilla-tilt.min.js" defer></script>
+    <style>
+        :root {
+            --bg-dark: #050b18;
+            --bg-secondary: #080f1f;
+            --card-bg: rgba(10,20,38,.85);
+            --card-border: rgba(56,189,248,.15);
+            --primary: #0284c7;
+            --primary-hover: #0369a1;
+            --accent: #38bdf8;
+            --accent-glow: rgba(56,189,248,.28);
+            --purple: #7c3aed;
+            --text-main: #f1f5f9;
+            --text-muted: #94a3b8;
+            --success: #22c55e;
+            --success-bg: rgba(34,197,94,.15);
+            --warning: #f59e0b;
+            --warning-bg: rgba(245,158,11,.15);
+            --danger: #ef4444;
+            --danger-bg: rgba(239,68,68,.15);
+        }
+
+        *{box-sizing:border-box;margin:0;padding:0}
+
+        html { scroll-behavior: smooth; }
+
+        /* ── Bootstrap Icons global styling ── */
+        .bi {
+            font-style: normal;
+            line-height: 1;
+            vertical-align: -0.125em;
+        }
+        /* Icon inside metric cards */
+        .metric-icon.bi {
+            font-size: 1.4rem;
+            background: linear-gradient(135deg, var(--accent), var(--purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            filter: drop-shadow(0 0 6px rgba(56,189,248,.4));
+        }
+        /* Icon inside action/quick-action buttons */
+        .action-icon.bi {
+            font-size: 1.25rem;
+            background: linear-gradient(135deg, var(--accent), var(--purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        /* Section heading icons */
+        .heading-icon.bi {
+            font-size: 1.1rem;
+            background: linear-gradient(135deg, #38bdf8, #7c3aed);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        /* Doc-type card icon */
+        .card-icon.bi {
+            font-size: 1.1rem;
+            background: linear-gradient(135deg, #38bdf8, #7c3aed);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        /* Empty state icon */
+        .empty-icon.bi {
+            font-size: 3rem;
+            background: linear-gradient(135deg, var(--accent), var(--purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            opacity: 0.7;
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+        /* Register page role icons */
+        .rc-ico.bi {
+            font-size: 1.6rem;
+            background: linear-gradient(135deg, #38bdf8, #7c3aed);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            display: block;
+            margin-bottom: 0.25rem;
+        }
+        /* Section step icons */
+        .section-icon.bi {
+            font-size: 1.3rem;
+            background: linear-gradient(135deg, #38bdf8, #7c3aed);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        /* Review action card icons */
+        .action-card-icon.bi {
+            font-size: 1.8rem;
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+        /* OCR panel section icons */
+        .ocr-section-icon.bi {
+            font-size: 1rem;
+            background: linear-gradient(135deg, #38bdf8, #7c3aed);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        /* seal icon (warranty detail) */
+        .seal-icon.bi {
+            font-size: 2.5rem;
+            background: linear-gradient(135deg, #38bdf8, #22c55e);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        /* notice icon (profile) */
+        .notice-icon.bi {
+            font-size: 1.1rem;
+            background: linear-gradient(135deg, #38bdf8, #7c3aed);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        /* uc-icon (create claim warranty card) */
+        .uc-icon.bi {
+            font-size: 1.5rem;
+            background: linear-gradient(135deg, #38bdf8, #7c3aed);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background: radial-gradient(ellipse at 15% 15%, #0c1e3a 0%, #050b18 45%, #020609 100%);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* ── Navbar ── */
+        .navbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: .85rem 2rem;
+            background: rgba(5,11,24,.92);
+            border-bottom: 1px solid rgba(56,189,248,.1);
+            backdrop-filter: blur(18px);
+            -webkit-backdrop-filter: blur(18px);
+            position: sticky;
+            top: 0;
+            z-index: 200;
+            box-shadow: 0 1px 30px rgba(0,0,0,.5);
+        }
+
+        .brand-container {
+            display: flex;
+            align-items: center;
+            gap: .7rem;
+            text-decoration: none;
+        }
+
+        /* 3D Logo Text */
+        .brand-logo {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.55rem;
+            font-weight: 700;
+            color: #fff;
+            letter-spacing: -.03em;
+            text-shadow:
+                0 1px 0 #1d4e80,
+                0 2px 0 #173e66,
+                0 3px 4px rgba(0,0,0,.4),
+                0 0 18px rgba(56,189,248,.3);
+            transition: text-shadow .3s;
+        }
+
+        .brand-logo span {
+            color: var(--accent);
+            text-shadow:
+                0 0 8px rgba(56,189,248,.9),
+                0 0 24px rgba(56,189,248,.5),
+                0 0 48px rgba(56,189,248,.2);
+            animation: logoGlow 3s ease-in-out infinite;
+        }
+
+        @keyframes logoGlow {
+            0%,100% { text-shadow:0 0 8px rgba(56,189,248,.9),0 0 24px rgba(56,189,248,.5); }
+            50%       { text-shadow:0 0 14px rgba(56,189,248,1),0 0 40px rgba(56,189,248,.7),0 0 70px rgba(56,189,248,.3); }
+        }
+
+        .brand-pill {
+            background: rgba(56,189,248,.1);
+            border: 1px solid rgba(56,189,248,.25);
+            color: var(--accent);
+            font-size: .68rem;
+            font-weight: 600;
+            padding: .2rem .6rem;
+            border-radius: 1rem;
+            text-transform: uppercase;
+            letter-spacing: .06em;
+        }
+
+        /* Nav links */
+        .nav-menu { display:flex; align-items:center; gap:1.25rem; list-style:none; }
+
+        .nav-item a {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: .9rem;
+            font-weight: 500;
+            padding: .38rem .75rem;
+            border-radius: .5rem;
+            transition: all .2s ease;
+            display: flex;
+            align-items: center;
+            gap: .4rem;
+            position: relative;
+        }
+
+        .nav-item a::after {
+            content: '';
+            position: absolute;
+            bottom: -2px; left: 50%;
+            width: 0; height: 2px;
+            background: var(--accent);
+            border-radius: 2px;
+            transition: width .25s, left .25s;
+            box-shadow: 0 0 8px var(--accent-glow);
+        }
+
+        .nav-item a:hover {
+            color: #fff;
+            background: rgba(255,255,255,.04);
+        }
+
+        .nav-item a:hover::after { width: 80%; left: 10%; }
+
+        .nav-item a.active {
+            color: var(--accent);
+            background: rgba(56,189,248,.08);
+            font-weight: 600;
+        }
+
+        .nav-item a.active::after { width: 80%; left: 10%; }
+
+        /* User controls */
+        .user-controls { display:flex; align-items:center; gap:1.1rem; }
+
+        .role-tag {
+            background: rgba(56,189,248,.1);
+            color: var(--accent);
+            border: 1px solid rgba(56,189,248,.22);
+            padding: .28rem .75rem;
+            border-radius: 1.5rem;
+            font-size: .78rem;
+            font-weight: 600;
+        }
+
+        .btn-logout {
+            color: #f87171;
+            text-decoration: none;
+            font-size: .85rem;
+            font-weight: 500;
+            padding: .38rem .85rem;
+            border-radius: .5rem;
+            border: 1px solid rgba(239,68,68,.28);
+            transition: all .2s;
+        }
+
+        .btn-logout:hover {
+            background: rgba(239,68,68,.1);
+            border-color: var(--danger);
+            box-shadow: 0 0 14px rgba(239,68,68,.2);
+        }
+
+        /* ── Page Container ── */
+        .page-container {
+            max-width: 1220px;
+            width: 100%;
+            margin: 2rem auto;
+            padding: 0 1.5rem;
+            flex: 1;
+            position: relative;
+            z-index: 2;
+        }
+
+        /* ── Flash messages ── */
+        .flash-container { margin-bottom: 1.5rem; }
+
+        .alert {
+            padding: .85rem 1.2rem;
+            border-radius: .75rem;
+            font-size: .9rem;
+            margin-bottom: .75rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 4px 14px rgba(0,0,0,.25);
+            backdrop-filter: blur(8px);
+        }
+
+        .alert-success  { background:var(--success-bg); border:1px solid var(--success); color:#86efac; }
+        .alert-error,
+        .alert-danger   { background:var(--danger-bg);  border:1px solid var(--danger);  color:#fca5a5; }
+        .alert-warning  { background:var(--warning-bg); border:1px solid var(--warning); color:#fde047; }
+        .alert-info     { background:rgba(56,189,248,.12); border:1px solid var(--accent); color:#bae6fd; }
+
+        /* ── Buttons ── */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: .5rem;
+            padding: .68rem 1.3rem;
+            border-radius: .6rem;
+            font-weight: 600;
+            font-size: .92rem;
+            text-decoration: none;
+            cursor: pointer;
+            border: none;
+            font-family: 'Outfit', sans-serif;
+            transition: transform .15s, box-shadow .2s, background-color .15s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), #2563eb 60%, var(--accent));
+            color: #fff;
+            box-shadow: 0 4px 16px rgba(2,132,199,.35);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 28px rgba(2,132,199,.55), 0 0 20px rgba(56,189,248,.2);
+        }
+
+        .btn-secondary {
+            background: rgba(255,255,255,.06);
+            color: var(--text-main);
+            border: 1px solid rgba(255,255,255,.14);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255,255,255,.1);
+            border-color: rgba(56,189,248,.3);
+            transform: translateY(-1px);
+        }
+
+        /* ── Footer ── */
+        .site-footer {
+            margin-top: auto;
+            border-top: 1px solid rgba(56,189,248,.07);
+            background: rgba(5,10,22,.7);
+            padding: 1.4rem 2rem;
+            text-align: center;
+            font-size: .82rem;
+            color: var(--text-muted);
+            position: relative;
+            z-index: 2;
+        }
+
+        @media (max-width:768px) {
+            .navbar { padding:.7rem 1rem; flex-wrap:wrap; gap:.6rem; }
+            .nav-menu { order:3; width:100%; justify-content:center; gap:.5rem; padding-top:.4rem; border-top:1px solid rgba(255,255,255,.05); flex-wrap:wrap; }
+        }
+
+        {% block extra_css %}{% endblock %}
+    </style>
+</head>
+<body>
+    <!-- CSS Particle layer -->
+    <div class="css-particles" id="css-particles" aria-hidden="true"></div>
+
+    <!-- ── Navbar ── -->
+    <header class="navbar">
+        <a href="{{ url_for('main.customer_dashboard') if current_user.is_authenticated and current_user.role == 'Customer' else '/' }}" class="brand-container">
+            <div class="brand-logo">Assure<span>X</span></div>
+        </a>
+
+        {% if current_user.is_authenticated %}
+        <ul class="nav-menu">
+            {% if current_user.role == 'Customer' %}
+                <li class="nav-item"><a href="{{ url_for('main.customer_dashboard') }}" class="{% if request.endpoint == 'main.customer_dashboard' %}active{% endif %}">Dashboard</a></li>
+                <li class="nav-item"><a href="{{ url_for('products.list_products') }}" class="{% if request.endpoint in ['products.list_products','products.get_product'] %}active{% endif %}">My Products</a></li>
+                <li class="nav-item"><a href="{{ url_for('warranties.list_warranties') }}" class="{% if request.endpoint in ['warranties.list_warranties','warranties.get_warranty'] %}active{% endif %}">My Warranties</a></li>
+                <li class="nav-item"><a href="{{ url_for('claims.create_claim_view') }}" class="{% if request.endpoint == 'claims.create_claim_view' %}active{% endif %}" id="nav-file-claim">+ File Claim</a></li>
+                <li class="nav-item"><a href="{{ url_for('products.register_product_view') }}" class="{% if request.endpoint == 'products.register_product_view' %}active{% endif %}">+ Register Product</a></li>
+                <li class="nav-item"><a href="{{ url_for('auth.profile_view') }}" class="{% if request.endpoint == 'auth.profile_view' %}active{% endif %}">Profile</a></li>
+            {% elif current_user.role == 'Service-Centre Employee' %}
+                <li class="nav-item"><a href="{{ url_for('service_center.dashboard') }}" class="{% if request.endpoint == 'service_center.dashboard' %}active{% endif %}">Dashboard</a></li>
+                <li class="nav-item"><a href="{{ url_for('warranties.list_warranties') }}" class="{% if request.endpoint in ['warranties.list_warranties','warranties.get_warranty'] %}active{% endif %}">Warranty Lookup</a></li>
+                <li class="nav-item"><a href="{{ url_for('auth.profile_view') }}" class="{% if request.endpoint == 'auth.profile_view' %}active{% endif %}">Profile</a></li>
+            {% elif current_user.role == 'Claim Reviewer' %}
+                <li class="nav-item"><a href="{{ url_for('reviewer.dashboard') }}" class="{% if request.endpoint == 'reviewer.dashboard' %}active{% endif %}">Dashboard</a></li>
+                <li class="nav-item"><a href="{{ url_for('reviewer.get_review_queue_view') }}" class="{% if request.endpoint == 'reviewer.get_review_queue_view' %}active{% endif %}">Review Queue</a></li>
+                <li class="nav-item"><a href="{{ url_for('warranties.list_warranties') }}" class="{% if request.endpoint in ['warranties.list_warranties','warranties.get_warranty'] %}active{% endif %}">Warranty Info</a></li>
+                <li class="nav-item"><a href="{{ url_for('auth.profile_view') }}" class="{% if request.endpoint == 'auth.profile_view' %}active{% endif %}">Profile</a></li>
+            {% elif current_user.role == 'Administrator' %}
+                <li class="nav-item"><a href="{{ url_for('admin.dashboard') }}" class="{% if request.endpoint == 'admin.dashboard' %}active{% endif %}">Dashboard</a></li>
+                <li class="nav-item"><a href="{{ url_for('reviewer.dashboard') }}" class="{% if request.endpoint == 'reviewer.dashboard' %}active{% endif %}">Review Queue</a></li>
+                <li class="nav-item"><a href="{{ url_for('admin.analytics_dashboard') }}" class="{% if request.endpoint == 'admin.analytics_dashboard' %}active{% endif %}">Analytics</a></li>
+                <li class="nav-item"><a href="{{ url_for('products.list_products') }}" class="{% if request.endpoint in ['products.list_products','products.get_product'] %}active{% endif %}">Products</a></li>
+                <li class="nav-item"><a href="{{ url_for('warranties.list_warranties') }}" class="{% if request.endpoint in ['warranties.list_warranties','warranties.get_warranty'] %}active{% endif %}">Warranties</a></li>
+                <li class="nav-item"><a href="{{ url_for('auth.profile_view') }}" class="{% if request.endpoint == 'auth.profile_view' %}active{% endif %}">Profile</a></li>
+            {% endif %}
+        </ul>
+
+        <div class="user-controls">
+            <span class="role-tag">{{ current_user.role }}</span>
+            <span style="font-size:.88rem;color:#cbd5e1;font-weight:500;">{{ current_user.name }}</span>
+
+            <!-- Notification Bell -->
+            <div style="position:relative;display:inline-flex;align-items:center;">
+                <button id="notif-bell" onclick="toggleNotifPanel()" style="background:none;border:none;cursor:pointer;color:#94a3b8;padding:.3rem;display:flex;align-items:center;position:relative;transition:color .2s;" onmouseenter="this.style.color='#38bdf8'" onmouseleave="this.style.color='#94a3b8'">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+                    <span id="notif-badge" style="display:none;position:absolute;top:-2px;right:-2px;background:#ef4444;color:#fff;font-size:.6rem;font-weight:700;border-radius:50%;width:16px;height:16px;text-align:center;line-height:16px;box-shadow:0 0 8px rgba(239,68,68,.6);"></span>
+                </button>
+                <div id="notif-panel" style="display:none;position:absolute;top:2.5rem;right:0;width:320px;background:rgba(8,15,30,.98);border:1px solid rgba(56,189,248,.18);border-radius:.85rem;box-shadow:0 16px 48px rgba(0,0,0,.6),0 0 20px rgba(56,189,248,.08);z-index:9999;overflow:hidden;backdrop-filter:blur(16px);">
+                    <div style="display:flex;justify-content:space-between;align-items:center;padding:.75rem 1rem;border-bottom:1px solid rgba(255,255,255,.06);">
+                        <span style="font-size:.88rem;font-weight:700;color:#fff;">Notifications</span>
+                        <button onclick="markAllRead()" style="background:none;border:none;cursor:pointer;font-size:.75rem;color:var(--accent);">Mark all read</button>
+                    </div>
+                    <div id="notif-list" style="max-height:340px;overflow-y:auto;padding:.5rem 0;">
+                        <div style="text-align:center;padding:2rem;color:#64748b;font-size:.82rem;">Loading…</div>
+                    </div>
+                </div>
+            </div>
+            <a href="{{ url_for('auth.logout') }}" class="btn-logout" id="logout-btn">Sign Out</a>
+        </div>
+
+        <script>
+        (function(){
+            function loadNotifs(){
+                fetch('/api/notifications').then(r=>r.json()).then(data=>{
+                    const badge=document.getElementById('notif-badge');
+                    const list=document.getElementById('notif-list');
+                    const unread=data.unread_count||0;
+                    badge.style.display=unread>0?'block':'none';
+                    if(unread>0) badge.textContent=unread>9?'9+':unread;
+                    if(!data.notifications||data.notifications.length===0){
+                        list.innerHTML='<div style="text-align:center;padding:2rem;color:#64748b;font-size:.82rem;">No notifications.</div>';return;
+                    }
+                    const colors={Info:'#38bdf8',Success:'#4ade80',Warning:'#fbbf24',Alert:'#f87171'};
+                    list.innerHTML=data.notifications.slice(0,10).map(n=>{
+                        const c=colors[n.notification_type]||'#94a3b8';
+                        return`<div style="padding:.65rem 1rem;border-bottom:1px solid rgba(255,255,255,.04);${!n.is_read?'background:rgba(56,189,248,.04);':''}">
+                            <div style="font-size:.82rem;font-weight:600;color:${c};">${n.title}</div>
+                            <div style="font-size:.78rem;color:#94a3b8;margin-top:.2rem;">${n.message}</div>
+                            <div style="font-size:.7rem;color:#475569;margin-top:.2rem;">${new Date(n.created_at).toLocaleDateString()}</div>
+                        </div>`;
+                    }).join('');
+                }).catch(()=>{});
+            }
+            function toggleNotifPanel(){
+                const p=document.getElementById('notif-panel');
+                p.style.display=p.style.display==='none'?'block':'none';
+                if(p.style.display==='block') loadNotifs();
+            }
+            function markAllRead(){
+                fetch('/api/notifications/mark-read',{method:'POST',headers:{'Content-Type':'application/json','X-CSRFToken':document.querySelector('meta[name=csrf-token]')?.content||''}}).then(()=>loadNotifs());
+            }
+            window.toggleNotifPanel=toggleNotifPanel;
+            window.markAllRead=markAllRead;
+            document.addEventListener('click',function(e){
+                const p=document.getElementById('notif-panel'),b=document.getElementById('notif-bell');
+                if(p&&b&&!b.contains(e.target)&&!p.contains(e.target)) p.style.display='none';
+            });
+            loadNotifs();
+        })();
+        </script>
+        {% else %}
+        <div class="user-controls">
+            <a href="{{ url_for('auth.login_view') }}" class="btn btn-secondary" style="padding:.42rem .95rem;">Sign In</a>
+            <a href="{{ url_for('auth.register_view') }}" class="btn btn-primary" style="padding:.42rem .95rem;">Register</a>
+        </div>
+        {% endif %}
+    </header>
+
+    <!-- ── Page Content ── -->
+    <div class="page-container" id="main-content">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="flash-container">
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ 'error' if category in ['error','danger'] else ('success' if category == 'success' else ('warning' if category == 'warning' else 'info')) }}">
+                            <span>{{ message }}</span>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+        {% block content %}{% endblock %}
+    </div>
+
+    <footer class="site-footer">
+        <p>&copy; 2026 AssureX Claim Engine &bull; AI-Powered Document Ops &amp; Warranty Claim Validation System</p>
+    </footer>
+
+    {% block extra_js %}{% endblock %}
+
+    <!-- ── Global 3D Init ── -->
+    <script>
+    (function(){
+        /* CSS Particles */
+        const pc=document.getElementById('css-particles');
+        if(pc){
+            for(let i=0;i<28;i++){
+                const d=document.createElement('div');
+                d.className='css-particle';
+                const size=(Math.random()*2.5+.8)+'px';
+                const op=Math.random()*.35+.1;
+                const blue=Math.random()>.4;
+                d.style.cssText=`left:${Math.random()*100}vw;width:${size};height:${size};
+                  background:rgba(${blue?'56,189,248':'124,58,237'},${op});
+                  animation-duration:${Math.random()*18+10}s;
+                  animation-delay:${-Math.random()*25}s;
+                  --dx:${(Math.random()-.5)*120}px`;
+                pc.appendChild(d);
+            }
+        }
+
+        /* Vanilla Tilt on cards */
+        window.addEventListener('load',function(){
+            if(typeof VanillaTilt!=='undefined'){
+                VanillaTilt.init(document.querySelectorAll('.metric-card,.section-card,.workflow-card,.feature-card,.role-card'),{
+                    max:6,speed:400,glare:true,'max-glare':.07,perspective:900,scale:1.015,gyroscope:false
+                });
+            }
+        });
+
+        /* Ripple on all .btn */
+        document.addEventListener('click',function(e){
+            const btn=e.target.closest('.btn,.btn-primary,.btn-secondary,.btn-submit,.action-btn');
+            if(!btn) return;
+            const r=document.createElement('span');
+            r.className='ripple-effect';
+            const rect=btn.getBoundingClientRect();
+            const sz=Math.max(rect.width,rect.height)*2;
+            r.style.cssText=`width:${sz}px;height:${sz}px;left:${e.clientX-rect.left-sz/2}px;top:${e.clientY-rect.top-sz/2}px`;
+            btn.appendChild(r);
+            setTimeout(()=>r.remove(),700);
+        });
+
+        /* Number counters */
+        function animateCounters(){
+            document.querySelectorAll('.metric-value').forEach(el=>{
+                const raw=el.textContent.trim();
+                const n=parseInt(raw.replace(/[^0-9]/g,''));
+                if(isNaN(n)||n<=0||n>99999) return;
+                const suffix=raw.replace(/[0-9]/g,'').trim();
+                const t0=performance.now();
+                const dur=900;
+                function tick(t){
+                    const p=Math.min((t-t0)/dur,1);
+                    const ease=1-Math.pow(1-p,3);
+                    el.textContent=Math.round(ease*n)+suffix;
+                    if(p<1) requestAnimationFrame(tick);
+                    else el.textContent=raw;
+                }
+                requestAnimationFrame(tick);
+            });
+        }
+
+        /* Page enter + add shimmer/scan classes */
+        document.addEventListener('DOMContentLoaded',function(){
+            const mc=document.getElementById('main-content');
+            if(mc) mc.classList.add('page-enter');
+
+            document.querySelectorAll('.section-card,.metric-card').forEach(c=>{
+                c.classList.add('holo-shimmer','scan-card','glass-card');
+            });
+
+            animateCounters();
+        });
+    })();
+    </script>
+</body>
+</html>

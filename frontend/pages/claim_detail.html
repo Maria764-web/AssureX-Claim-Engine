@@ -1,0 +1,1957 @@
+{% extends "base.html" %}
+
+{% block title %}Claim {{ claim.claim_uid }} - AssureX Claim Engine{% endblock %}
+
+{% block content %}
+<div class="claim-detail-wrapper">
+    <!-- Header Card -->
+    <div class="claim-header-card">
+        <div class="header-top">
+            <div class="uid-group">
+                <span class="step-tag">Claim Record</span>
+                <h1 class="claim-title">{{ claim.claim_uid }}</h1>
+                <span class="status-badge
+                    {% if claim.claim_status == 'Submitted' %}status-submitted
+                    {% elif claim.claim_status == 'Draft' %}status-draft
+                    {% elif claim.claim_status == 'Approved' %}status-approved
+                    {% elif claim.claim_status == 'Rejected' %}status-rejected
+                    {% elif claim.claim_status == 'Manual Review' %}status-manual
+                    {% elif claim.claim_status == 'Under Evaluation' %}status-evaluation
+                    {% elif claim.claim_status == 'Additional Info Required' %}status-addinfo
+                    {% elif claim.claim_status == 'Closed' %}status-closed
+                    {% else %}status-info{% endif %}">
+                    ● {{ claim.claim_status }}
+                </span>
+            </div>
+            <div class="header-actions">
+                <a href="{{ url_for('main.customer_dashboard') }}" class="btn btn-secondary btn-sm">
+                    &larr; Back to Dashboard
+                </a>
+                {% if claim.final_decision %}
+                <a href="{{ url_for('reports.download_claim_report', claim_id=claim.id) }}" class="btn btn-secondary btn-sm" target="_blank" style="margin-left:0.5rem;">
+                    &#8681; Download Report
+                </a>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="header-meta-row">
+            <div class="meta-item">
+                <span class="meta-label">Claimant Account</span>
+                <span class="meta-value">{{ claim.customer.name if claim.customer else 'User #' ~ claim.user_id }}</span>
+            </div>
+            <div class="meta-item">
+                <span class="meta-label">Submission Timestamp</span>
+                <span class="meta-value">{{ claim.submission_date.strftime('%B %d, %Y at %H:%M UTC') if claim.submission_date else 'Draft' }}</span>
+            </div>
+            <div class="meta-item">
+                <span class="meta-label">Evidence Uploads</span>
+                <span class="meta-value highlight">{{ documents|length }} Documents Attached</span>
+            </div>
+            <div class="meta-item">
+                <span class="meta-label">Last Updated</span>
+                <span class="meta-value">{{ claim.updated_at.strftime('%B %d, %Y') if claim.updated_at else 'Recent' }}</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- 2-Column Main Layout: Claim Details vs Attached Evidence -->
+    <div class="claim-grid-layout">
+        <!-- Left Column: Detailed Claim & Device Information -->
+        <div class="claim-col-left">
+            <!-- Fault & Breakdown Information -->
+            <div class="info-card">
+                <h2 class="card-heading">
+                    <span class="heading-icon">⚡</span>
+                    Fault & Malfunction Details
+                </h2>
+
+                <div class="spec-grid">
+                    <div class="spec-cell">
+                        <span class="spec-name">Malfunction Date</span>
+                        <span class="spec-data">{{ claim.fault_date.strftime('%B %d, %Y') if claim.fault_date else 'N/A' }}</span>
+                    </div>
+                    <div class="spec-cell">
+                        <span class="spec-name">Damage Classification</span>
+                        <span class="spec-data text-accent font-semibold">{{ claim.damage_type or 'General Hardware Defect' }}</span>
+                    </div>
+                    <div class="spec-cell">
+                        <span class="spec-name">Device Age at Fault</span>
+                        <span class="spec-data font-semibold">
+                            {% if claim.product_age is not none %}
+                                {{ claim.product_age }} Months
+                            {% else %}
+                                Calculated upon validation
+                            {% endif %}
+                        </span>
+                    </div>
+                    <div class="spec-cell">
+                        <span class="spec-name">Purchase / Invoice Ref</span>
+                        <span class="spec-data mono">{{ claim.purchase_reference or 'Not provided' }}</span>
+                    </div>
+                </div>
+
+                <div class="desc-box">
+                    <div class="desc-label">Claimant Fault Description</div>
+                    <div class="desc-content">{{ claim.fault_description }}</div>
+                </div>
+
+                {% if claim.service_history_notes %}
+                    <div class="desc-box" style="margin-top: 1rem; border-left-color: #f59e0b;">
+                        <div class="desc-label" style="color: #fde047;">Prior Service & Repair Reference</div>
+                        <div class="desc-content">{{ claim.service_history_notes }}</div>
+                    </div>
+                {% endif %}
+            </div>
+
+            <!-- Associated Product & Warranty Information -->
+            <div class="info-card">
+                <h2 class="card-heading">
+                    <span class="heading-icon">📦</span>
+                    Linked Hardware Asset & Policy
+                </h2>
+
+                {% if product %}
+                    <div class="spec-grid">
+                        <div class="spec-cell">
+                            <span class="spec-name">Product Name</span>
+                            <span class="spec-data font-semibold">{{ product.product_name }}</span>
+                        </div>
+                        <div class="spec-cell">
+                            <span class="spec-name">Brand & Model</span>
+                            <span class="spec-data">{{ product.brand }} &bull; {{ product.model }}</span>
+                        </div>
+                        <div class="spec-cell">
+                            <span class="spec-name">Serial Number</span>
+                            <span class="spec-data mono highlight">{{ product.serial_number }}</span>
+                        </div>
+                        <div class="spec-cell">
+                            <span class="spec-name">Purchase Date</span>
+                            <span class="spec-data">{{ product.purchase_date.strftime('%B %d, %Y') if product.purchase_date else 'N/A' }}</span>
+                        </div>
+                        <div class="spec-cell">
+                            <span class="spec-name">Authorized Retailer</span>
+                            <span class="spec-data">{{ product.retailer or 'Direct' }}</span>
+                        </div>
+                        <div class="spec-cell">
+                            <span class="spec-name">Product Record UID</span>
+                            <span class="spec-data mono">{{ product.product_uid }}</span>
+                        </div>
+                    </div>
+
+                    <div style="margin-top: 1rem; display: flex; justify-content: flex-end;">
+                        <a href="{{ url_for('products.get_product', product_id=product.id) }}" class="btn-link">
+                            View Full Product Profile &rarr;
+                        </a>
+                    </div>
+                {% else %}
+                    <p class="text-muted">Associated product record not found.</p>
+                {% endif %}
+
+                {% if warranty %}
+                    <div class="warranty-summary-box">
+                        <div class="ws-header">
+                            <div>
+                                <span class="ws-uid">{{ warranty.warranty_uid }}</span>
+                                <h4 class="ws-provider">{{ warranty.warranty_provider }}</h4>
+                            </div>
+                            <span class="status-badge status-{{ 'active' if warranty.warranty_status == 'Active' else ('warning' if warranty.warranty_status == 'Nearing Expiry' else 'expired') }}">
+                                {{ warranty.warranty_status }}
+                            </span>
+                        </div>
+                        <div class="ws-dates">
+                            <span>Policy Period: {{ warranty.start_date.strftime('%b %Y') }} &ndash; {{ warranty.expiry_date.strftime('%b %Y') }}</span>
+                            <a href="{{ url_for('warranties.get_warranty', warranty_id=warranty.id) }}" class="btn-link">Certificate &rarr;</a>
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+
+            <!-- Step 5B: Extracted Document Information Card -->
+            <div class="info-card" id="extracted-docs-card">
+                <div class="card-header-flex">
+                    <h2 class="card-heading">
+                        <i class="bi bi-file-earmark-text heading-icon"></i>
+                        Extracted Document Information
+                    </h2>
+                    <span class="step-tag" style="background: rgba(139, 92, 246, 0.15); border-color: rgba(139, 92, 246, 0.3); color: #c4b5fd;">Step 5B · OCR Verification</span>
+                </div>
+                <p class="section-subheading" style="margin-bottom: 1.25rem;">
+                    Key structured data extracted from uploaded documents via optical character recognition. Customers can review, correct, and confirm all fields.
+                </p>
+
+                {% set ocr_docs = documents | rejectattr("document_type", "equalto", "Damage Photo") | rejectattr("document_type", "equalto", "Video") | list %}
+                {% if ocr_docs %}
+                    <div style="display: flex; flex-direction: column; gap: 1rem;">
+                        {% for doc in ocr_docs %}
+                            <div class="extracted-doc-block" style="background: rgba(15, 23, 42, 0.6); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 0.65rem; padding: 1rem;">
+                                <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 0.75rem; border-bottom: 1px solid rgba(255, 255, 255, 0.06); padding-bottom: 0.6rem;">
+                                    <div>
+                                        <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
+                                            <span style="font-weight: 700; color: #f1f5f9; font-size: 0.92rem;">{{ doc.original_filename }}</span>
+                                            <span class="doc-type-badge" style="font-size: 0.72rem; padding: 0.15rem 0.5rem;">{{ doc.document_type }}</span>
+                                        </div>
+                                        <div class="doc-meta-sub" style="margin-top: 0.2rem;">
+                                            <span>UID: <span class="mono">{{ doc.document_uid }}</span></span>
+                                            {% if doc.extraction and doc.extraction.ocr_engine_used %}
+                                                &bull; <span>Engine: {{ doc.extraction.ocr_engine_used }}</span>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                    <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
+                                        {% if doc.ocr_status %}
+                                            <span class="ocr-status-pill ocr-{{ doc.ocr_status|lower|replace(' ', '-') }}">{{ doc.ocr_status }}</span>
+                                        {% endif %}
+                                        {% if doc.extraction %}
+                                            {% if doc.extraction.verification_status == 'Verified' %}
+                                                <span class="ocr-verify-badge verify-verified"><i class="bi bi-check-circle-fill"></i> Verified</span>
+                                            {% elif doc.extraction.verification_status == 'Needs Correction' %}
+                                                <span class="ocr-verify-badge verify-needs-correction"><i class="bi bi-pencil-fill"></i> Needs Correction</span>
+                                            {% else %}
+                                                <span class="ocr-verify-badge verify-unverified">⏳ Unverified</span>
+                                            {% endif %}
+                                        {% endif %}
+                                    </div>
+                                </div>
+
+                                <!-- Extracted Fields Display -->
+                                {% set ext_data = (doc.extraction.verified_fields if (doc.extraction and doc.extraction.verified_fields) else (doc.extraction.extracted_fields if doc.extraction else {})) %}
+                                {% if ext_data %}
+                                    <div class="spec-grid" style="margin-top: 0.5rem; margin-bottom: 0.75rem;">
+                                        {% for field_name, field_val in ext_data.items() %}
+                                            <div class="spec-cell">
+                                                <span class="spec-name">{{ field_name | replace('_', ' ') | title }}</span>
+                                                {% if field_val %}
+                                                    <span class="spec-data font-semibold text-accent">{{ field_val }}</span>
+                                                {% else %}
+                                                    <span class="spec-data" style="color: #64748b; font-style: italic;">Not detected</span>
+                                                {% endif %}
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+                                {% elif doc.ocr_status == 'Completed' %}
+                                    <p class="text-muted" style="font-size: 0.82rem; margin: 0.5rem 0;">No structured fields detected in document text.</p>
+                                {% elif doc.ocr_status == 'Failed' %}
+                                    <p style="color: #fca5a5; font-size: 0.82rem; margin: 0.5rem 0;">OCR processing encountered an issue: {{ doc.extraction.error_message if doc.extraction else 'Failed to parse file' }}</p>
+                                {% else %}
+                                    <p class="text-muted" style="font-size: 0.82rem; margin: 0.5rem 0;">OCR extraction pending or in progress.</p>
+                                {% endif %}
+
+                                <div style="display: flex; justify-content: flex-end; gap: 0.5rem; margin-top: 0.6rem;">
+                                    <button type="button" 
+                                            class="btn btn-secondary btn-sm"
+                                            style="font-size: 0.78rem; padding: 0.35rem 0.75rem;"
+                                            onclick="openOcrPanel({{ doc.id }}, '{{ doc.original_filename|e }}', '{{ doc.document_type|e }}')">
+                                        <i class="bi bi-pencil-square"></i> Review / Verify Extracted Data
+                                    </button>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="empty-docs-box" style="padding: 1.5rem; text-align: center;">
+                        <span class="text-muted">No OCR-eligible documents (receipts, warranty cards, invoices, serial photos, diagnostic reports) uploaded for this claim.</span>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Right Column: Evidence Documents & Additional Upload -->
+        <div class="claim-col-right">
+            <!-- Uploaded Evidence Documents Section -->
+            <div class="info-card">
+                <div class="card-header-flex">
+                    <h2 class="card-heading">
+                        <span class="heading-icon">📑</span>
+                        Attached Evidence Documents
+                    </h2>
+                    <span class="count-pill">{{ documents|length }} Files</span>
+                </div>
+
+                {% if documents %}
+                    <div class="documents-list">
+                        {% for doc in documents %}
+                            <div class="document-item-card" id="doc-card-{{ doc.id }}">
+                                <div class="doc-icon-box">
+                                    {% if doc.file_extension == 'pdf' %}
+                                        📄
+                                    {% elif doc.file_extension in ['png', 'jpg', 'jpeg', 'webp'] %}
+                                        🖼️
+                                    {% else %}
+                                        📎
+                                    {% endif %}
+                                </div>
+                                <div class="doc-info-block">
+                                    <div class="doc-type-badge">
+                                        {{ doc.document_type }}
+                                        {% if doc.ocr_status and doc.ocr_status != 'Not Applicable' %}
+                                            <span class="ocr-status-pill ocr-{{ doc.ocr_status|lower|replace(' ', '-') }}">{{ doc.ocr_status }}</span>
+                                        {% endif %}
+                                    </div>
+                                    <div class="doc-filename" title="{{ doc.original_filename }}">{{ doc.original_filename }}</div>
+                                    <div class="doc-meta-sub">
+                                        <span>{{ (doc.file_size / 1024)|round(1) }} KB</span>
+                                        &bull;
+                                        <span>{{ doc.file_extension|upper }}</span>
+                                        &bull;
+                                        <span>{{ doc.upload_timestamp.strftime('%b %d, %Y') if doc.upload_timestamp else 'Uploaded' }}</span>
+                                    </div>
+                                    <div class="doc-hash-text mono" title="SHA-256 Hash">
+                                        Hash: {{ doc.file_hash[:16] }}...
+                                    </div>
+                                </div>
+                                <div class="doc-actions">
+                                    <a href="{{ url_for('documents.download_document', document_id=doc.id) }}" 
+                                       class="btn-icon" 
+                                       title="Download Document"
+                                       id="btn-dl-{{ doc.id }}">
+                                                        <i class="bi bi-download"></i>
+                                    </a>
+                                    {% if doc.file_extension in ['pdf', 'png', 'jpg', 'jpeg', 'webp'] %}
+                                        <a href="{{ url_for('documents.view_document_inline', document_id=doc.id) }}"
+                                           class="btn-icon"
+                                           title="View Document"
+                                           id="btn-view-{{ doc.id }}">
+                                            <i class="bi bi-eye"></i>
+                                        </a>
+                                    {% endif %}
+                                    {% if doc.file_extension in ['pdf', 'png', 'jpg', 'jpeg', 'webp'] and doc.document_type not in ['Damage Photo', 'Video'] %}
+                                        <button class="btn-icon btn-ocr-trigger"
+                                                title="View / Run OCR"
+                                                id="btn-ocr-{{ doc.id }}"
+                                                data-doc-id="{{ doc.id }}"
+                                                data-doc-name="{{ doc.original_filename }}"
+                                                data-doc-type="{{ doc.document_type }}"
+                                                onclick="openOcrPanel({{ doc.id }}, '{{ doc.original_filename|e }}', '{{ doc.document_type|e }}')">
+                                            <i class="bi bi-file-earmark-text"></i>
+                                        </button>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="empty-docs-box">
+                        <i class="bi bi-exclamation-triangle" style="font-size:1.3rem;color:var(--warning);"></i>
+                        <span>No documents attached to this claim yet.</span>
+                    </div>
+                {% endif %}
+            </div>
+
+            <!-- Upload Additional Evidence Form -->
+            <div class="info-card">
+                <h2 class="card-heading" style="font-size: 1.05rem;">
+                    <span class="heading-icon">📤</span>
+                    Attach Additional Evidence
+                </h2>
+                <p class="section-subheading" style="margin-bottom: 1rem;">
+                    Upload supplementary invoices, diagnostic reports, or replacement photos to this claim.
+                </p>
+
+                <form action="{{ url_for('claims.upload_claim_document', claim_id=claim.id) }}" 
+                      method="POST" 
+                      enctype="multipart/form-data">
+                    <div class="form-group" style="margin-bottom: 0.85rem;">
+                        <label for="document_type" class="input-label">Document Classification <span class="req">*</span></label>
+                        <select name="document_type" id="document_type" class="form-select" required>
+                            <option value="Receipt">Proof of Purchase (Receipt)</option>
+                            <option value="Invoice">Tax / Commercial Invoice</option>
+                            <option value="Damage Photo">Damage / Defect Photo</option>
+                            <option value="Warranty Card">Warranty Card</option>
+                            <option value="Serial Number Photo">Serial Number Photo</option>
+                            <option value="Diagnostic Report">Diagnostic Report</option>
+                            <option value="Other Evidence">Other Evidence</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group" style="margin-bottom: 1rem;">
+                        <label for="extra_document" class="input-label">Select Evidence File (PDF or Image) <span class="req">*</span></label>
+                        <input type="file" 
+                               name="document" 
+                               id="extra_document" 
+                               class="form-control" 
+                               accept=".pdf,.png,.jpg,.jpeg,.webp" 
+                               required>
+                        <span class="input-hint">Max file size: 10 MB</span>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary btn-sm" style="width: 100%; justify-content: center;" id="btn-upload-more">
+                        Upload Document &rarr;
+                    </button>
+                </form>
+            </div>
+
+            <!-- Python Model Prediction Card -->
+            <div class="info-card" id="python-model-prediction-card" style="margin-top: 1rem;">
+                <h2 class="card-heading">
+                    <span class="heading-icon">🤖</span>
+                    Python Model Prediction
+                </h2>
+                {% set py_pred = (claim.predictions | selectattr("model_name", "equalto", "AssureX Calibrated Decision Tree") | list | last) if claim.predictions else None %}
+                {% if not py_pred and claim.predictions %}
+                    {% set py_pred = claim.predictions[-1] %}
+                {% endif %}
+
+                <div id="prediction-result-box" style="{% if not py_pred %}display: none;{% endif %} margin-top: 0.75rem;">
+                    <div style="font-size: 1.05rem; margin-bottom: 0.5rem; color: #f8fafc;">
+                        Prediction: <strong id="pred-class-text" style="color: #38bdf8;">{{ py_pred.predicted_class if py_pred else '' }}</strong>
+                    </div>
+                    <div style="font-size: 1.0rem; color: #a3e635; margin-bottom: 0.5rem;">
+                        Confidence: <strong id="pred-conf-text">
+                            {% if py_pred %}
+                                {% if py_pred.predicted_class == 'Valid' %}
+                                    {{ '%.2f' % (py_pred.valid_confidence * 100) }}%
+                                {% elif py_pred.predicted_class == 'Invalid' %}
+                                    {{ '%.2f' % (py_pred.invalid_confidence * 100) }}%
+                                {% else %}
+                                    {{ '%.2f' % (py_pred.manual_review_confidence * 100) }}%
+                                {% endif %}
+                            {% endif %}
+                        </strong>
+                    </div>
+                    {% if py_pred and py_pred.model_version %}
+                        <div style="font-size: 0.8rem; color: #94a3b8; margin-top: 0.25rem;">
+                            Model: {{ py_pred.model_name }} (v{{ py_pred.model_version }})
+                        </div>
+                    {% endif %}
+                    <div id="pred-processing-time" style="font-size:0.75rem; color:#475569; margin-top:0.3rem;"></div>
+                </div>
+
+                <div id="prediction-empty-box" style="{% if py_pred %}display: none;{% endif %} text-align: center; padding: 0.75rem 0;">
+                    <p class="text-muted" style="margin-bottom: 0.5rem; font-size: 0.9rem;">No Python model prediction generated yet.</p>
+                </div>
+
+                <div style="margin-top: 1rem;">
+                    <button type="button" class="btn btn-primary btn-sm" id="btn-run-prediction" style="width: 100%; justify-content: center;" onclick="runPythonPrediction({{ claim.id }})">
+                        ⚡ Run Python Model Prediction
+                    </button>
+                </div>
+            </div>
+
+            <!-- Teachable Machine Image Prediction Card -->
+            <div class="info-card" id="teachable-machine-prediction-card" style="margin-top: 1rem;">
+                <h2 class="card-heading">
+                    <i class="bi bi-cpu heading-icon"></i>
+                    Teachable Machine Image Prediction
+                </h2>
+                {% set tm_pred = (claim.predictions | selectattr("model_name", "equalto", "Google Teachable Machine Model") | list | last) if claim.predictions else None %}
+
+                <!-- Claim Summary Card Image -->
+                <div id="tm-card-image-box" style="margin-top: 0.75rem; text-align: center;">
+                    {% set card_filename = claim.claim_uid + '.png' %}
+                    <img id="tm-card-img"
+                         src="/claim-cards/{{ card_filename }}"
+                         alt="Claim Summary Card"
+                         onerror="this.parentElement.style.display='none'"
+                         style="max-width: 100%; border-radius: 0.5rem; border: 1px solid rgba(148,163,184,0.3);">
+                    <p style="font-size: 0.75rem; color: #64748b; margin-top: 0.4rem;">Auto-generated Claim Summary Card (input to image model)</p>
+                </div>
+
+                <div id="tm-prediction-result-box" style="{% if not tm_pred %}display: none;{% endif %} margin-top: 0.75rem;">
+                    <div style="font-size: 1.05rem; margin-bottom: 0.5rem; color: #f8fafc;">
+                        Prediction: <strong id="tm-pred-class-text" style="color: #a78bfa;">{{ tm_pred.predicted_class if tm_pred else '' }}</strong>
+                    </div>
+                    <div style="font-size: 1.0rem; color: #a3e635; margin-bottom: 0.5rem;">
+                        Confidence: <strong id="tm-pred-conf-text">
+                            {% if tm_pred %}
+                                {% if tm_pred.predicted_class == 'Valid' %}
+                                    {{ '%.2f' % (tm_pred.valid_confidence * 100) }}%
+                                {% elif tm_pred.predicted_class == 'Invalid' %}
+                                    {{ '%.2f' % (tm_pred.invalid_confidence * 100) }}%
+                                {% else %}
+                                    {{ '%.2f' % (tm_pred.manual_review_confidence * 100) }}%
+                                {% endif %}
+                            {% endif %}
+                        </strong>
+                    </div>
+                    {% if tm_pred and tm_pred.model_version %}
+                        <div style="font-size: 0.8rem; color: #94a3b8; margin-top: 0.25rem;" id="tm-pred-model-info">
+                            Model: {{ tm_pred.model_name }} (v{{ tm_pred.model_version }})
+                        </div>
+                    {% else %}
+                        <div style="font-size: 0.8rem; color: #94a3b8; margin-top: 0.25rem; display: none;" id="tm-pred-model-info"></div>
+                    {% endif %}
+                    <div id="tm-processing-time" style="font-size:0.75rem; color:#475569; margin-top:0.3rem;"></div>
+                </div>
+
+                <div id="tm-prediction-empty-box" style="{% if tm_pred %}display: none;{% endif %} text-align: center; padding: 0.75rem 0;">
+                    <p class="text-muted" style="margin-bottom: 0.5rem; font-size: 0.9rem;">No Teachable Machine prediction generated yet.</p>
+                </div>
+
+                <!-- Error State Box -->
+                <div id="tm-prediction-error-box" style="display: none; background: rgba(239, 68, 68, 0.12); border: 1px solid rgba(239, 68, 68, 0.3); border-radius: 0.5rem; padding: 0.75rem; margin-top: 0.75rem; color: #fca5a5; font-size: 0.85rem;">
+                    <i class="bi bi-exclamation-triangle-fill" style="color:#f59e0b;"></i> <span style="font-weight: 700;">Prediction Error:</span>
+                    <span id="tm-error-message"></span>
+                </div>
+
+                <div style="margin-top: 1rem;">
+                    <button type="button" class="btn btn-secondary btn-sm" id="btn-run-tm-prediction" style="width: 100%; justify-content: center; background: rgba(139, 92, 246, 0.2); border-color: rgba(139, 92, 246, 0.4); color: #e9d5ff;" onclick="runTeachablePrediction({{ claim.id }})">
+                        📷 Run Teachable Machine Prediction
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================================
+         STEP 5B: OCR Extraction & Verification Panel
+         Shown as an overlay drawer when user clicks 🔍 on a document
+    ============================================================ -->
+    <div id="ocr-panel-overlay" class="ocr-overlay" role="dialog" aria-modal="true" aria-label="OCR Extraction & Verification">
+        <div class="ocr-panel">
+            <!-- Panel Header -->
+            <div class="ocr-panel-header">
+                <div>
+                    <div class="ocr-panel-tag">Step 5B · Document AI</div>
+                    <h2 class="ocr-panel-title" id="ocr-panel-doc-name">OCR Extraction</h2>
+                    <div class="ocr-panel-subtitle" id="ocr-panel-doc-type"></div>
+                </div>
+                <button class="ocr-panel-close" onclick="closeOcrPanel()" id="btn-close-ocr" aria-label="Close OCR Panel">✕</button>
+            </div>
+
+            <!-- Loader -->
+            <div id="ocr-loader" class="ocr-loader" style="display:flex;">
+                <div class="ocr-spinner"></div>
+                <span>Running OCR extraction…</span>
+            </div>
+
+            <!-- Run Prompt (shown when OCR not yet run) -->
+            <div id="ocr-run-prompt" style="display:none; flex-direction:column; align-items:center; justify-content:center; gap:1rem; padding:2.5rem 1.5rem; text-align:center;">
+                <i class="bi bi-file-earmark-text" style="font-size:2.5rem;color:#7c3aed;"></i>
+                <p style="color:#94a3b8; font-size:0.9rem; margin:0;">OCR has not been run on this document yet.</p>
+                <button class="btn btn-primary btn-sm" onclick="runOcrManually()" style="min-width:160px;">Run OCR Extraction</button>
+            </div>
+
+            <!-- Error State -->
+            <div id="ocr-error-state" class="ocr-error-state" style="display:none;">
+                <i class="bi bi-exclamation-triangle-fill ocr-error-icon" style="font-size:1.8rem;color:#f59e0b;"></i>
+                <span id="ocr-error-msg">OCR failed.</span>
+                <button class="btn btn-secondary btn-sm" onclick="retryOcr()" id="btn-retry-ocr" style="margin-top: 0.75rem;"><i class="bi bi-arrow-clockwise"></i> Retry OCR</button>
+            </div>
+
+            <!-- Main Content (populated by JS) -->
+            <div id="ocr-content" style="display:none;">
+
+                <!-- Not applicable banner -->
+                <div id="ocr-na-banner" class="ocr-na-banner" style="display:none;">
+                    <i class="bi bi-info-circle-fill" style="color:#38bdf8;"></i>
+                    <span>OCR is not applicable for this document type. No text extraction is performed on damage photos or video evidence.</span>
+                </div>
+
+                <!-- Raw OCR Output -->
+                <div id="ocr-raw-section" class="ocr-section">
+                    <div class="ocr-section-header">
+                        <i class="bi bi-file-text ocr-section-icon"></i>
+                        <span class="ocr-section-label">Raw OCR Text</span>
+                        <span id="ocr-engine-badge" class="ocr-engine-pill"></span>
+                        <span id="ocr-status-badge" class="ocr-status-large"></span>
+                    </div>
+                    <pre id="ocr-raw-text" class="ocr-raw-text"></pre>
+                </div>
+
+                <!-- Extracted Fields -->
+                <div id="ocr-fields-section" class="ocr-section">
+                    <div class="ocr-section-header">
+                        <i class="bi bi-grid-1x2 ocr-section-icon"></i>
+                        <span class="ocr-section-label">Extracted Information</span>
+                        <span class="ocr-hint-pill">Review each field — OCR output may contain errors</span>
+                    </div>
+                    <div class="ocr-correction-banner" id="ocr-correction-banner">
+                        <i class="bi bi-pencil-fill"></i> <strong>Correction Mode</strong> — Edit the fields below, then click <strong>Save Correction</strong>.
+                    </div>
+                    <div id="ocr-fields-grid" class="ocr-fields-grid"></div>
+                </div>
+
+            </div><!-- /ocr-content -->
+
+            <!-- Verification Actions — sticky footer outside scroll area -->
+            <div id="ocr-verify-section" class="ocr-verify-bar" style="display:none;">
+                <div class="ocr-verify-status-row">
+                    <span class="ocr-section-label">Verification Status:</span>
+                    <span id="ocr-verify-badge" class="ocr-verify-badge"></span>
+                    <span id="ocr-verified-by" class="ocr-verified-by"></span>
+                </div>
+                <div class="ocr-verify-actions">
+                    <button class="btn btn-sm" id="btn-ocr-needs-correction"
+                            onclick="enterCorrectionMode()"
+                            style="background:rgba(239,68,68,0.12);color:#fca5a5;border:1px solid rgba(239,68,68,0.35);">
+                        <i class="bi bi-pencil"></i> Needs Correction
+                    </button>
+                    <button class="btn btn-sm" id="btn-ocr-save-correction"
+                            onclick="submitVerification(true)"
+                            style="display:none;background:rgba(251,146,60,0.15);color:#fb923c;border:1px solid rgba(251,146,60,0.4);min-width:140px;justify-content:center;">
+                        <i class="bi bi-floppy"></i> Save Correction
+                    </button>
+                    <button class="btn btn-primary btn-sm" id="btn-ocr-verify"
+                            onclick="submitVerification(false)"
+                            style="min-width:140px;justify-content:center;">
+                        <i class="bi bi-check2-circle"></i> Confirm Verified
+                    </button>
+                </div>
+                <div id="ocr-verify-msg" class="ocr-verify-msg"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Claim Lifecycle Timeline -->
+    <div style="background:var(--card-bg); border:1px solid var(--card-border); border-radius:1rem; padding:1.5rem; margin-top:1.5rem;">
+        <div style="font-size:1.05rem; font-weight:700; color:#fff; margin-bottom:1.25rem; display:flex; align-items:center; gap:0.5rem; padding-bottom:0.75rem; border-bottom:1px solid rgba(255,255,255,0.06);">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            Claim Lifecycle
+        </div>
+        {% set all_statuses = ['Draft', 'Submitted', 'Under Evaluation', 'Additional Info Required', 'Manual Review', 'Approved', 'Rejected', 'Closed'] %}
+        {% set current_status = claim.claim_status %}
+        {% set decision_statuses = ['Approved', 'Rejected'] %}
+        <div style="display:flex; flex-wrap:wrap; gap:0; align-items:center; overflow-x:auto; padding-bottom:0.5rem;">
+            {% for status in all_statuses %}
+                {% if status not in decision_statuses or status == current_status or claim.final_decision == status %}
+                    {% set is_current = (status == current_status) %}
+                    {% set is_done = false %}
+                    {% set status_order = ['Draft', 'Submitted', 'Under Evaluation', 'Additional Info Required', 'Manual Review', 'Approved', 'Rejected', 'Closed'] %}
+                    {% set curr_idx = status_order.index(current_status) if current_status in status_order else 0 %}
+                    {% set this_idx = status_order.index(status) %}
+                    {% set is_done = (this_idx < curr_idx) %}
+                    <div style="display:flex; align-items:center;">
+                        <div style="display:flex; flex-direction:column; align-items:center; gap:0.4rem; min-width:80px; padding:0 0.5rem;">
+                            <div style="width:28px; height:28px; border-radius:50%; border:2px solid {% if is_current %}var(--accent){% elif is_done %}#22c55e{% else %}rgba(148,163,184,0.3){% endif %}; background:{% if is_current %}rgba(56,189,248,0.15){% elif is_done %}rgba(34,197,94,0.12){% else %}transparent{% endif %}; display:flex; align-items:center; justify-content:center; font-size:0.7rem; color:{% if is_current %}var(--accent){% elif is_done %}#4ade80{% else %}#475569{% endif %};">
+                                {% if is_done %}✓{% elif is_current %}●{% else %}○{% endif %}
+                            </div>
+                            <span style="font-size:0.68rem; text-align:center; color:{% if is_current %}var(--accent){% elif is_done %}#4ade80{% else %}#475569{% endif %}; font-weight:{% if is_current %}700{% else %}400{% endif %}; line-height:1.3;">{{ status }}</span>
+                        </div>
+                        {% if not loop.last %}<div style="flex:1; height:2px; min-width:20px; background:rgba(148,163,184,0.15); margin-bottom:1.1rem;"></div>{% endif %}
+                    </div>
+                {% endif %}
+            {% endfor %}
+        </div>
+        {% if claim.reviewer_notes %}
+        <div style="margin-top:1rem; padding:0.75rem 1rem; background:rgba(251,191,36,0.05); border:1px solid rgba(251,191,36,0.2); border-radius:0.5rem;">
+            <div style="font-size:0.72rem; color:#fbbf24; font-weight:600; margin-bottom:0.3rem; text-transform:uppercase; letter-spacing:0.05em;">Reviewer Notes</div>
+            <p style="font-size:0.85rem; color:#cbd5e1; line-height:1.6; margin:0;">{{ claim.reviewer_notes }}</p>
+        </div>
+        {% endif %}
+        {% if claim.decision_reasoning %}
+        <div style="margin-top:0.75rem; padding:0.75rem 1rem; background:rgba(56,189,248,0.04); border:1px solid rgba(56,189,248,0.15); border-radius:0.5rem;">
+            <div style="font-size:0.72rem; color:var(--accent); font-weight:600; margin-bottom:0.3rem; text-transform:uppercase; letter-spacing:0.05em;">Evaluation Reasoning</div>
+            <p style="font-size:0.85rem; color:#94a3b8; line-height:1.6; margin:0;">{{ claim.decision_reasoning }}</p>
+        </div>
+        {% endif %}
+    </div>
+
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .claim-detail-wrapper {
+        max-width: 1100px;
+        margin: 0 auto;
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+    }
+
+    /* Header Card */
+    .claim-header-card {
+        background: linear-gradient(135deg, rgba(15, 23, 42, 0.95), rgba(30, 41, 59, 0.75));
+        border: 1px solid var(--card-border);
+        border-radius: 1rem;
+        padding: 1.75rem 2rem;
+        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.4);
+    }
+
+    .header-top {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        flex-wrap: wrap;
+        gap: 1rem;
+        margin-bottom: 1.25rem;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .uid-group {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 0.75rem;
+    }
+
+    .step-tag {
+        background: rgba(56, 189, 248, 0.1);
+        border: 1px solid rgba(56, 189, 248, 0.25);
+        color: var(--accent);
+        font-size: 0.72rem;
+        font-weight: 600;
+        padding: 0.2rem 0.6rem;
+        border-radius: 1rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+
+    .claim-title {
+        font-size: 1.75rem;
+        font-weight: 700;
+        color: #ffffff;
+        font-family: monospace;
+        letter-spacing: -0.02em;
+    }
+
+    .header-meta-row {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: 1rem;
+    }
+
+    .meta-item {
+        display: flex;
+        flex-direction: column;
+        gap: 0.2rem;
+    }
+
+    .meta-label {
+        font-size: 0.75rem;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+    }
+
+    .meta-value {
+        font-size: 0.95rem;
+        font-weight: 600;
+        color: #f1f5f9;
+    }
+
+    /* Grid Layout */
+    .claim-grid-layout {
+        display: grid;
+        grid-template-columns: 1.25fr 1fr;
+        gap: 1.5rem;
+    }
+
+    .claim-col-left, .claim-col-right {
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+    }
+
+    .info-card {
+        background: var(--card-bg);
+        border: 1px solid var(--card-border);
+        border-radius: 1rem;
+        padding: 1.5rem;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+        backdrop-filter: blur(12px);
+    }
+
+    .card-header-flex {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.25rem;
+    }
+
+    .card-heading {
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+        font-size: 1.15rem;
+        font-weight: 700;
+        color: #ffffff;
+        margin-bottom: 1.25rem;
+    }
+
+    .heading-icon {
+        font-size: 1.2rem;
+    }
+
+    .count-pill {
+        background: rgba(56, 189, 248, 0.1);
+        border: 1px solid rgba(56, 189, 248, 0.25);
+        color: var(--accent);
+        font-size: 0.75rem;
+        font-weight: 600;
+        padding: 0.2rem 0.6rem;
+        border-radius: 1rem;
+    }
+
+    /* Spec Grid */
+    .spec-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+        gap: 1rem;
+        overflow-x: auto;
+    }
+
+    .spec-cell {
+        display: flex;
+        flex-direction: column;
+        gap: 0.2rem;
+        min-width: 0;
+    }
+
+    .spec-name {
+        font-size: 0.75rem;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.03em;
+        white-space: nowrap;
+    }
+
+    .spec-data {
+        font-size: 0.92rem;
+        color: #ffffff;
+        word-break: break-word;
+        overflow-wrap: anywhere;
+    }
+
+    .desc-box {
+        margin-top: 1.25rem;
+        background: rgba(15, 23, 42, 0.7);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-left: 3px solid var(--accent);
+        border-radius: 0.5rem;
+        padding: 1rem;
+    }
+
+    .desc-label {
+        font-size: 0.75rem;
+        font-weight: 700;
+        color: var(--accent);
+        text-transform: uppercase;
+        margin-bottom: 0.4rem;
+        letter-spacing: 0.03em;
+    }
+
+    .desc-content {
+        font-size: 0.92rem;
+        color: #e2e8f0;
+        line-height: 1.5;
+        white-space: pre-wrap;
+    }
+
+    /* Warranty Summary Box */
+    .warranty-summary-box {
+        margin-top: 1.25rem;
+        background: rgba(15, 23, 42, 0.6);
+        border: 1px solid rgba(56, 189, 248, 0.2);
+        border-radius: 0.65rem;
+        padding: 1rem;
+    }
+
+    .ws-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 0.5rem;
+    }
+
+    .ws-uid {
+        font-family: monospace;
+        font-size: 0.78rem;
+        color: var(--accent);
+    }
+
+    .ws-provider {
+        font-size: 1rem;
+        font-weight: 600;
+        color: #ffffff;
+    }
+
+    .ws-dates {
+        display: flex;
+        justify-content: space-between;
+        font-size: 0.82rem;
+        color: var(--text-muted);
+    }
+
+    /* Document Item Cards */
+    .documents-list {
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+
+    .document-item-card {
+        background: rgba(15, 23, 42, 0.7);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 0.65rem;
+        padding: 0.85rem 1rem;
+        display: flex;
+        align-items: flex-start;
+        flex-wrap: wrap;
+        gap: 0.85rem;
+        transition: border-color 0.2s, background-color 0.2s;
+    }
+
+    .document-item-card:hover {
+        border-color: rgba(56, 189, 248, 0.3);
+        background: rgba(15, 23, 42, 0.9);
+    }
+
+    .doc-icon-box {
+        font-size: 1.6rem;
+        flex-shrink: 0;
+    }
+
+    .doc-info-block {
+        flex: 1;
+        min-width: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 0.15rem;
+    }
+
+    .doc-type-badge {
+        font-size: 0.72rem;
+        font-weight: 600;
+        color: var(--accent);
+        text-transform: uppercase;
+        letter-spacing: 0.03em;
+    }
+
+    .doc-filename {
+        font-size: 0.88rem;
+        font-weight: 600;
+        color: #ffffff;
+        white-space: normal;
+        overflow: visible;
+        word-break: break-word;
+    }
+
+    .doc-meta-sub {
+        font-size: 0.75rem;
+        color: var(--text-muted);
+    }
+
+    .doc-hash-text {
+        font-size: 0.7rem;
+        color: #64748b;
+    }
+
+    .doc-actions {
+        display: flex;
+        gap: 0.4rem;
+        flex-shrink: 0;
+    }
+
+    .btn-icon {
+        background: rgba(255, 255, 255, 0.06);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        color: #ffffff;
+        width: 34px;
+        height: 34px;
+        border-radius: 0.4rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-decoration: none;
+        font-size: 0.95rem;
+        transition: all 0.15s;
+    }
+
+    .btn-icon:hover {
+        background: rgba(56, 189, 248, 0.2);
+        border-color: var(--accent);
+        transform: translateY(-1px);
+    }
+
+    .empty-docs-box {
+        padding: 1.5rem;
+        text-align: center;
+        background: rgba(255, 255, 255, 0.02);
+        border: 1px dashed rgba(255, 255, 255, 0.15);
+        border-radius: 0.65rem;
+        color: var(--text-muted);
+        font-size: 0.88rem;
+    }
+
+    /* Common utilities */
+    .btn-link {
+        color: var(--accent);
+        text-decoration: none;
+        font-size: 0.85rem;
+        font-weight: 600;
+    }
+
+    .btn-link:hover {
+        text-decoration: underline;
+    }
+
+    .mono {
+        font-family: 'JetBrains Mono', monospace, Consolas;
+    }
+
+    .highlight {
+        color: var(--accent);
+    }
+
+    .font-semibold {
+        font-weight: 600;
+    }
+
+    .status-badge {
+        font-size: 0.75rem;
+        padding: 0.22rem 0.7rem;
+        border-radius: 1rem;
+        font-weight: 700;
+        white-space: nowrap;
+        letter-spacing: 0.02em;
+    }
+
+    /* warranty statuses */
+    .status-active  { background: rgba(34,197,94,.14);  color: #86efac; border: 1px solid rgba(34,197,94,.4); }
+    .status-expired { background: rgba(239,68,68,.14);  color: #fca5a5; border: 1px solid rgba(239,68,68,.4); }
+    .status-warning { background: rgba(251,191,36,.14); color: #fde68a; border: 1px solid rgba(251,191,36,.4); }
+    .status-info    { background: rgba(56,189,248,.14); color: #7dd3fc; border: 1px solid rgba(56,189,248,.4); }
+
+    /* claim-specific statuses */
+    .status-submitted  { background: rgba(56,189,248,.14);  color: #7dd3fc; border: 1px solid rgba(56,189,248,.4); }
+    .status-draft      { background: rgba(100,116,139,.14); color: #94a3b8; border: 1px solid rgba(100,116,139,.4); }
+    .status-approved   { background: rgba(34,197,94,.14);   color: #86efac; border: 1px solid rgba(34,197,94,.4); }
+    .status-rejected   { background: rgba(239,68,68,.14);   color: #fca5a5; border: 1px solid rgba(239,68,68,.4); }
+    .status-manual     { background: rgba(251,191,36,.14);  color: #fde68a; border: 1px solid rgba(251,191,36,.4); }
+    .status-evaluation { background: rgba(167,139,250,.14); color: #d8b4fe; border: 1px solid rgba(167,139,250,.4); }
+    .status-addinfo    { background: rgba(251,146,60,.14);  color: #fdba74; border: 1px solid rgba(251,146,60,.4); }
+    .status-closed     { background: rgba(71,85,105,.14);   color: #64748b; border: 1px solid rgba(71,85,105,.4); }
+
+    @media (max-width: 860px) {
+        .claim-grid-layout {
+            grid-template-columns: 1fr;
+        }
+        .header-top {
+            flex-direction: column;
+        }
+    }
+
+    /* =========================================================
+       Step 5B: OCR Status Pills & Panel Styles
+    ========================================================= */
+    .ocr-status-pill {
+        display: inline-block;
+        padding: 0.1rem 0.45rem;
+        border-radius: 0.9rem;
+        font-size: 0.65rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.03em;
+        margin-left: 0.35rem;
+        vertical-align: middle;
+    }
+    .ocr-pending    { background: rgba(100,116,139,0.2); color: #94a3b8; border: 1px solid rgba(100,116,139,0.4); }
+    .ocr-processing { background: rgba(251,191,36,0.15); color: #fde047; border: 1px solid rgba(251,191,36,0.4); }
+    .ocr-completed  { background: rgba(34,197,94,0.12);  color: #86efac; border: 1px solid rgba(34,197,94,0.35); }
+    .ocr-failed     { background: rgba(239,68,68,0.12);  color: #fca5a5; border: 1px solid rgba(239,68,68,0.3); }
+
+    .btn-ocr-trigger {
+        background: rgba(139,92,246,0.15);
+        border-color: rgba(139,92,246,0.4);
+        color: #c4b5fd;
+        cursor: pointer;
+        font-size: 0.85rem;
+    }
+    .btn-ocr-trigger:hover {
+        background: rgba(139,92,246,0.3);
+        border-color: #a78bfa;
+        color: #e9d5ff;
+    }
+
+    /* Overlay & Panel */
+    .ocr-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(0,0,0,0.6);
+        z-index: 2000;
+        display: none;
+        align-items: flex-end;
+        justify-content: flex-end;
+        backdrop-filter: blur(3px);
+        animation: overlayIn 0.2s ease;
+    }
+    .ocr-overlay.active {
+        display: flex;
+    }
+    @keyframes overlayIn { from { opacity: 0; } to { opacity: 1; } }
+
+    .ocr-panel {
+        width: min(680px, 100vw);
+        height: 100vh;
+        background: linear-gradient(160deg, #0f172a 0%, #1e293b 100%);
+        border-left: 1px solid rgba(139,92,246,0.3);
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        animation: panelSlide 0.25s cubic-bezier(.22,.68,0,.97);
+    }
+    @keyframes panelSlide { from { transform: translateX(100%); } to { transform: translateX(0); } }
+
+    .ocr-panel-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        padding: 1.5rem 1.75rem 1rem;
+        border-bottom: 1px solid rgba(255,255,255,0.08);
+        flex-shrink: 0;
+    }
+    .ocr-panel-tag {
+        font-size: 0.68rem;
+        font-weight: 700;
+        color: #a78bfa;
+        text-transform: uppercase;
+        letter-spacing: 0.07em;
+        margin-bottom: 0.3rem;
+    }
+    .ocr-panel-title { font-size: 1.1rem; font-weight: 700; color: #fff; margin: 0; }
+    .ocr-panel-subtitle { font-size: 0.8rem; color: #64748b; margin-top: 0.2rem; }
+    .ocr-panel-close {
+        background: rgba(255,255,255,0.06);
+        border: 1px solid rgba(255,255,255,0.12);
+        color: #94a3b8;
+        width: 32px; height: 32px;
+        border-radius: 50%;
+        cursor: pointer;
+        font-size: 0.85rem;
+        display: flex; align-items: center; justify-content: center;
+        transition: all 0.15s;
+        flex-shrink: 0;
+    }
+    .ocr-panel-close:hover { background: rgba(239,68,68,0.2); color: #fca5a5; border-color: rgba(239,68,68,0.4); }
+
+    /* Loader */
+    .ocr-loader {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 1rem;
+        color: #94a3b8;
+        font-size: 0.9rem;
+        padding: 3rem;
+        flex: 1;
+    }
+    .ocr-spinner {
+        width: 40px; height: 40px;
+        border: 3px solid rgba(139,92,246,0.2);
+        border-top-color: #a78bfa;
+        border-radius: 50%;
+        animation: spin 0.75s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* Error State */
+    .ocr-error-state {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 2rem;
+        color: #fca5a5;
+        text-align: center;
+    }
+    .ocr-error-icon { font-size: 2rem; }
+
+    /* Not Applicable */
+    .ocr-na-banner {
+        display: flex;
+        align-items: flex-start;
+        gap: 0.6rem;
+        padding: 1rem 1.25rem;
+        background: rgba(56,189,248,0.07);
+        border: 1px solid rgba(56,189,248,0.2);
+        border-radius: 0.5rem;
+        margin: 1.25rem;
+        color: #bae6fd;
+        font-size: 0.87rem;
+        line-height: 1.5;
+    }
+
+    /* Panel Scrollable Content */
+    #ocr-content {
+        flex: 1;
+        min-height: 0;
+        overflow-y: auto;
+        padding: 0 1.75rem 1.75rem;
+        display: flex;
+        flex-direction: column;
+        gap: 1.25rem;
+    }
+
+    .ocr-section {
+        background: rgba(15,23,42,0.6);
+        border: 1px solid rgba(255,255,255,0.07);
+        border-radius: 0.65rem;
+        overflow: hidden;
+    }
+    .ocr-section-header {
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+        padding: 0.75rem 1rem;
+        border-bottom: 1px solid rgba(255,255,255,0.07);
+        background: rgba(0,0,0,0.2);
+        flex-wrap: wrap;
+    }
+    .ocr-section-icon { font-size: 1rem; }
+    .ocr-section-label { font-size: 0.82rem; font-weight: 700; color: #e2e8f0; text-transform: uppercase; letter-spacing: 0.04em; }
+
+    .ocr-engine-pill {
+        background: rgba(139,92,246,0.12);
+        border: 1px solid rgba(139,92,246,0.3);
+        color: #c4b5fd;
+        font-size: 0.68rem;
+        font-weight: 600;
+        padding: 0.1rem 0.5rem;
+        border-radius: 1rem;
+        text-transform: uppercase;
+    }
+    .ocr-hint-pill {
+        background: rgba(251,191,36,0.08);
+        border: 1px solid rgba(251,191,36,0.2);
+        color: #fde68a;
+        font-size: 0.67rem;
+        font-weight: 600;
+        padding: 0.1rem 0.5rem;
+        border-radius: 1rem;
+        margin-left: auto;
+    }
+    .ocr-status-large {
+        font-size: 0.7rem;
+        font-weight: 700;
+        padding: 0.15rem 0.5rem;
+        border-radius: 1rem;
+        text-transform: uppercase;
+    }
+
+    .ocr-raw-text {
+        white-space: pre-wrap;
+        word-break: break-word;
+        font-family: 'JetBrains Mono', Consolas, monospace;
+        font-size: 0.77rem;
+        color: #94a3b8;
+        line-height: 1.55;
+        padding: 1rem;
+        margin: 0;
+        max-height: 240px;
+        overflow-y: auto;
+        background: rgba(0,0,0,0.15);
+    }
+    .ocr-raw-text.empty { color: #475569; font-style: italic; }
+
+    /* Extracted Fields Grid */
+    .ocr-fields-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 0.85rem;
+        padding: 1rem;
+        max-height: 280px;
+        overflow-y: auto;
+    }
+    .ocr-fields-grid::-webkit-scrollbar { width: 5px; }
+    .ocr-fields-grid::-webkit-scrollbar-track { background: rgba(0,0,0,0.15); border-radius: 4px; }
+    .ocr-fields-grid::-webkit-scrollbar-thumb { background: rgba(139,92,246,0.45); border-radius: 4px; }
+    .ocr-fields-grid::-webkit-scrollbar-thumb:hover { background: rgba(139,92,246,0.7); }
+    @media (max-width: 500px) { .ocr-fields-grid { grid-template-columns: 1fr; } }
+
+    .ocr-field-cell { display: flex; flex-direction: column; gap: 0.3rem; }
+    .ocr-field-label {
+        font-size: 0.7rem;
+        font-weight: 700;
+        color: #64748b;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+    }
+    .ocr-field-input {
+        background: rgba(0,0,0,0.25);
+        border: 1px solid rgba(255,255,255,0.1);
+        border-radius: 0.4rem;
+        color: #e2e8f0;
+        font-size: 0.82rem;
+        padding: 0.4rem 0.6rem;
+        width: 100%;
+        box-sizing: border-box;
+        transition: border-color 0.15s;
+        font-family: inherit;
+    }
+    .ocr-field-input:focus {
+        outline: none;
+        border-color: rgba(139,92,246,0.55);
+        background: rgba(139,92,246,0.06);
+    }
+    .ocr-field-input::placeholder { color: #475569; }
+    .ocr-field-input.modified { border-color: rgba(251,191,36,0.5); background: rgba(251,191,36,0.04); }
+
+    /* Correction mode — fields visually active/editable */
+    .ocr-correction-mode .ocr-field-input {
+        border-color: rgba(251,146,60,0.55);
+        background: rgba(251,146,60,0.05);
+        color: #fde68a;
+    }
+    .ocr-correction-mode .ocr-field-input:focus {
+        border-color: rgba(251,146,60,0.85);
+        background: rgba(251,146,60,0.1);
+        outline: none;
+    }
+    .ocr-correction-banner {
+        display: none;
+        align-items: center;
+        gap: 0.5rem;
+        background: rgba(251,146,60,0.1);
+        border: 1px solid rgba(251,146,60,0.35);
+        border-radius: 0.45rem;
+        padding: 0.45rem 0.75rem;
+        font-size: 0.8rem;
+        color: #fb923c;
+        margin-bottom: 0.6rem;
+    }
+    .ocr-correction-mode .ocr-correction-banner { display: flex; }
+    .ocr-field-wide { grid-column: 1 / -1; }
+
+    /* Verification Bar — pinned footer, never scrolls */
+    .ocr-verify-bar {
+        background: rgba(15,23,42,0.95);
+        border-top: 1px solid rgba(139,92,246,0.25);
+        border-radius: 0;
+        padding: 1rem 1.75rem 1.5rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+        flex-shrink: 0;
+    }
+    .ocr-verify-status-row { display: flex; align-items: center; gap: 0.6rem; flex-wrap: wrap; }
+    .ocr-verify-badge {
+        font-size: 0.72rem;
+        font-weight: 700;
+        padding: 0.15rem 0.55rem;
+        border-radius: 1rem;
+        text-transform: uppercase;
+    }
+    .verify-unverified { background: rgba(100,116,139,0.2); color: #94a3b8; border: 1px solid rgba(100,116,139,0.3); }
+    .verify-verified   { background: rgba(34,197,94,0.12); color: #86efac; border: 1px solid rgba(34,197,94,0.35); }
+    .verify-needs-correction { background: rgba(239,68,68,0.12); color: #fca5a5; border: 1px solid rgba(239,68,68,0.3); }
+
+    .ocr-verified-by { font-size: 0.73rem; color: #64748b; }
+    .ocr-verify-actions { display: flex; gap: 0.6rem; flex-wrap: wrap; }
+    .ocr-verify-msg {
+        font-size: 0.82rem;
+        padding: 0.5rem 0.75rem;
+        border-radius: 0.4rem;
+        display: none;
+    }
+    .ocr-verify-msg.success { background: rgba(34,197,94,0.1); color: #86efac; border: 1px solid rgba(34,197,94,0.25); display:block; }
+    .ocr-verify-msg.error   { background: rgba(239,68,68,0.1);  color: #fca5a5; border: 1px solid rgba(239,68,68,0.25);  display:block; }
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Move OCR overlay to <body> so position:fixed is viewport-relative,
+// not trapped inside #main-content whose .page-enter animation keeps
+// transform:translateY(0) active (transform creates a new containing block).
+(function(){
+    var el = document.getElementById('ocr-panel-overlay');
+    if (el) document.body.appendChild(el);
+})();
+
+// ============================================================
+// Step 5B: OCR Panel Controller
+// ============================================================
+
+let _currentDocId    = null;
+let _currentDocName  = null;
+let _currentDocType  = null;
+let _extractionData  = null;  // Last fetched extraction JSON
+let _originalValues  = {};    // Original OCR extracted values (for change tracking)
+let _correctionMode  = false; // True while user is actively correcting fields
+let _savedAnyChange  = false; // Flag to reload page on close after changes are saved
+
+// CSRF token — reads from meta tag if present, else blank (POST uses session auth)
+function getCsrf() {
+    const m = document.querySelector('meta[name="csrf-token"]');
+    return m ? m.getAttribute('content') : '';
+}
+
+function openOcrPanel(docId, docName, docType) {
+    _currentDocId   = docId;
+    _currentDocName = docName;
+    _currentDocType = docType;
+
+    document.getElementById('ocr-panel-doc-name').textContent = docName;
+    document.getElementById('ocr-panel-doc-type').textContent = docType;
+    document.getElementById('ocr-panel-overlay').classList.add('active');
+    document.body.style.overflow = 'hidden';
+
+    loadOcrData(docId);
+}
+
+function closeOcrPanel() {
+    document.getElementById('ocr-panel-overlay').classList.remove('active');
+    document.body.style.overflow = '';
+    document.getElementById('ocr-verify-section').style.display = 'none';
+    _currentDocId   = null;
+    _extractionData = null;
+    _originalValues = {};
+    exitCorrectionMode();
+    if (_savedAnyChange) {
+        window.location.reload();
+    }
+}
+
+function retryOcr() {
+    showOcrLoader();
+    triggerOcrAndRender(_currentDocId, true);
+}
+
+function showOcrError(msg) {
+    document.getElementById('ocr-loader').style.display        = 'none';
+    document.getElementById('ocr-content').style.display       = 'none';
+    document.getElementById('ocr-run-prompt').style.display    = 'none';
+    document.getElementById('ocr-error-state').style.display   = 'flex';
+    document.getElementById('ocr-verify-section').style.display = 'none';
+    document.getElementById('ocr-error-msg').textContent       = msg || 'OCR processing failed. Please try again.';
+}
+
+function showOcrContent(showVerify) {
+    document.getElementById('ocr-loader').style.display        = 'none';
+    document.getElementById('ocr-error-state').style.display   = 'none';
+    document.getElementById('ocr-run-prompt').style.display    = 'none';
+    document.getElementById('ocr-content').style.display       = 'flex';
+    document.getElementById('ocr-verify-section').style.display = (showVerify === false) ? 'none' : 'flex';
+}
+
+// Step 1: Try to GET existing result; if none, show manual run prompt
+async function loadOcrData(docId) {
+    showOcrLoader();
+    try {
+        const resp = await fetch(`/api/documents/${docId}/ocr`, {
+            method: 'GET',
+            credentials: 'same-origin',
+            headers: { 'Accept': 'application/json' }
+        });
+        if (resp.status === 404) {
+            showOcrRunPrompt();
+            return;
+        }
+        if (!resp.ok) {
+            throw new Error(`Server error ${resp.status}`);
+        }
+        const data = await resp.json();
+        if (data.extraction) {
+            _extractionData = data.extraction;
+            renderOcrPanel(_extractionData);
+        } else {
+            showOcrRunPrompt();
+        }
+    } catch (e) {
+        showOcrError(e.message);
+    }
+}
+
+function showOcrRunPrompt() {
+    document.getElementById('ocr-loader').style.display        = 'none';
+    document.getElementById('ocr-error-state').style.display   = 'none';
+    document.getElementById('ocr-content').style.display       = 'none';
+    document.getElementById('ocr-run-prompt').style.display    = 'flex';
+    document.getElementById('ocr-verify-section').style.display = 'none';
+}
+
+async function runOcrManually() {
+    document.getElementById('ocr-run-prompt').style.display = 'none';
+    showOcrLoader();
+    await triggerOcrAndRender(_currentDocId, false);
+}
+
+function showOcrLoader() {
+    document.getElementById('ocr-loader').style.display        = 'flex';
+    document.getElementById('ocr-error-state').style.display   = 'none';
+    document.getElementById('ocr-content').style.display       = 'none';
+    document.getElementById('ocr-run-prompt').style.display    = 'none';
+    document.getElementById('ocr-verify-section').style.display = 'none';
+}
+
+// Trigger OCR POST and render
+async function triggerOcrAndRender(docId, force) {
+    try {
+        const resp = await fetch(`/api/documents/${docId}/ocr`, {
+            method: 'POST',
+            credentials: 'same-origin',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+                'X-CSRFToken': getCsrf()
+            },
+            body: JSON.stringify({ force: force })
+        });
+        if (!resp.ok) {
+            throw new Error(`OCR trigger failed: HTTP ${resp.status}`);
+        }
+        const data = await resp.json();
+        if (data.extraction) {
+            _extractionData = data.extraction;
+            renderOcrPanel(_extractionData);
+        } else {
+            showOcrError(data.message || 'OCR processing returned no data.');
+        }
+    } catch (e) {
+        showOcrError(e.message);
+    }
+}
+
+// Render the extracted data into the panel UI
+/**
+ * Enter correction mode: make fields visually editable, show Save Correction button.
+ * Fields are already <input> elements; this just enables/highlights the editing state.
+ */
+function enterCorrectionMode() {
+    if (_correctionMode) return; // Already in correction mode
+    _correctionMode = true;
+
+    // Apply correction-mode class to fields section (triggers CSS)
+    const fieldsSection = document.getElementById('ocr-fields-section');
+    if (fieldsSection) fieldsSection.classList.add('ocr-correction-mode');
+
+    // Swap buttons: hide Needs Correction, show Save Correction
+    const btnNeeds = document.getElementById('btn-ocr-needs-correction');
+    const btnSave  = document.getElementById('btn-ocr-save-correction');
+    if (btnNeeds) btnNeeds.style.display = 'none';
+    if (btnSave)  btnSave.style.display  = 'inline-flex';
+
+    clearVerifyMsg();
+    showVerifyMsg('Correction mode active — edit the fields below and click Save Correction.', true);
+
+    // Focus first non-empty editable field
+    const first = document.querySelector('#ocr-fields-grid .ocr-field-input');
+    if (first) {
+        first.focus();
+        first.select();
+    }
+}
+
+/**
+ * Exit correction mode: restore normal button state.
+ */
+function exitCorrectionMode() {
+    _correctionMode = false;
+
+    const fieldsSection = document.getElementById('ocr-fields-section');
+    if (fieldsSection) fieldsSection.classList.remove('ocr-correction-mode');
+
+    const btnNeeds = document.getElementById('btn-ocr-needs-correction');
+    const btnSave  = document.getElementById('btn-ocr-save-correction');
+    if (btnNeeds) btnNeeds.style.display = 'inline-flex';
+    if (btnSave)  btnSave.style.display  = 'none';
+}
+
+function renderOcrPanel(ext) {
+    try {
+    const naEl = document.getElementById('ocr-na-banner');
+    if (ext.extraction_status === 'Not Applicable') {
+        naEl.style.display = 'flex';
+        document.getElementById('ocr-raw-section').style.display   = 'none';
+        document.getElementById('ocr-fields-section').style.display = 'none';
+        showOcrContent(false);
+        return;
+    }
+    naEl.style.display = 'none';
+
+    // Raw text
+    const rawEl = document.getElementById('ocr-raw-text');
+    if (ext.raw_text && ext.raw_text.trim()) {
+        rawEl.textContent = ext.raw_text;
+        rawEl.classList.remove('empty');
+    } else {
+        rawEl.textContent = '(No text extracted — document may be image-only or handwritten)';
+        rawEl.classList.add('empty');
+    }
+
+    // Engine + Status badges
+    const engineBadge = document.getElementById('ocr-engine-badge');
+    engineBadge.textContent = ext.ocr_engine_used ? ext.ocr_engine_used.toUpperCase() : '';
+    engineBadge.style.display = ext.ocr_engine_used ? 'inline' : 'none';
+
+    const statusBadge = document.getElementById('ocr-status-badge');
+    statusBadge.textContent = ext.extraction_status || '';
+    statusBadge.className = 'ocr-status-large ocr-' + (ext.extraction_status || '').toLowerCase().replace(' ', '-');
+
+    // Extracted fields
+    renderFields(ext);
+
+    // Verification status
+    renderVerifyStatus(ext);
+
+    } catch(e) {
+        // ignore render errors — always show content area
+    }
+    showOcrContent();
+}
+
+function renderFields(ext) {
+    const grid = document.getElementById('ocr-fields-grid');
+    grid.innerHTML = '';
+
+    const fields = ext.extracted_fields || {};
+    const verified = ext.verified_fields || {};
+
+    // Use verified fields as the initial values if available; fall back to extracted
+    const activeValues = Object.keys(verified).length > 0 ? verified : fields;
+    _originalValues = Object.assign({}, activeValues);
+
+    if (Object.keys(fields).length === 0) {
+        grid.innerHTML = '<div style="grid-column:1/-1;color:#64748b;font-size:0.82rem;padding:0.5rem;">No structured fields extracted from this document.</div>';
+        return;
+    }
+
+    // Wide fields (text_excerpt, fault_description) span full width
+    const wideFields = new Set(['text_excerpt', 'fault_description']);
+
+    for (const [key, val] of Object.entries(fields)) {
+        const cell = document.createElement('div');
+        cell.className = 'ocr-field-cell' + (wideFields.has(key) ? ' ocr-field-wide' : '');
+
+        const label = document.createElement('label');
+        label.className = 'ocr-field-label';
+        label.setAttribute('for', `ocr-field-${key}`);
+        label.textContent = key.replace(/_/g, ' ');
+
+        const input = document.createElement(wideFields.has(key) ? 'textarea' : 'input');
+        input.className = 'ocr-field-input';
+        input.id = `ocr-field-${key}`;
+        input.name = key;
+        input.setAttribute('data-original', val || '');
+        input.setAttribute('data-key', key);
+        input.value = activeValues[key] || val || '';
+        input.placeholder = val ? '' : '(not detected)';
+        if (wideFields.has(key)) {
+            input.rows = 3;
+            input.style.resize = 'vertical';
+        }
+
+        input.addEventListener('input', function() {
+            const orig = this.getAttribute('data-original');
+            if (this.value !== orig) {
+                this.classList.add('modified');
+            } else {
+                this.classList.remove('modified');
+            }
+            clearVerifyMsg();
+        });
+
+        cell.appendChild(label);
+        cell.appendChild(input);
+        grid.appendChild(cell);
+    }
+}
+
+function renderVerifyStatus(ext) {
+    const badge = document.getElementById('ocr-verify-badge');
+    const byEl  = document.getElementById('ocr-verified-by');
+    const vs = ext.verification_status || 'Unverified';
+    badge.textContent = vs;
+    badge.className = 'ocr-verify-badge verify-' + vs.toLowerCase().replace(' ', '-');
+
+    if (ext.verified_at) {
+        const dt = new Date(ext.verified_at);
+        byEl.textContent = 'Verified ' + dt.toLocaleDateString();
+    } else {
+        byEl.textContent = '';
+    }
+}
+
+function clearVerifyMsg() {
+    const m = document.getElementById('ocr-verify-msg');
+    m.className = 'ocr-verify-msg';
+    m.textContent = '';
+}
+
+function showVerifyMsg(text, isSuccess) {
+    const m = document.getElementById('ocr-verify-msg');
+    m.textContent = text;
+    m.className = 'ocr-verify-msg ' + (isSuccess ? 'success' : 'error');
+    m.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+/**
+ * Attempt to parse a human-readable date string and return ISO YYYY-MM-DD.
+ * Supports:
+ *   '15 July 2026', '15 Jul 2026'
+ *   'July 15, 2026', 'Jul 15, 2026'
+ *   '15/07/2026', '15-07-2026'
+ *   '2026-07-15' (already ISO — returned as-is)
+ * Returns null if unparseable.
+ */
+function _parseDateToISO(raw) {
+    if (!raw || !raw.trim()) return null;
+    const s = raw.trim();
+
+    // Already ISO: YYYY-MM-DD
+    if (/^\d{4}-\d{2}-\d{2}$/.test(s)) return s;
+
+    // Try native Date parse — works for 'July 15, 2026', '15 Jul 2026', 'Jul 15, 2026'
+    const MONTHS = {
+        january:0, february:1, march:2, april:3, may:4, june:5,
+        july:6, august:7, september:8, october:9, november:10, december:11,
+        jan:0, feb:1, mar:2, apr:3, jun:5, jul:6, aug:7,
+        sep:8, oct:9, nov:10, dec:11
+    };
+
+    // '15 July 2026' or '15 Jul 2026'
+    let m = s.match(/^(\d{1,2})\s+([A-Za-z]+)[,\s]+(\d{4})$/);
+    if (m) {
+        const mo = MONTHS[m[2].toLowerCase()];
+        if (mo !== undefined) {
+            const d = new Date(+m[3], mo, +m[1]);
+            if (!isNaN(d)) return _isoStr(d);
+        }
+    }
+
+    // 'July 15, 2026' or 'Jul 15, 2026' or 'July 15 2026'
+    m = s.match(/^([A-Za-z]+)\s+(\d{1,2})[,\s]+(\d{4})$/);
+    if (m) {
+        const mo = MONTHS[m[1].toLowerCase()];
+        if (mo !== undefined) {
+            const d = new Date(+m[3], mo, +m[2]);
+            if (!isNaN(d)) return _isoStr(d);
+        }
+    }
+
+    // DD/MM/YYYY
+    m = s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
+    if (m) {
+        const d = new Date(+m[3], +m[2]-1, +m[1]);
+        if (!isNaN(d)) return _isoStr(d);
+    }
+
+    // DD-MM-YYYY
+    m = s.match(/^(\d{1,2})-(\d{1,2})-(\d{4})$/);
+    if (m) {
+        const d = new Date(+m[3], +m[2]-1, +m[1]);
+        if (!isNaN(d)) return _isoStr(d);
+    }
+
+    // DD.MM.YYYY
+    m = s.match(/^(\d{1,2})\.(\d{1,2})\.(\d{4})$/);
+    if (m) {
+        const d = new Date(+m[3], +m[2]-1, +m[1]);
+        if (!isNaN(d)) return _isoStr(d);
+    }
+
+    return null; // Cannot parse — backend validator will reject
+}
+
+function _isoStr(d) {
+    const y = d.getFullYear();
+    const mo = String(d.getMonth()+1).padStart(2,'0');
+    const dy = String(d.getDate()).padStart(2,'0');
+    return y + '-' + mo + '-' + dy;
+}
+
+async function submitVerification(needsCorrection) {
+    if (!_currentDocId || !_extractionData) return;
+
+    // Collect field values from form
+    const inputs = document.querySelectorAll('#ocr-fields-grid .ocr-field-input');
+    const verifiedFields = {};
+    inputs.forEach(inp => {
+        verifiedFields[inp.name] = inp.value.trim();
+    });
+
+    // Normalize date fields to ISO 8601 (YYYY-MM-DD) before submitting.
+    const _dateFlds = ['invoice_date', 'warranty_start_date', 'warranty_end_date', 'report_date'];
+    _dateFlds.forEach(df => {
+        if (verifiedFields[df]) {
+            const iso = _parseDateToISO(verifiedFields[df]);
+            if (iso) verifiedFields[df] = iso;
+        }
+    });
+
+    clearVerifyMsg();
+
+    // Pick the button to disable: in correction mode the Save Correction button is active
+    const btn = needsCorrection
+        ? document.getElementById('btn-ocr-save-correction')
+        : document.getElementById('btn-ocr-verify');
+    if (btn) btn.disabled = true;
+
+    try {
+        const resp = await fetch(`/api/documents/${_currentDocId}/ocr/verify`, {
+            method: 'POST',
+            credentials: 'same-origin',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+                'X-CSRFToken': getCsrf()
+            },
+            body: JSON.stringify({
+                verified_fields: verifiedFields,
+                needs_correction: needsCorrection
+            })
+        });
+
+        const data = await resp.json();
+
+        if (resp.ok && data.success) {
+            _savedAnyChange = true;
+            _extractionData = data.extraction;
+            renderVerifyStatus(_extractionData);
+
+            // Determine success message
+            const msg = needsCorrection
+                ? 'Corrected information saved successfully.'
+                : (data.message || 'Verified.');
+            showVerifyMsg(msg, true);
+
+            // Update original references so fields no longer show as modified
+            document.querySelectorAll('#ocr-fields-grid .ocr-field-input').forEach(inp => {
+                inp.setAttribute('data-original', inp.value);
+                inp.classList.remove('modified');
+            });
+
+            // Exit correction mode after saving — user can re-enter if needed
+            if (needsCorrection) {
+                exitCorrectionMode();
+            }
+        } else {
+            const errors = data.errors ? data.errors.join(' ') : (data.message || 'Save failed.');
+            showVerifyMsg(errors, false);
+        }
+    } catch (e) {
+        showVerifyMsg('Network error: ' + e.message, false);
+    } finally {
+        if (btn) btn.disabled = false;
+    }
+}
+
+// Close on overlay background click
+document.getElementById('ocr-panel-overlay').addEventListener('click', function(e) {
+    if (e.target === this && this.classList.contains('active')) closeOcrPanel();
+});
+
+// Close on Escape key
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape' && _currentDocId) closeOcrPanel();
+});
+
+async function runPythonPrediction(claimId) {
+    const btn = document.getElementById('btn-run-prediction');
+    const origText = btn ? btn.innerHTML : '';
+    if (btn) { btn.disabled = true; btn.innerHTML = '⏳ Running AI Analysis...'; }
+    try {
+        const resp = await fetch(`/api/predictions/claims/${claimId}/predict`, {
+            method: 'POST',
+            credentials: 'same-origin',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+                'X-CSRFToken': (typeof getCsrf === 'function') ? getCsrf() : ''
+            }
+        });
+        const data = await resp.json();
+        if (resp.ok && data.success && (data.prediction || data.predicted_class)) {
+            const p = data.prediction || data;
+            const predClass = p.predicted_class || data.predicted_class;
+            document.getElementById('pred-class-text').textContent = predClass;
+
+            let confVal = p.confidence || data.confidence || 0;
+            if (predClass === 'Valid') confVal = p.valid_confidence ?? confVal;
+            else if (predClass === 'Invalid') confVal = p.invalid_confidence ?? confVal;
+            else if (p.manual_review_confidence !== undefined) confVal = p.manual_review_confidence;
+
+            if (confVal <= 1.0) confVal = confVal * 100;
+            document.getElementById('pred-conf-text').textContent = parseFloat(confVal).toFixed(2) + '%';
+
+            document.getElementById('prediction-result-box').style.display = 'block';
+            document.getElementById('prediction-empty-box').style.display = 'none';
+            const tEl = document.getElementById('pred-processing-time');
+            if (tEl && data.processing_time_ms) tEl.textContent = `Processed in ${data.processing_time_ms} ms`;
+        } else {
+            alert(data.message || data.error || 'Prediction failed.');
+        }
+    } catch (err) {
+        alert('Error executing Python model prediction: ' + err.message);
+    } finally {
+        if (btn) { btn.disabled = false; btn.innerHTML = origText; }
+    }
+}
+
+async function runTeachablePrediction(claimId) {
+    const btn = document.getElementById('btn-run-tm-prediction');
+    const errBox = document.getElementById('tm-prediction-error-box');
+    const errMsg = document.getElementById('tm-error-message');
+
+    if (errBox) errBox.style.display = 'none';
+    if (btn) {
+        btn.disabled = true;
+        btn.innerHTML = '⏳ Running Image Inference...';
+    }
+
+    try {
+        const resp = await fetch(`/api/predictions/claims/${claimId}/teachable-predict`, {
+            method: 'POST',
+            credentials: 'same-origin',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+                'X-CSRFToken': (typeof getCsrf === 'function') ? getCsrf() : ''
+            }
+        });
+        const data = await resp.json();
+        if (resp.ok && data.success) {
+            const p = data.prediction || data;
+            const predClass = p.predicted_class || data.predicted_class;
+            document.getElementById('tm-pred-class-text').textContent = predClass;
+
+            let confVal = p.confidence || data.confidence || 0;
+            if (predClass === 'Valid') confVal = p.valid_confidence ?? confVal;
+            else if (predClass === 'Invalid') confVal = p.invalid_confidence ?? confVal;
+            else if (p.manual_review_confidence !== undefined) confVal = p.manual_review_confidence;
+
+            if (confVal <= 1.0) confVal = confVal * 100;
+            document.getElementById('tm-pred-conf-text').textContent = parseFloat(confVal).toFixed(2) + '%';
+
+            const modelInfo = document.getElementById('tm-pred-model-info');
+            if (modelInfo) {
+                const mName = p.model_name || data.model_name || 'Google Teachable Machine Model';
+                const mVer = p.model_version || data.model_version || '1.0.0';
+                modelInfo.textContent = `Model: ${mName} (v${mVer})`;
+                modelInfo.style.display = 'block';
+            }
+
+            document.getElementById('tm-prediction-result-box').style.display = 'block';
+            document.getElementById('tm-prediction-empty-box').style.display = 'none';
+            if (errBox) errBox.style.display = 'none';
+
+            const tmTimeEl = document.getElementById('tm-processing-time');
+            if (tmTimeEl && data.processing_time_ms) tmTimeEl.textContent = `Processed in ${data.processing_time_ms} ms`;
+
+            // Refresh the claim summary card image (it was just generated)
+            const cardImg = document.getElementById('tm-card-img');
+            if (cardImg) {
+                const cardBox = document.getElementById('tm-card-image-box');
+                cardImg.src = cardImg.src.split('?')[0] + '?t=' + Date.now();
+                cardImg.onload = () => { if (cardBox) cardBox.style.display = 'block'; };
+                cardImg.onerror = () => { if (cardBox) cardBox.style.display = 'none'; };
+            }
+        } else {
+            const msg = data.message || data.error || 'Teachable Machine prediction failed.';
+            if (errBox && errMsg) {
+                errMsg.textContent = ' ' + msg;
+                errBox.style.display = 'block';
+            } else {
+                alert(msg);
+            }
+        }
+    } catch (err) {
+        if (errBox && errMsg) {
+            errMsg.textContent = ' Error executing Teachable Machine prediction: ' + err.message;
+            errBox.style.display = 'block';
+        } else {
+            alert('Error executing Teachable Machine prediction: ' + err.message);
+        }
+    } finally {
+        if (btn) {
+            btn.disabled = false;
+            btn.innerHTML = '📷 Run Teachable Machine Prediction';
+        }
+    }
+}
+</script>
+{% endblock %}

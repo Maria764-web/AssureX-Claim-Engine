@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Claim Report - {{ claim.claim_uid }}</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', Arial, sans-serif; background: #fff; color: #1a1a2e; font-size: 13px; line-height: 1.5; }
+        .page { max-width: 800px; margin: 0 auto; padding: 30px 40px; }
+
+        .header { display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 3px solid #0ea5e9; padding-bottom: 20px; margin-bottom: 24px; }
+        .brand { font-size: 22px; font-weight: 800; color: #0ea5e9; letter-spacing: -0.5px; }
+        .brand span { color: #1a1a2e; }
+        .report-meta { text-align: right; font-size: 11px; color: #6b7280; }
+        .report-meta strong { color: #1a1a2e; display: block; font-size: 13px; }
+
+        h2 { font-size: 14px; font-weight: 700; color: #0ea5e9; text-transform: uppercase; letter-spacing: 0.05em; margin: 20px 0 10px; border-bottom: 1px solid #e5e7eb; padding-bottom: 6px; }
+
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px 24px; margin-bottom: 16px; }
+        .field-label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.05em; color: #9ca3af; margin-bottom: 2px; }
+        .field-value { font-size: 13px; color: #111827; font-weight: 500; }
+
+        .status-badge { display: inline-block; padding: 3px 12px; border-radius: 20px; font-size: 12px; font-weight: 700; }
+        .badge-approved { background: #d1fae5; color: #065f46; }
+        .badge-rejected { background: #fee2e2; color: #991b1b; }
+        .badge-manual { background: #fef3c7; color: #92400e; }
+        .badge-pending { background: #f3f4f6; color: #374151; }
+
+        table { width: 100%; border-collapse: collapse; font-size: 12px; margin-bottom: 16px; }
+        th { background: #f3f4f6; color: #374151; font-size: 10px; text-transform: uppercase; letter-spacing: 0.05em; padding: 7px 10px; text-align: left; border: 1px solid #e5e7eb; }
+        td { padding: 7px 10px; border: 1px solid #e5e7eb; color: #374151; vertical-align: top; }
+        tr:nth-child(even) td { background: #f9fafb; }
+
+        .pill-passed { background: #d1fae5; color: #065f46; padding: 2px 8px; border-radius: 10px; font-size: 11px; font-weight: 600; }
+        .pill-failed { background: #fee2e2; color: #991b1b; padding: 2px 8px; border-radius: 10px; font-size: 11px; font-weight: 600; }
+        .pill-warn { background: #fef3c7; color: #92400e; padding: 2px 8px; border-radius: 10px; font-size: 11px; font-weight: 600; }
+
+        .reasoning-box { background: #f8fafc; border: 1px solid #e5e7eb; border-radius: 6px; padding: 12px; font-size: 12px; color: #374151; line-height: 1.6; margin-bottom: 12px; }
+
+        .summary-row { display: flex; gap: 16px; margin-bottom: 20px; }
+        .summary-box { flex: 1; background: #f8fafc; border: 1px solid #e5e7eb; border-radius: 8px; padding: 12px 16px; text-align: center; }
+        .summary-num { font-size: 22px; font-weight: 800; color: #0ea5e9; }
+        .summary-lbl { font-size: 10px; text-transform: uppercase; color: #9ca3af; letter-spacing: 0.05em; }
+
+        .footer { border-top: 2px solid #e5e7eb; margin-top: 30px; padding-top: 16px; font-size: 11px; color: #9ca3af; display: flex; justify-content: space-between; }
+
+        @media print {
+            body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+            .no-print { display: none !important; }
+            .page { padding: 20px; }
+        }
+    </style>
+</head>
+<body>
+<div class="page">
+
+    <!-- Print Button (hidden when printing) -->
+    <div class="no-print" style="text-align:right; margin-bottom:16px;">
+        <button onclick="window.print()" style="background:#0ea5e9; color:#fff; border:none; padding:8px 20px; border-radius:6px; font-size:13px; cursor:pointer; font-weight:600;">
+            &#128438; Print / Save as PDF
+        </button>
+    </div>
+
+    <!-- Header -->
+    <div class="header">
+        <div>
+            <div class="brand">Assure<span>X</span></div>
+            <div style="font-size:12px; color:#6b7280; margin-top:4px;">Claim Evaluation Report</div>
+        </div>
+        <div class="report-meta">
+            <strong>{{ claim.claim_uid }}</strong>
+            Generated: {{ generated_at.strftime('%d %b %Y %H:%M') }} UTC<br>
+            Report Type: {{ report.report_type }}
+        </div>
+    </div>
+
+    <!-- Decision Summary -->
+    <div class="summary-row">
+        <div class="summary-box">
+            <div class="summary-num">{{ report.rule_engine.passed }}</div>
+            <div class="summary-lbl">Rules Passed</div>
+        </div>
+        <div class="summary-box" style="background:#fff0f0;">
+            <div class="summary-num" style="color:#ef4444;">{{ report.rule_engine.failed }}</div>
+            <div class="summary-lbl">Rules Failed</div>
+        </div>
+        <div class="summary-box">
+            <div class="summary-num">{{ report.documents.count }}</div>
+            <div class="summary-lbl">Documents</div>
+        </div>
+        <div class="summary-box" style="background:#f0fdf4;">
+            <div class="summary-num" style="color:#22c55e;">
+                {% set decision = claim.final_decision or claim.claim_status %}
+                {% if decision == 'Approved' %}&#10003;
+                {% elif decision == 'Rejected' %}&#10007;
+                {% else %}&#8263;{% endif %}
+            </div>
+            <div class="summary-lbl">Final Decision</div>
+        </div>
+    </div>
+
+    <!-- Claim Details -->
+    <h2>Claim Details</h2>
+    <div class="grid">
+        <div>
+            <div class="field-label">Claim Reference</div>
+            <div class="field-value" style="font-family:monospace; color:#0ea5e9;">{{ claim.claim_uid }}</div>
+        </div>
+        <div>
+            <div class="field-label">Claim Status</div>
+            <div class="field-value">
+                {% set st = claim.claim_status %}
+                {% if st == 'Approved' %}<span class="status-badge badge-approved">{{ st }}</span>
+                {% elif st == 'Rejected' %}<span class="status-badge badge-rejected">{{ st }}</span>
+                {% elif st == 'Manual Review' %}<span class="status-badge badge-manual">{{ st }}</span>
+                {% else %}<span class="status-badge badge-pending">{{ st }}</span>{% endif %}
+            </div>
+        </div>
+        <div>
+            <div class="field-label">Final Decision</div>
+            <div class="field-value">
+                {% set d = claim.final_decision or '—' %}
+                {% if d == 'Approved' %}<span class="status-badge badge-approved">Likely Valid</span>
+                {% elif d == 'Rejected' %}<span class="status-badge badge-rejected">Likely Invalid</span>
+                {% elif d == 'Manual Review' %}<span class="status-badge badge-manual">Manual Review Required</span>
+                {% else %}<span style="color:#9ca3af;">{{ d }}</span>{% endif %}
+            </div>
+        </div>
+        <div>
+            <div class="field-label">Damage Type</div>
+            <div class="field-value">{{ claim.damage_type or '—' }}</div>
+        </div>
+        <div>
+            <div class="field-label">Fault Date</div>
+            <div class="field-value">{{ claim.fault_date.strftime('%d %b %Y') if claim.fault_date else '—' }}</div>
+        </div>
+        <div>
+            <div class="field-label">Product Age</div>
+            <div class="field-value">{{ claim.product_age or '—' }} months</div>
+        </div>
+        <div>
+            <div class="field-label">Submission Date</div>
+            <div class="field-value">{{ claim.submission_date.strftime('%d %b %Y') if claim.submission_date else '—' }}</div>
+        </div>
+        <div>
+            <div class="field-label">Purchase Reference</div>
+            <div class="field-value">{{ claim.purchase_reference or '—' }}</div>
+        </div>
+    </div>
+
+    {% if claim.fault_description %}
+    <div style="margin-bottom:16px;">
+        <div class="field-label" style="margin-bottom:4px;">Fault Description</div>
+        <div class="reasoning-box">{{ claim.fault_description }}</div>
+    </div>
+    {% endif %}
+
+    {% if claim.decision_reasoning %}
+    <h2>Evaluation Reasoning</h2>
+    <div class="reasoning-box">{{ claim.decision_reasoning }}</div>
+    {% endif %}
+
+    {% if claim.reviewer_notes %}
+    <h2>Reviewer Notes</h2>
+    <div class="reasoning-box" style="border-color:#fbbf24; background:#fffbeb;">{{ claim.reviewer_notes }}</div>
+    {% endif %}
+
+    <!-- Rule Results -->
+    {% if report.rule_engine.results %}
+    <h2>Warranty Rule Check Results</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Rule Name</th>
+                <th>Status</th>
+                <th>Result / Details</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for rule in report.rule_engine.results %}
+            <tr>
+                <td>{{ rule.rule_name or '—' }}</td>
+                <td>
+                    {% if rule.rule_status == 'Passed' %}<span class="pill-passed">Passed</span>
+                    {% elif rule.rule_status == 'Failed' %}<span class="pill-failed">Failed</span>
+                    {% elif rule.rule_status == 'Warning' %}<span class="pill-warn">Warning</span>
+                    {% else %}<span>{{ rule.rule_status }}</span>{% endif %}
+                </td>
+                <td style="font-size:11px; color:#6b7280;">{{ rule.rule_result or rule.details or '—' }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% endif %}
+
+    <!-- AI Prediction -->
+    {% if report.ai_prediction.latest %}
+    {% set pred = report.ai_prediction.latest %}
+    <h2>AI Model Prediction</h2>
+    <div class="grid" style="grid-template-columns: repeat(3, 1fr);">
+        <div>
+            <div class="field-label">Model</div>
+            <div class="field-value" style="font-size:12px;">{{ pred.model_name or '—' }}</div>
+        </div>
+        <div>
+            <div class="field-label">Predicted Class</div>
+            <div class="field-value">{{ pred.predicted_class or '—' }}</div>
+        </div>
+        <div>
+            <div class="field-label">Confidence</div>
+            <div class="field-value">
+                {% if pred.predicted_class == 'Valid' %}{{ (pred.valid_confidence * 100)|round(1) }}%
+                {% elif pred.predicted_class == 'Invalid' %}{{ (pred.invalid_confidence * 100)|round(1) }}%
+                {% else %}{{ (pred.manual_review_confidence * 100)|round(1) if pred.manual_review_confidence else '—' }}%
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Documents -->
+    {% if report.documents.list %}
+    <h2>Submitted Documents ({{ report.documents.count }})</h2>
+    <table>
+        <thead><tr><th>Document Type</th><th>Filename</th><th>Uploaded</th></tr></thead>
+        <tbody>
+            {% for doc in report.documents.list %}
+            <tr>
+                <td>{{ doc.type or '—' }}</td>
+                <td style="font-size:11px; color:#6b7280;">{{ doc.filename or '—' }}</td>
+                <td style="font-size:11px;">{{ doc.uploaded_at[:10] if doc.uploaded_at else '—' }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% endif %}
+
+    <!-- Footer -->
+    <div class="footer">
+        <span>AssureX Claim Engine &mdash; Confidential Evaluation Report</span>
+        <span>{{ claim.claim_uid }} &mdash; {{ generated_at.strftime('%d %b %Y') }}</span>
+    </div>
+
+</div>
+</body>
+</html>

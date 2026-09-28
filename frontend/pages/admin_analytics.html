@@ -1,0 +1,322 @@
+{% extends "base.html" %}
+
+{% block title %}Analytics Dashboard - AssureX Admin{% endblock %}
+
+{% block extra_css %}
+<style>
+    .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.25rem; margin-bottom: 2rem; }
+    .stat-card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 1rem; padding: 1.5rem; }
+    .stat-label { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted); margin-bottom: 0.4rem; }
+    .stat-value { font-size: 2rem; font-weight: 700; color: #fff; line-height: 1; }
+    .stat-sub { font-size: 0.82rem; color: var(--text-muted); margin-top: 0.4rem; }
+    .panel { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 1rem; padding: 1.5rem; margin-bottom: 1.5rem; }
+    .panel-title { font-size: 1.05rem; font-weight: 700; color: #fff; margin-bottom: 1.25rem; display: flex; align-items: center; gap: 0.5rem; padding-bottom: 0.75rem; border-bottom: 1px solid rgba(255,255,255,0.06); }
+    .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+    @media (max-width: 768px) { .two-col { grid-template-columns: 1fr; } }
+    .chart-bar-row { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.75rem; }
+    .chart-bar-label { width: 160px; font-size: 0.82rem; color: #cbd5e1; text-align: right; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex-shrink: 0; }
+    .chart-bar-track { flex: 1; background: rgba(255,255,255,0.06); border-radius: 99px; height: 16px; overflow: hidden; }
+    .chart-bar-fill { height: 100%; border-radius: 99px; transition: width 0.8s ease; }
+    .chart-bar-count { font-size: 0.8rem; color: var(--text-muted); width: 36px; text-align: right; flex-shrink: 0; }
+    .table-wrap { overflow-x: auto; }
+    .data-table { width: 100%; border-collapse: collapse; font-size: 0.88rem; }
+    .data-table th { color: var(--text-muted); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; padding: 0.6rem 1rem; text-align: left; border-bottom: 1px solid rgba(255,255,255,0.08); }
+    .data-table td { padding: 0.65rem 1rem; border-bottom: 1px solid rgba(255,255,255,0.04); color: #cbd5e1; vertical-align: middle; }
+    .data-table tr:last-child td { border-bottom: none; }
+    .data-table tr:hover td { background: rgba(255,255,255,0.02); }
+    .decision-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; margin-right: 0.4rem; }
+    .dot-approved { background: #22c55e; }
+    .dot-rejected { background: #ef4444; }
+    .dot-manual { background: #f59e0b; }
+    .dot-other { background: #94a3b8; }
+    .timeline-item { display: flex; align-items: center; gap: 0.75rem; padding: 0.45rem 0; border-bottom: 1px solid rgba(255,255,255,0.04); }
+    .timeline-date { font-size: 0.78rem; font-family: monospace; color: var(--text-muted); width: 90px; flex-shrink: 0; }
+    .timeline-bar-wrap { flex: 1; background: rgba(255,255,255,0.06); border-radius: 99px; height: 12px; }
+    .timeline-bar { height: 100%; border-radius: 99px; background: linear-gradient(90deg, var(--primary), var(--accent)); }
+    .timeline-count { font-size: 0.8rem; color: #cbd5e1; width: 30px; text-align: right; flex-shrink: 0; }
+    .model-badge { display: inline-block; padding: 0.2rem 0.65rem; border-radius: 1rem; font-size: 0.75rem; font-weight: 600; background: rgba(56,189,248,0.1); color: var(--accent); border: 1px solid rgba(56,189,248,0.25); }
+</style>
+{% endblock %}
+
+{% block content %}
+<div style="max-width: 1200px; margin: 0 auto;">
+
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:2rem; flex-wrap:wrap; gap:1rem;">
+        <div>
+            <h1 style="font-size:2rem; font-weight:700; color:#fff;">Analytics Dashboard</h1>
+            <p style="color:var(--text-muted); margin-top:0.25rem;">System-wide claim and AI model performance overview.</p>
+        </div>
+        <div style="display:flex; gap:0.75rem; align-items:center; flex-wrap:wrap;">
+            <a href="{{ url_for('reports.export_analytics_csv') }}" class="btn btn-secondary" style="font-size:0.85rem;">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:4px;vertical-align:middle;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                Export Analytics CSV
+            </a>
+            <a href="{{ url_for('reports.export_claims_csv') }}" class="btn btn-secondary" style="font-size:0.85rem;">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:4px;vertical-align:middle;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                Export Claims CSV
+            </a>
+            <a href="{{ url_for('admin.system_monitoring') }}" class="btn btn-secondary" style="font-size:0.85rem; color:#f87171; border-color:rgba(239,68,68,0.3);">
+                🔴 System Monitoring
+            </a>
+            <button onclick="refreshAnalytics()" class="btn btn-secondary" style="font-size:0.88rem;" id="refresh-btn">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.65"/></svg>
+                Refresh
+            </button>
+        </div>
+    </div>
+
+    {% if analytics and analytics.overview %}
+    {% set ov = analytics.overview %}
+
+    <!-- Top Stats -->
+    <div class="stats-grid">
+        <div class="stat-card" style="border-color: rgba(56,189,248,0.3);">
+            <div class="stat-label">Total Claims</div>
+            <div class="stat-value" style="color: var(--accent);">{{ ov.claims.total }}</div>
+            <div class="stat-sub">{{ ov.claims.pending }} pending evaluation</div>
+        </div>
+        <div class="stat-card" style="border-color: rgba(34,197,94,0.3);">
+            <div class="stat-label">Approved</div>
+            <div class="stat-value" style="color: #4ade80;">{{ ov.claims.approved }}</div>
+            <div class="stat-sub">{{ ov.claims.approval_rate }}% approval rate</div>
+        </div>
+        <div class="stat-card" style="border-color: rgba(239,68,68,0.3);">
+            <div class="stat-label">Rejected</div>
+            <div class="stat-value" style="color: #f87171;">{{ ov.claims.rejected }}</div>
+            <div class="stat-sub">{{ ov.claims.rejection_rate }}% rejection rate</div>
+        </div>
+        <div class="stat-card" style="border-color: rgba(245,158,11,0.3);">
+            <div class="stat-label">Manual Review</div>
+            <div class="stat-value" style="color: #fbbf24;">{{ ov.claims.manual_review }}</div>
+            <div class="stat-sub">Awaiting reviewer action</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-label">Total Users</div>
+            <div class="stat-value">{{ ov.users.total }}</div>
+            <div class="stat-sub">{{ ov.users.customers }} customers</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-label">Products Registered</div>
+            <div class="stat-value">{{ ov.products }}</div>
+            <div class="stat-sub">{{ ov.warranties }} warranties linked</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-label">AI Predictions</div>
+            <div class="stat-value">{{ ov.predictions }}</div>
+            <div class="stat-sub">Across all models</div>
+        </div>
+    </div>
+
+    <div class="two-col">
+        <!-- Claim Status Distribution -->
+        <div class="panel">
+            <div class="panel-title">
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2"><pie/><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                Claim Status Distribution
+            </div>
+            {% if analytics.status_distribution %}
+            {% set total_s = analytics.status_distribution.values() | sum %}
+            {% for status, count in analytics.status_distribution.items() %}
+            {% set pct = ((count / total_s) * 100) | round(1) if total_s > 0 else 0 %}
+            <div class="chart-bar-row">
+                <div class="chart-bar-label">{{ status }}</div>
+                <div class="chart-bar-track">
+                    <div class="chart-bar-fill" style="width:{{ pct }}%; background: {% if status == 'Approved' %}#22c55e{% elif status == 'Rejected' %}#ef4444{% elif status == 'Manual Review' %}#f59e0b{% elif status == 'Submitted' %}#38bdf8{% else %}#64748b{% endif %};"></div>
+                </div>
+                <div class="chart-bar-count">{{ count }}</div>
+            </div>
+            {% endfor %}
+            {% else %}
+            <p style="color:var(--text-muted); font-size:0.88rem;">No status data available.</p>
+            {% endif %}
+        </div>
+
+        <!-- Decision Distribution -->
+        <div class="panel">
+            <div class="panel-title">
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                Final Decision Distribution
+            </div>
+            {% if analytics.decision_distribution %}
+            {% set total_d = analytics.decision_distribution.values() | sum %}
+            {% for decision, count in analytics.decision_distribution.items() %}
+            {% set pct = ((count / total_d) * 100) | round(1) if total_d > 0 else 0 %}
+            <div class="chart-bar-row">
+                <div class="chart-bar-label">
+                    <span class="decision-dot {{ 'dot-approved' if decision == 'Approved' else ('dot-rejected' if decision == 'Rejected' else ('dot-manual' if decision == 'Manual Review' else 'dot-other')) }}"></span>
+                    {{ decision }}
+                </div>
+                <div class="chart-bar-track">
+                    <div class="chart-bar-fill" style="width:{{ pct }}%; background: {% if decision == 'Approved' %}#22c55e{% elif decision == 'Rejected' %}#ef4444{% else %}#f59e0b{% endif %};"></div>
+                </div>
+                <div class="chart-bar-count">{{ count }}</div>
+            </div>
+            {% endfor %}
+            {% else %}
+            <p style="color:var(--text-muted); font-size:0.88rem;">No decision data available yet. Run evaluations to see results.</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="two-col">
+        <!-- Claims Over Time (30 days) -->
+        <div class="panel">
+            <div class="panel-title">
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+                Claim Volume (Last 30 Days)
+            </div>
+            {% if analytics.claims_over_time %}
+            {% set max_count = analytics.claims_over_time | map(attribute='count') | max %}
+            {% for item in analytics.claims_over_time[-15:] %}
+            {% set pct = ((item.count / max_count) * 100) | round(0) if max_count > 0 else 0 %}
+            <div class="timeline-item">
+                <div class="timeline-date">{{ item.date }}</div>
+                <div class="timeline-bar-wrap">
+                    <div class="timeline-bar" style="width:{{ pct }}%;"></div>
+                </div>
+                <div class="timeline-count">{{ item.count }}</div>
+            </div>
+            {% endfor %}
+            {% else %}
+            <p style="color:var(--text-muted); font-size:0.88rem;">No timeline data for the last 30 days.</p>
+            {% endif %}
+        </div>
+
+        <!-- Damage Type Breakdown -->
+        <div class="panel">
+            <div class="panel-title">
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+                Top Damage Types
+            </div>
+            {% if analytics.damage_type_breakdown %}
+            {% set max_dam = analytics.damage_type_breakdown[0].count if analytics.damage_type_breakdown else 1 %}
+            {% for item in analytics.damage_type_breakdown[:10] %}
+            {% set pct = ((item.count / max_dam) * 100) | round(0) %}
+            <div class="chart-bar-row">
+                <div class="chart-bar-label" style="width:200px;">{{ item.damage_type }}</div>
+                <div class="chart-bar-track">
+                    <div class="chart-bar-fill" style="width:{{ pct }}%; background: linear-gradient(90deg, #6366f1, #818cf8);"></div>
+                </div>
+                <div class="chart-bar-count">{{ item.count }}</div>
+            </div>
+            {% endfor %}
+            {% else %}
+            <p style="color:var(--text-muted); font-size:0.88rem;">No damage type data available.</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- AI Model Performance -->
+    {% if analytics.model_predictions %}
+    <div class="panel">
+        <div class="panel-title">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14"/></svg>
+            AI Model Prediction Summary
+        </div>
+        <div class="table-wrap">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Model</th>
+                        <th>Predicted Class</th>
+                        <th>Count</th>
+                        <th>Avg Valid Confidence</th>
+                        <th>Avg Invalid Confidence</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for model_name, model_data in analytics.model_predictions.items() %}
+                    {% for pred_class, pred_data in model_data.predictions.items() %}
+                    <tr>
+                        <td><span class="model-badge">{{ model_name }}</span></td>
+                        <td style="color:{% if pred_class == 'Valid' %}#4ade80{% elif pred_class == 'Invalid' %}#f87171{% else %}#fbbf24{% endif %};">{{ pred_class }}</td>
+                        <td>{{ pred_data.count }}</td>
+                        <td>{{ (pred_data.avg_valid_conf * 100) | round(1) }}%</td>
+                        <td>{{ (pred_data.avg_invalid_conf * 100) | round(1) }}%</td>
+                    </tr>
+                    {% endfor %}
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Recent Claims Table -->
+    {% if analytics.recent_claims %}
+    <div class="panel">
+        <div class="panel-title">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+            Recent Claims
+        </div>
+        <div class="table-wrap">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Claim UID</th>
+                        <th>Status</th>
+                        <th>Final Decision</th>
+                        <th>Damage Type</th>
+                        <th>Submitted</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for claim in analytics.recent_claims %}
+                    <tr>
+                        <td style="font-family:monospace; color:var(--accent);">{{ claim.claim_uid }}</td>
+                        <td>
+                            <span style="font-size:0.78rem; padding:0.2rem 0.6rem; border-radius:1rem; background:rgba(255,255,255,0.07); color:#cbd5e1;">
+                                {{ claim.claim_status }}
+                            </span>
+                        </td>
+                        <td>
+                            {% if claim.final_decision %}
+                            <span class="decision-dot {{ 'dot-approved' if claim.final_decision == 'Approved' else ('dot-rejected' if claim.final_decision == 'Rejected' else 'dot-manual') }}"></span>
+                            {{ claim.final_decision }}
+                            {% else %}—{% endif %}
+                        </td>
+                        <td>{{ claim.damage_type or '—' }}</td>
+                        <td style="font-size:0.82rem; color:var(--text-muted);">{{ claim.submission_date[:10] if claim.submission_date else '—' }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {% endif %}
+
+    {% else %}
+    <div style="text-align:center; padding:3rem; color:var(--text-muted);">
+        <p>Analytics data unavailable. Please check the system configuration.</p>
+    </div>
+    {% endif %}
+
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function refreshAnalytics() {
+    const btn = document.getElementById('refresh-btn');
+    btn.disabled = true;
+    btn.innerHTML = '↻ Refreshing...';
+
+    fetch('/api/reports/analytics')
+        .then(r => r.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            } else {
+                alert('Refresh failed: ' + (data.error || 'Unknown error'));
+                btn.disabled = false;
+                btn.innerHTML = '↻ Refresh';
+            }
+        })
+        .catch(e => {
+            alert('Network error: ' + e.message);
+            btn.disabled = false;
+            btn.innerHTML = '↻ Refresh';
+        });
+}
+</script>
+{% endblock %}

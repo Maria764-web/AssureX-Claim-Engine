@@ -1,0 +1,529 @@
+{% extends "base.html" %}
+
+{% block title %}My Warranties - AssureX Claim Engine{% endblock %}
+
+{% block content %}
+<div class="warranty-page-wrapper">
+    <!-- Header with Breadcrumbs & Action -->
+    <div class="warranty-page-header">
+        <div>
+            <div class="breadcrumb-trail">
+                <a href="{{ url_for('main.customer_dashboard') }}">Dashboard</a> &rsaquo; <span>Warranties</span>
+            </div>
+            <h1 class="page-title">
+                {% if user.role == 'Administrator' %}
+                    Global Warranty Management &amp; Policy Control
+                {% elif user.role == 'Claim Reviewer' %}
+                    Claim Reviewer Policy Inspection Hub
+                {% elif user.role == 'Service-Centre Employee' %}
+                    Service Centre Warranty Verification Hub
+                {% else %}
+                    My Warranties &amp; Policy Certificates
+                {% endif %}
+            </h1>
+            <p class="page-subtitle">
+                {% if user.role == 'Administrator' %}
+                    Enterprise warranty policies, status lifecycles, and policy extensions.
+                {% elif user.role == 'Claim Reviewer' %}
+                    Inspection of policy clauses, covered hardware assemblies, and exclusion terms for claim adjudication.
+                {% elif user.role == 'Service-Centre Employee' %}
+                    Rapid hardware warranty verification and active repair coverage lookup.
+                {% else %}
+                    Live database tracking of manufacturer warranty coverage, covered defect terms, and policy lifecycles for your hardware.
+                {% endif %}
+            </p>
+        </div>
+        {% if user.role == 'Customer' %}
+            <div>
+                <a href="{{ url_for('products.register_product_view') }}" class="btn btn-primary" id="btn-register-new">
+                    + Register Device
+                </a>
+            </div>
+        {% endif %}
+    </div>
+
+    <!-- Filter & Search Toolbar -->
+    <div class="filter-toolbar">
+        <div class="filter-pills">
+            <a href="{{ url_for('warranties.list_warranties') }}" class="filter-pill {% if not current_status or current_status == 'all' %}active{% endif %}">
+                All Policies ({{ warranties|length }})
+            </a>
+            <a href="{{ url_for('warranties.list_warranties', status='Active') }}" class="filter-pill {% if current_status == 'Active' %}active{% endif %}">
+                Active
+            </a>
+            <a href="{{ url_for('warranties.list_warranties', status='Nearing Expiry') }}" class="filter-pill {% if current_status == 'Nearing Expiry' %}active{% endif %}">
+                Nearing Expiry
+            </a>
+            <a href="{{ url_for('warranties.list_warranties', status='Expired') }}" class="filter-pill {% if current_status == 'Expired' %}active{% endif %}">
+                Expired
+            </a>
+            <a href="{{ url_for('warranties.list_warranties', status='Extended') }}" class="filter-pill {% if current_status == 'Extended' %}active{% endif %}">
+                Extended
+            </a>
+        </div>
+
+        <form method="GET" action="{{ url_for('warranties.list_warranties') }}" class="search-form">
+            {% if current_status %}
+                <input type="hidden" name="status" value="{{ current_status }}">
+            {% endif %}
+            <input 
+                type="text" 
+                name="q" 
+                class="search-input" 
+                placeholder="Search by device, serial, UID..." 
+                value="{{ search_query or '' }}"
+            >
+            <button type="submit" class="btn btn-secondary btn-search">Search</button>
+            {% if search_query or current_status %}
+                <a href="{{ url_for('warranties.list_warranties') }}" class="btn-clear" title="Clear filters">&times;</a>
+            {% endif %}
+        </form>
+    </div>
+
+    <!-- Warranties Grid -->
+    {% if warranties %}
+        <div class="warranties-grid">
+            {% for w in warranties %}
+                <div class="warranty-card" id="warranty-card-{{ w.id }}">
+                    <div class="warranty-card-header">
+                        <div>
+                            <div class="warranty-uid-tag">{{ w.warranty_uid }}</div>
+                            <h2 class="warranty-product-name">{{ w.product.product_name if w.product else 'Hardware Device' }}</h2>
+                            <div class="warranty-brand-model">
+                                {{ w.product.brand if w.product else '' }} &bull; Model: {{ w.product.model if w.product else 'N/A' }}
+                            </div>
+                        </div>
+                        <div class="warranty-badge-group">
+                            <span class="status-badge status-{{ 'active' if w.warranty_status == 'Active' else ('nearing' if w.warranty_status == 'Nearing Expiry' else ('extended' if w.warranty_status == 'Extended' else 'expired')) }}">
+                                {{ w.warranty_status }}
+                            </span>
+                            {% if w.is_extended %}
+                                <span class="badge-extended">Extended</span>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="warranty-meta-grid">
+                        <div class="meta-item">
+                            <span class="meta-label">Serial Number</span>
+                            <span class="meta-val mono">{{ w.product.serial_number if w.product else 'N/A' }}</span>
+                        </div>
+                        <div class="meta-item">
+                            <span class="meta-label">Provider</span>
+                            <span class="meta-val">{{ w.warranty_provider }}</span>
+                        </div>
+                        <div class="meta-item">
+                            <span class="meta-label">Coverage Start</span>
+                            <span class="meta-val">{{ w.start_date.strftime('%b %d, %Y') }}</span>
+                        </div>
+                        <div class="meta-item">
+                            <span class="meta-label">Expiry Date</span>
+                            <span class="meta-val font-semibold">{{ w.expiry_date.strftime('%b %d, %Y') }}</span>
+                        </div>
+                    </div>
+
+                    <div class="coverage-preview">
+                        <div class="clause-snippet">
+                            <span class="clause-label">Covered:</span>
+                            <span class="clause-text">{{ w.covered_items|truncate(90) }}</span>
+                        </div>
+                        <div class="clause-snippet exclusion">
+                            <span class="clause-label">Exclusions:</span>
+                            <span class="clause-text">{{ w.exclusions|truncate(90) }}</span>
+                        </div>
+                    </div>
+
+                    <div class="warranty-card-footer">
+                        {% if w.product %}
+                            <a href="{{ url_for('products.get_product', product_id=w.product.id) }}" class="btn-product-link">
+                                Product Details &rarr;
+                            </a>
+                        {% endif %}
+                        <a href="{{ url_for('warranties.get_warranty', warranty_id=w.id) }}" class="btn btn-primary btn-sm" id="view-warranty-{{ w.id }}">
+                            View Policy Certificate &rarr;
+                        </a>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="empty-warranties-card">
+            <i class="bi bi-shield empty-icon"></i>
+            <h3>No Warranty Policies Found</h3>
+            <p>
+                {% if search_query or current_status %}
+                    No warranty policies match your search criteria. Try clearing filters.
+                {% else %}
+                    Register a device to activate manufacturer warranty policy certificates.
+                {% endif %}
+            </p>
+            {% if search_query or current_status %}
+                <a href="{{ url_for('warranties.list_warranties') }}" class="btn btn-secondary" style="margin-top: 1rem;">
+                    Clear Filters
+                </a>
+            {% elif user.role == 'Customer' %}
+                <a href="{{ url_for('products.register_product_view') }}" class="btn btn-primary" style="margin-top: 1rem;">
+                    + Register New Product
+                </a>
+            {% endif %}
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .warranty-page-wrapper {
+        display: flex;
+        flex-direction: column;
+        gap: 1.75rem;
+    }
+
+    .warranty-page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+
+    .breadcrumb-trail {
+        font-size: 0.82rem;
+        color: var(--text-muted);
+        margin-bottom: 0.35rem;
+    }
+
+    .breadcrumb-trail a {
+        color: var(--accent);
+        text-decoration: none;
+    }
+
+    .breadcrumb-trail a:hover {
+        text-decoration: underline;
+    }
+
+    .page-title {
+        font-size: 1.85rem;
+        font-weight: 700;
+        color: #ffffff;
+        letter-spacing: -0.02em;
+    }
+
+    .page-subtitle {
+        font-size: 0.92rem;
+        color: var(--text-muted);
+        max-width: 680px;
+        margin-top: 0.25rem;
+    }
+
+    /* Filter Toolbar */
+    .filter-toolbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 1rem;
+        background: rgba(15, 23, 42, 0.7);
+        border: 1px solid var(--card-border);
+        padding: 0.85rem 1.25rem;
+        border-radius: 0.85rem;
+        backdrop-filter: blur(12px);
+    }
+
+    .filter-pills {
+        display: flex;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+    }
+
+    .filter-pill {
+        color: var(--text-muted);
+        text-decoration: none;
+        font-size: 0.82rem;
+        font-weight: 500;
+        padding: 0.35rem 0.8rem;
+        border-radius: 2rem;
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        transition: all 0.15s ease;
+    }
+
+    .filter-pill:hover {
+        color: #ffffff;
+        background: rgba(255, 255, 255, 0.08);
+    }
+
+    .filter-pill.active {
+        color: var(--accent);
+        background: rgba(56, 189, 248, 0.12);
+        border-color: rgba(56, 189, 248, 0.3);
+        font-weight: 600;
+    }
+
+    .search-form {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .search-input {
+        background: rgba(10, 15, 26, 0.8);
+        border: 1px solid #27354a;
+        color: #ffffff;
+        padding: 0.45rem 0.85rem;
+        border-radius: 0.5rem;
+        font-size: 0.85rem;
+        font-family: 'Inter', sans-serif;
+        width: 220px;
+        transition: all 0.2s;
+    }
+
+    .search-input:focus {
+        outline: none;
+        border-color: var(--accent);
+        box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.15);
+    }
+
+    .btn-search {
+        padding: 0.45rem 0.85rem;
+        font-size: 0.85rem;
+    }
+
+    .btn-clear {
+        color: var(--text-muted);
+        text-decoration: none;
+        font-size: 1.25rem;
+        padding: 0 0.4rem;
+        line-height: 1;
+        transition: color 0.15s;
+    }
+
+    .btn-clear:hover {
+        color: #f87171;
+    }
+
+    /* Warranties Grid */
+    .warranties-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+        gap: 1.5rem;
+    }
+
+    .warranty-card {
+        background: var(--card-bg);
+        border: 1px solid var(--card-border);
+        border-radius: 1.15rem;
+        padding: 1.75rem;
+        display: flex;
+        flex-direction: column;
+        gap: 1.15rem;
+        box-shadow: 0 4px 18px rgba(0, 0, 0, 0.25);
+        backdrop-filter: blur(14px);
+        transition: transform 0.2s, border-color 0.2s;
+    }
+
+    .warranty-card:hover {
+        transform: translateY(-3px);
+        border-color: rgba(56, 189, 248, 0.35);
+    }
+
+    .warranty-card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 1rem;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+        padding-bottom: 1rem;
+    }
+
+    .warranty-uid-tag {
+        font-family: monospace;
+        font-size: 0.75rem;
+        font-weight: 600;
+        color: var(--accent);
+        background: rgba(56, 189, 248, 0.1);
+        padding: 0.2rem 0.5rem;
+        border-radius: 0.35rem;
+        display: inline-block;
+        margin-bottom: 0.35rem;
+        border: 1px solid rgba(56, 189, 248, 0.2);
+    }
+
+    .warranty-product-name {
+        font-size: 1.2rem;
+        font-weight: 700;
+        color: #ffffff;
+        line-height: 1.25;
+    }
+
+    .warranty-brand-model {
+        font-size: 0.85rem;
+        color: var(--text-muted);
+        margin-top: 0.2rem;
+    }
+
+    .warranty-badge-group {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        gap: 0.35rem;
+    }
+
+    .status-badge {
+        padding: 0.25rem 0.7rem;
+        border-radius: 1.5rem;
+        font-size: 0.75rem;
+        font-weight: 600;
+        letter-spacing: 0.03em;
+        text-transform: uppercase;
+    }
+
+    .status-active {
+        background: rgba(34, 197, 94, 0.15);
+        color: #86efac;
+        border: 1px solid rgba(34, 197, 94, 0.3);
+    }
+
+    .status-nearing {
+        background: rgba(245, 158, 11, 0.15);
+        color: #fde047;
+        border: 1px solid rgba(245, 158, 11, 0.3);
+    }
+
+    .status-expired {
+        background: rgba(239, 68, 68, 0.15);
+        color: #fca5a5;
+        border: 1px solid rgba(239, 68, 68, 0.3);
+    }
+
+    .status-extended {
+        background: rgba(192, 132, 252, 0.15);
+        color: #d8b4fe;
+        border: 1px solid rgba(192, 132, 252, 0.3);
+    }
+
+    .badge-extended {
+        background: rgba(192, 132, 252, 0.12);
+        color: #d8b4fe;
+        border: 1px solid rgba(192, 132, 252, 0.25);
+        padding: 0.15rem 0.5rem;
+        border-radius: 1rem;
+        font-size: 0.68rem;
+        font-weight: 600;
+        text-transform: uppercase;
+    }
+
+    .warranty-meta-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.85rem;
+        background: rgba(10, 15, 26, 0.5);
+        padding: 1rem;
+        border-radius: 0.75rem;
+        border: 1px solid rgba(255, 255, 255, 0.04);
+    }
+
+    .meta-item {
+        display: flex;
+        flex-direction: column;
+        gap: 0.2rem;
+    }
+
+    .meta-label {
+        font-size: 0.72rem;
+        text-transform: uppercase;
+        color: var(--text-muted);
+        letter-spacing: 0.05em;
+    }
+
+    .meta-val {
+        font-size: 0.9rem;
+        color: #f1f5f9;
+    }
+
+    .coverage-preview {
+        display: flex;
+        flex-direction: column;
+        gap: 0.45rem;
+        font-size: 0.82rem;
+    }
+
+    .clause-snippet {
+        color: var(--text-muted);
+        line-height: 1.4;
+    }
+
+    .clause-label {
+        color: #cbd5e1;
+        font-weight: 600;
+        margin-right: 0.3rem;
+    }
+
+    .clause-snippet.exclusion .clause-label {
+        color: #fca5a5;
+    }
+
+    .warranty-card-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-top: 1px solid rgba(255, 255, 255, 0.06);
+        padding-top: 1rem;
+        margin-top: auto;
+    }
+
+    .btn-product-link {
+        color: var(--text-muted);
+        text-decoration: none;
+        font-size: 0.85rem;
+        transition: color 0.15s;
+    }
+
+    .btn-product-link:hover {
+        color: var(--accent);
+        text-decoration: underline;
+    }
+
+    .btn-sm {
+        padding: 0.5rem 1rem;
+        font-size: 0.85rem;
+    }
+
+    .empty-warranties-card {
+        background: var(--card-bg);
+        border: 1px dashed rgba(56, 189, 248, 0.25);
+        border-radius: 1.25rem;
+        padding: 3.5rem 2rem;
+        text-align: center;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .empty-icon {
+        font-size: 3rem;
+        margin-bottom: 0.75rem;
+    }
+
+    .empty-warranties-card h3 {
+        font-size: 1.35rem;
+        color: #ffffff;
+        margin-bottom: 0.5rem;
+    }
+
+    .empty-warranties-card p {
+        color: var(--text-muted);
+        max-width: 500px;
+        font-size: 0.95rem;
+        line-height: 1.5;
+    }
+
+    .mono {
+        font-family: monospace;
+    }
+
+    .font-semibold {
+        font-weight: 600;
+    }
+</style>
+{% endblock %}

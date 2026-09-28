@@ -1,0 +1,1050 @@
+Claim_ID,Product_Category,Product_Age_Months,Warranty_Duration_Months,Warranty_Status,Receipt_Available,Warranty_Card_Available,Damage_Photo_Available,Serial_Number_Status,Damage_Covered,Contradiction_Detected,Missing_Document,Document_Quality_Score,Damage_Severity_Score,Previous_Repair_Count,Claim_Amount,Claim_Decision
+CLM-01270,Mobile,23,48,Expired,No,Yes,No,Unknown,Unknown,No,Yes,67,49,0,991.8,Manual Review
+CLM-00303,Camera,11,18,Active,No,Yes,Yes,Unknown,Yes,No,Yes,80,41,5,1331.87,Manual Review
+CLM-00295,Washing Machine,70,36,Inactive,No,Yes,Yes,Mismatch,No,No,Yes,49,58,5,362.06,Invalid
+CLM-01037,TV,20,24,Inactive,Yes,No,Yes,Mismatch,Unknown,Yes,Yes,73,85,3,1196.88,Invalid
+CLM-00728,Laptop,39,48,Active,No,No,Yes,Match,Yes,Yes,No,40,36,0,1234.31,Manual Review
+CLM-00451,TV,39,24,Active,No,Yes,Yes,Match,Yes,No,No,97,6,1,531.83,Valid
+CLM-01447,Camera,2,18,Active,Yes,Yes,No,Match,Yes,No,No,75,12,3,389.96,Valid
+CLM-00151,Washing Machine,31,18,Unknown,No,Yes,Yes,Unknown,Yes,Yes,Yes,47,66,5,1207.09,Manual Review
+CLM-00668,Camera,27,24,Inactive,No,Yes,No,Match,No,Yes,Yes,62,91,2,2129.48,Invalid
+CLM-00156,Camera,34,48,Active,No,Yes,No,Unknown,No,No,Yes,71,76,4,887.42,Manual Review
+CLM-01456,TV,28,24,Expired,No,Yes,Yes,Mismatch,Unknown,Yes,No,85,88,2,398.16,Invalid
+CLM-00708,Camera,38,24,Inactive,Yes,No,Yes,Mismatch,Unknown,Yes,No,45,98,2,1295.92,Invalid
+CLM-00693,TV,48,24,Inactive,No,Yes,No,Mismatch,No,No,Yes,69,58,1,993.15,Invalid
+CLM-00203,Washing Machine,36,60,Active,No,Yes,No,Match,Yes,No,No,97,31,1,2355.75,Valid
+CLM-00204,Camera,5,18,Active,Yes,Yes,No,Match,Yes,No,No,96,40,2,1065.56,Valid
+CLM-00541,Laptop,72,24,Expired,No,No,No,Mismatch,No,Yes,No,54,44,4,1647.08,Manual Review
+CLM-00145,Camera,34,18,Inactive,No,No,Yes,Mismatch,No,Yes,No,62,66,2,715.29,Invalid
+CLM-00076,Mobile,8,18,Unknown,No,No,No,Match,Unknown,No,Yes,73,76,0,1867.19,Manual Review
+CLM-00310,Refrigerator,1,60,Active,No,Yes,Yes,Match,Yes,No,No,78,25,2,335.37,Valid
+CLM-00348,Mobile,59,12,Expired,Yes,No,Yes,Match,No,Yes,Yes,80,91,2,1788.0,Invalid
+CLM-01082,Laptop,10,60,Active,No,Yes,Yes,Match,Yes,No,No,89,1,2,653.98,Valid
+CLM-01283,Mobile,53,12,Active,Yes,No,No,Match,Yes,No,No,90,12,2,2448.41,Valid
+CLM-01142,Laptop,1,48,Active,No,Yes,Yes,Match,Yes,No,No,100,28,4,1380.11,Valid
+CLM-01494,Mobile,5,12,Expired,Yes,No,No,Match,No,No,Yes,63,55,1,907.32,Manual Review
+CLM-00164,Mobile,18,24,Unknown,Yes,Yes,No,Mismatch,No,Yes,No,40,66,5,81.92,Manual Review
+CLM-01132,TV,12,24,Active,Yes,Yes,Yes,Match,Unknown,Yes,No,60,47,1,655.99,Manual Review
+CLM-01167,Mobile,15,48,Expired,Yes,No,No,Unknown,Unknown,Yes,No,77,37,4,138.57,Manual Review
+CLM-01066,Washing Machine,7,60,Active,No,No,Yes,Unknown,Unknown,Yes,Yes,44,63,1,2349.54,Manual Review
+CLM-00970,TV,62,24,Active,No,Yes,Yes,Match,Yes,No,No,85,22,3,639.65,Valid
+CLM-00315,Refrigerator,44,60,Unknown,No,Yes,Yes,Match,Yes,Yes,No,44,31,2,1175.36,Manual Review
+CLM-00250,Mobile,57,24,Expired,No,No,Yes,Match,Unknown,Yes,No,59,66,2,2013.54,Invalid
+CLM-00194,TV,25,36,Expired,Yes,Yes,No,Match,No,No,No,56,79,4,1306.18,Manual Review
+CLM-01045,Refrigerator,48,48,Active,No,No,No,Match,Yes,No,No,84,4,5,797.87,Valid
+CLM-00509,Laptop,25,24,Active,No,No,Yes,Match,Yes,No,No,89,19,5,1825.17,Valid
+CLM-01005,Laptop,38,18,Active,No,Yes,No,Match,Yes,No,No,100,7,3,2297.94,Valid
+CLM-00737,Washing Machine,53,12,Active,No,No,Yes,Match,Yes,No,No,94,40,5,1016.49,Valid
+CLM-01469,Refrigerator,54,24,Expired,No,Yes,Yes,Match,No,Yes,No,50,85,3,2413.48,Invalid
+CLM-00230,Refrigerator,40,60,Expired,No,No,No,Mismatch,No,No,Yes,72,44,2,1615.63,Manual Review
+CLM-00137,Laptop,22,48,Active,No,Yes,Yes,Match,Yes,No,No,89,30,5,1341.7,Valid
+CLM-01484,Laptop,3,18,Active,No,No,No,Match,Yes,No,No,100,18,3,1812.75,Valid
+CLM-00840,Mobile,60,60,Inactive,Yes,Yes,Yes,Match,No,No,Yes,88,81,5,1760.28,Invalid
+CLM-00490,Laptop,17,60,Inactive,No,No,No,Match,No,Yes,No,75,83,1,530.15,Invalid
+CLM-01021,Refrigerator,24,18,Unknown,Yes,No,Yes,Mismatch,No,No,No,79,68,1,228.99,Manual Review
+CLM-00154,Laptop,14,18,Unknown,Yes,Yes,Yes,Mismatch,Yes,No,Yes,66,67,5,1350.8,Manual Review
+CLM-00758,Washing Machine,24,60,Active,No,No,No,Unknown,Unknown,No,No,32,68,5,384.97,Manual Review
+CLM-00152,Mobile,8,36,Expired,No,Yes,No,Match,Yes,Yes,Yes,74,63,5,1629.84,Manual Review
+CLM-00926,Mobile,55,60,Active,No,Yes,No,Match,Yes,No,No,95,22,2,1641.3,Valid
+CLM-00783,Camera,5,36,Active,No,Yes,Yes,Match,Yes,No,No,79,12,3,224.01,Valid
+CLM-00563,Laptop,57,18,Expired,No,No,No,Mismatch,No,Yes,No,64,75,5,2278.14,Invalid
+CLM-01493,Mobile,68,12,Active,No,No,Yes,Match,Yes,No,No,78,25,5,534.07,Valid
+CLM-00018,Laptop,2,12,Inactive,Yes,Yes,Yes,Match,Unknown,No,No,77,64,5,131.35,Invalid
+CLM-00798,Refrigerator,11,36,Unknown,Yes,Yes,No,Mismatch,Unknown,No,Yes,69,35,1,1753.95,Manual Review
+CLM-00296,Laptop,5,48,Inactive,Yes,No,Yes,Mismatch,Unknown,No,Yes,85,98,2,782.02,Invalid
+CLM-00455,Refrigerator,31,24,Expired,Yes,Yes,No,Match,No,No,Yes,61,70,0,450.86,Invalid
+CLM-01284,TV,39,36,Active,Yes,No,Yes,Mismatch,No,No,Yes,36,65,2,364.99,Manual Review
+CLM-00805,Laptop,66,36,Active,No,Yes,Yes,Match,Yes,No,No,79,31,2,708.32,Valid
+CLM-01281,Refrigerator,10,12,Expired,Yes,Yes,Yes,Mismatch,No,No,No,53,77,1,2158.78,Invalid
+CLM-00523,Camera,46,60,Active,No,No,Yes,Match,Unknown,No,Yes,58,45,3,129.59,Manual Review
+CLM-00560,Washing Machine,59,18,Active,Yes,No,No,Match,Yes,No,No,82,20,0,1682.99,Valid
+CLM-00196,TV,61,18,Active,Yes,No,No,Match,Yes,No,No,85,33,0,1698.54,Valid
+CLM-01326,Washing Machine,49,12,Expired,No,No,No,Mismatch,Unknown,No,No,85,94,4,822.38,Invalid
+CLM-00684,Mobile,66,24,Unknown,Yes,Yes,No,Mismatch,Unknown,Yes,Yes,50,66,0,562.84,Manual Review
+CLM-01216,Laptop,29,18,Expired,No,No,Yes,Match,Unknown,Yes,Yes,84,58,3,865.0,Invalid
+CLM-00142,Camera,55,24,Active,No,Yes,Yes,Match,Yes,No,No,97,13,4,2113.47,Valid
+CLM-00610,Camera,65,12,Active,No,No,Yes,Match,Yes,No,No,96,15,5,1231.77,Valid
+CLM-01058,Washing Machine,30,60,Active,No,Yes,Yes,Match,Yes,No,No,86,21,2,547.73,Valid
+CLM-01248,Refrigerator,59,60,Active,Yes,No,No,Match,Yes,No,No,89,1,3,1026.72,Valid
+CLM-01315,Refrigerator,66,36,Unknown,No,No,Yes,Match,Yes,Yes,No,70,79,2,1204.85,Manual Review
+CLM-00704,Refrigerator,20,48,Inactive,No,Yes,Yes,Match,Unknown,Yes,No,63,64,3,889.06,Invalid
+CLM-01016,Washing Machine,53,48,Active,Yes,Yes,No,Match,Yes,No,No,87,19,4,1978.04,Valid
+CLM-01389,Washing Machine,52,24,Active,No,Yes,Yes,Match,Yes,No,No,89,13,4,1906.72,Valid
+CLM-00084,Mobile,16,48,Expired,Yes,No,Yes,Match,No,Yes,No,55,93,1,869.55,Invalid
+CLM-00071,TV,2,60,Active,Yes,Yes,No,Match,Yes,No,No,78,11,3,433.76,Valid
+CLM-00914,Refrigerator,45,12,Active,No,Yes,Yes,Match,Yes,No,No,78,4,1,1666.92,Valid
+CLM-00549,Mobile,30,36,Active,Yes,Yes,No,Match,Yes,No,No,98,1,1,2135.59,Valid
+CLM-00772,Washing Machine,20,12,Active,Yes,No,No,Match,Yes,No,No,96,29,3,1815.06,Valid
+CLM-00400,Refrigerator,12,18,Inactive,Yes,No,No,Match,Unknown,Yes,Yes,86,79,0,262.43,Invalid
+CLM-00355,Mobile,1,36,Expired,No,Yes,No,Match,No,Yes,No,77,72,2,968.32,Invalid
+CLM-00913,TV,6,24,Active,Yes,No,Yes,Match,Yes,No,No,89,35,3,1877.06,Valid
+CLM-00415,Laptop,56,60,Expired,Yes,Yes,Yes,Mismatch,Unknown,Yes,No,88,99,0,2278.51,Invalid
+CLM-00450,Mobile,11,12,Expired,Yes,No,Yes,Unknown,Unknown,Yes,Yes,44,45,3,1147.53,Manual Review
+CLM-00946,Washing Machine,49,24,Expired,No,Yes,Yes,Match,No,No,Yes,85,94,0,338.12,Invalid
+CLM-00141,Mobile,34,18,Active,No,No,No,Unknown,Yes,Yes,No,45,31,3,405.73,Manual Review
+CLM-00829,Laptop,33,18,Expired,No,No,No,Mismatch,Unknown,No,No,71,98,0,2070.57,Invalid
+CLM-00790,Mobile,37,18,Inactive,Yes,No,No,Mismatch,No,No,Yes,49,79,5,1934.47,Invalid
+CLM-00880,Refrigerator,34,24,Active,Yes,Yes,Yes,Match,Yes,No,No,93,38,0,2276.62,Valid
+CLM-01092,Laptop,52,48,Expired,No,Yes,Yes,Match,No,Yes,No,61,69,1,939.95,Invalid
+CLM-00497,Mobile,35,48,Expired,Yes,No,No,Mismatch,No,No,No,58,62,0,1176.96,Invalid
+CLM-00448,Refrigerator,65,12,Inactive,Yes,Yes,Yes,Match,Unknown,Yes,No,83,78,4,131.89,Invalid
+CLM-00351,Laptop,71,48,Active,Yes,Yes,No,Match,Yes,No,No,99,28,4,1068.86,Valid
+CLM-00835,TV,32,24,Active,Yes,No,No,Match,Yes,No,No,87,36,5,622.18,Valid
+CLM-00456,TV,2,24,Expired,Yes,Yes,Yes,Unknown,No,Yes,Yes,68,76,4,2051.91,Manual Review
+CLM-00739,Camera,33,60,Expired,No,Yes,No,Match,Unknown,Yes,No,63,96,2,2032.0,Invalid
+CLM-01429,Camera,66,12,Expired,No,Yes,Yes,Match,No,No,No,49,60,1,1560.07,Manual Review
+CLM-01101,Refrigerator,2,24,Active,No,No,No,Match,Yes,No,No,84,33,0,1219.33,Valid
+CLM-00425,Laptop,51,60,Expired,No,No,Yes,Mismatch,No,No,No,82,99,5,2046.24,Invalid
+CLM-00773,Refrigerator,51,36,Active,No,No,Yes,Match,Yes,No,No,85,30,0,1173.71,Valid
+CLM-00376,TV,72,36,Inactive,No,Yes,No,Match,No,Yes,Yes,87,80,5,1866.99,Invalid
+CLM-01007,TV,53,36,Inactive,No,Yes,Yes,Match,No,No,Yes,75,56,4,1140.52,Invalid
+CLM-01436,Camera,45,18,Inactive,No,Yes,No,Mismatch,No,No,Yes,59,91,4,904.27,Invalid
+CLM-00958,Laptop,13,60,Expired,No,Yes,Yes,Unknown,Unknown,Yes,No,33,62,5,1742.14,Manual Review
+CLM-00375,Washing Machine,3,18,Active,Yes,No,Yes,Mismatch,No,No,No,78,47,0,783.12,Manual Review
+CLM-00975,Washing Machine,21,60,Expired,No,Yes,Yes,Match,Unknown,Yes,No,79,54,4,2283.41,Manual Review
+CLM-00112,Refrigerator,35,12,Active,No,No,No,Match,Unknown,Yes,Yes,38,38,0,111.6,Manual Review
+CLM-00598,Camera,56,18,Expired,Yes,No,No,Match,No,Yes,Yes,59,62,5,2291.95,Invalid
+CLM-01343,Washing Machine,10,12,Active,No,Yes,Yes,Unknown,Yes,No,Yes,41,51,0,1166.23,Manual Review
+CLM-01491,TV,9,18,Active,Yes,Yes,No,Match,Yes,No,No,62,72,1,1000.43,Manual Review
+CLM-00603,TV,50,60,Expired,No,Yes,No,Mismatch,Unknown,No,No,73,55,2,1403.23,Invalid
+CLM-00673,Camera,44,60,Expired,No,Yes,Yes,Mismatch,No,Yes,No,88,99,4,897.04,Invalid
+CLM-00678,Camera,11,48,Expired,Yes,No,No,Mismatch,Unknown,Yes,No,64,79,0,1041.38,Invalid
+CLM-01152,TV,18,60,Active,Yes,No,Yes,Match,Yes,No,No,81,29,4,1963.74,Valid
+CLM-00911,Mobile,38,36,Active,Yes,No,Yes,Mismatch,No,Yes,Yes,53,69,2,1630.27,Manual Review
+CLM-00982,Laptop,70,36,Inactive,Yes,No,No,Match,No,No,No,54,77,5,99.53,Invalid
+CLM-00725,Washing Machine,9,36,Inactive,Yes,Yes,No,Match,No,Yes,Yes,73,76,4,274.13,Invalid
+CLM-00669,Laptop,51,24,Expired,Yes,Yes,Yes,Mismatch,Unknown,No,Yes,65,89,3,159.42,Invalid
+CLM-00837,Laptop,66,36,Unknown,Yes,No,No,Unknown,No,No,No,46,69,4,1070.06,Manual Review
+CLM-00888,Refrigerator,16,36,Expired,No,No,Yes,Mismatch,No,No,No,68,62,0,371.25,Invalid
+CLM-00478,Washing Machine,21,18,Active,Yes,No,Yes,Match,Yes,No,No,76,38,4,1175.93,Valid
+CLM-01464,Washing Machine,39,18,Inactive,No,No,No,Mismatch,No,Yes,Yes,58,99,5,2032.1,Invalid
+CLM-01204,Camera,44,12,Active,Yes,Yes,No,Mismatch,Yes,No,No,71,39,3,503.65,Manual Review
+CLM-00785,Washing Machine,60,18,Inactive,Yes,No,Yes,Match,Unknown,Yes,Yes,45,60,2,152.46,Invalid
+CLM-00037,Laptop,13,12,Active,Yes,Yes,Yes,Match,Yes,No,No,93,5,2,970.4,Valid
+CLM-01195,Laptop,72,12,Expired,Yes,Yes,No,Unknown,Unknown,No,Yes,55,43,1,277.47,Manual Review
+CLM-00474,TV,2,18,Active,No,Yes,Yes,Match,Yes,No,No,91,31,1,2451.64,Valid
+CLM-00564,Refrigerator,17,24,Unknown,Yes,Yes,Yes,Mismatch,Unknown,Yes,No,35,43,5,851.17,Manual Review
+CLM-00232,Camera,62,24,Active,Yes,No,Yes,Match,Yes,No,No,94,15,2,2220.93,Valid
+CLM-01440,Mobile,3,18,Expired,No,No,Yes,Mismatch,Unknown,Yes,No,62,59,5,2359.52,Manual Review
+CLM-00246,Mobile,15,48,Inactive,Yes,No,No,Mismatch,Unknown,Yes,No,80,87,1,2373.83,Invalid
+CLM-01411,Laptop,57,18,Active,Yes,Yes,Yes,Match,Yes,No,No,83,11,5,1819.65,Valid
+CLM-00089,Laptop,57,48,Inactive,No,No,Yes,Mismatch,Unknown,Yes,No,87,74,2,900.99,Invalid
+CLM-00255,Refrigerator,72,18,Unknown,No,No,No,Mismatch,Yes,No,No,69,62,2,276.28,Manual Review
+CLM-00711,TV,17,18,Expired,Yes,Yes,No,Mismatch,Unknown,Yes,No,48,62,2,450.88,Invalid
+CLM-01184,Camera,49,24,Expired,No,No,No,Match,No,No,Yes,49,83,5,2102.03,Invalid
+CLM-00074,TV,22,36,Active,Yes,Yes,No,Match,Yes,No,No,96,21,1,372.74,Valid
+CLM-00916,Refrigerator,51,48,Active,Yes,Yes,No,Match,No,Yes,Yes,51,47,5,759.86,Manual Review
+CLM-01249,Laptop,23,24,Active,Yes,No,Yes,Match,Unknown,Yes,No,78,30,0,118.85,Manual Review
+CLM-01317,Washing Machine,65,18,Active,Yes,Yes,No,Match,Yes,No,No,75,10,4,870.4,Valid
+CLM-00824,Washing Machine,10,48,Active,No,No,Yes,Match,Yes,No,No,91,16,5,1018.95,Valid
+CLM-00069,TV,7,24,Active,No,Yes,Yes,Unknown,No,No,No,40,44,1,291.07,Manual Review
+CLM-00332,Washing Machine,17,36,Inactive,Yes,No,Yes,Match,Unknown,Yes,Yes,67,74,1,65.84,Invalid
+CLM-00033,Mobile,39,24,Unknown,No,Yes,No,Mismatch,Unknown,No,Yes,79,58,5,392.15,Manual Review
+CLM-00557,Mobile,39,48,Active,Yes,Yes,No,Match,Yes,No,No,81,17,3,1836.64,Valid
+CLM-00709,Mobile,58,36,Active,Yes,Yes,No,Match,Yes,No,No,97,2,0,1755.74,Valid
+CLM-00622,Washing Machine,4,12,Unknown,No,No,Yes,Unknown,Yes,Yes,Yes,62,65,0,882.17,Manual Review
+CLM-00608,Washing Machine,50,18,Expired,Yes,No,Yes,Match,Unknown,No,Yes,63,97,3,767.67,Invalid
+CLM-01480,Laptop,47,12,Expired,No,No,Yes,Match,No,No,Yes,32,63,4,162.15,Manual Review
+CLM-01094,Refrigerator,4,18,Active,No,Yes,No,Match,Yes,No,No,78,27,5,980.21,Valid
+CLM-00357,Washing Machine,42,12,Inactive,Yes,No,Yes,Mismatch,Unknown,Yes,Yes,87,93,5,74.28,Invalid
+CLM-00378,Mobile,26,12,Unknown,Yes,No,Yes,Mismatch,Yes,Yes,No,55,43,2,2419.81,Manual Review
+CLM-00322,Camera,41,36,Active,Yes,Yes,Yes,Mismatch,Yes,No,Yes,46,55,5,1726.57,Manual Review
+CLM-00838,Mobile,8,36,Expired,No,No,No,Mismatch,No,Yes,Yes,81,77,4,2308.38,Invalid
+CLM-00545,Camera,42,48,Active,Yes,Yes,No,Mismatch,No,Yes,No,36,67,0,2030.48,Manual Review
+CLM-00472,TV,5,24,Unknown,Yes,Yes,No,Unknown,No,No,No,78,48,3,1953.21,Manual Review
+CLM-01218,TV,19,36,Active,Yes,No,No,Match,Yes,No,No,81,35,4,1084.7,Valid
+CLM-00174,Washing Machine,23,48,Inactive,Yes,Yes,No,Match,Unknown,No,Yes,78,77,4,1925.59,Invalid
+CLM-00311,Refrigerator,29,24,Active,Yes,Yes,Yes,Match,Yes,No,No,99,17,3,1555.28,Valid
+CLM-00988,Washing Machine,5,60,Expired,Yes,No,No,Match,Unknown,Yes,No,64,82,5,69.81,Invalid
+CLM-00157,TV,7,36,Unknown,Yes,Yes,Yes,Unknown,No,No,Yes,41,45,2,2082.92,Manual Review
+CLM-00333,TV,14,18,Expired,No,Yes,Yes,Match,Unknown,Yes,No,35,74,4,1205.54,Manual Review
+CLM-00609,TV,43,12,Active,No,No,Yes,Match,Yes,No,No,49,79,1,421.07,Manual Review
+CLM-00016,Washing Machine,18,60,Active,No,No,No,Unknown,No,No,Yes,46,37,5,764.57,Manual Review
+CLM-00963,Laptop,36,48,Active,No,Yes,No,Mismatch,Unknown,Yes,No,57,77,0,812.05,Manual Review
+CLM-00494,Refrigerator,66,24,Expired,No,Yes,Yes,Unknown,No,Yes,No,80,40,4,1903.52,Manual Review
+CLM-00937,Mobile,71,18,Active,No,No,Yes,Mismatch,Yes,No,No,42,56,5,293.03,Manual Review
+CLM-01255,Laptop,33,24,Active,Yes,Yes,No,Mismatch,Yes,Yes,Yes,45,65,1,2409.63,Manual Review
+CLM-00792,Laptop,15,24,Expired,No,No,Yes,Match,Unknown,Yes,No,32,66,2,1101.84,Manual Review
+CLM-00371,Washing Machine,40,60,Active,No,Yes,Yes,Match,Yes,No,No,80,40,4,2129.86,Valid
+CLM-01047,TV,2,18,Inactive,Yes,No,Yes,Mismatch,No,Yes,Yes,77,98,0,761.88,Invalid
+CLM-00855,TV,37,36,Inactive,Yes,Yes,No,Mismatch,No,No,No,58,72,3,722.98,Invalid
+CLM-00663,Laptop,56,48,Active,No,No,Yes,Unknown,No,No,Yes,64,72,5,1260.33,Manual Review
+CLM-00459,Washing Machine,58,36,Active,No,No,Yes,Match,Yes,No,No,92,37,0,568.01,Valid
+CLM-00861,Mobile,66,60,Active,Yes,No,No,Match,Yes,No,No,100,10,5,945.36,Valid
+CLM-00393,Washing Machine,30,36,Unknown,Yes,No,Yes,Match,No,No,No,75,53,3,2483.5,Manual Review
+CLM-00014,TV,46,18,Unknown,No,Yes,Yes,Match,No,Yes,Yes,37,44,4,371.55,Manual Review
+CLM-01307,Laptop,54,36,Active,Yes,Yes,No,Match,Yes,No,No,98,12,5,155.1,Valid
+CLM-01466,Laptop,51,12,Active,Yes,Yes,No,Unknown,No,No,No,79,57,5,1853.95,Manual Review
+CLM-01500,TV,6,18,Expired,Yes,No,Yes,Unknown,No,No,Yes,38,39,5,472.84,Manual Review
+CLM-01149,Refrigerator,63,18,Active,Yes,No,Yes,Match,Yes,No,No,96,5,2,964.6,Valid
+CLM-01165,Refrigerator,35,18,Expired,No,Yes,No,Unknown,Yes,No,Yes,31,44,5,323.41,Manual Review
+CLM-00550,Camera,18,36,Active,No,Yes,Yes,Match,Yes,No,No,83,40,0,427.21,Valid
+CLM-00672,TV,29,48,Active,No,Yes,No,Match,Yes,No,No,80,32,1,1637.16,Valid
+CLM-01457,Camera,47,36,Expired,Yes,Yes,Yes,Mismatch,No,No,No,67,42,3,420.4,Manual Review
+CLM-00294,Mobile,33,48,Expired,No,No,No,Mismatch,Yes,No,Yes,45,65,5,774.77,Manual Review
+CLM-01029,Mobile,63,12,Expired,No,No,Yes,Match,Unknown,Yes,No,74,86,1,333.11,Invalid
+CLM-01197,Mobile,45,18,Active,No,No,Yes,Match,Yes,No,No,76,8,1,880.62,Valid
+CLM-01067,Mobile,69,24,Active,Yes,Yes,Yes,Match,Yes,No,No,77,39,5,2061.8,Valid
+CLM-01116,Refrigerator,25,48,Active,No,No,Yes,Match,Yes,No,No,92,24,3,1809.05,Valid
+CLM-00997,TV,22,48,Inactive,Yes,No,No,Mismatch,Unknown,No,No,59,76,4,1840.23,Invalid
+CLM-01454,Washing Machine,45,24,Expired,No,No,No,Match,No,Yes,No,45,60,4,85.84,Invalid
+CLM-00505,Refrigerator,25,24,Expired,Yes,Yes,Yes,Mismatch,Unknown,No,Yes,86,79,2,94.3,Invalid
+CLM-01293,Mobile,68,36,Active,Yes,Yes,Yes,Match,Yes,No,No,89,40,0,1685.64,Valid
+CLM-00096,Camera,39,36,Active,Yes,Yes,Yes,Match,Yes,No,No,84,34,1,278.85,Valid
+CLM-01263,Camera,61,24,Expired,No,Yes,Yes,Match,Unknown,Yes,Yes,70,96,1,1022.04,Invalid
+CLM-01073,Refrigerator,3,18,Inactive,No,No,Yes,Mismatch,No,Yes,Yes,62,97,0,2432.59,Invalid
+CLM-00710,Refrigerator,21,36,Inactive,No,Yes,Yes,Match,No,Yes,No,63,70,5,483.95,Invalid
+CLM-01026,Refrigerator,14,48,Unknown,No,Yes,No,Unknown,Unknown,Yes,Yes,79,76,4,2405.6,Manual Review
+CLM-00782,Laptop,48,36,Expired,Yes,Yes,Yes,Match,No,Yes,No,68,61,0,551.04,Invalid
+CLM-00165,Laptop,34,48,Active,No,No,No,Match,Yes,No,No,85,15,3,655.98,Valid
+CLM-00326,Washing Machine,55,24,Unknown,Yes,Yes,Yes,Mismatch,Yes,Yes,Yes,41,76,4,1733.87,Manual Review
+CLM-01362,Laptop,13,36,Expired,Yes,Yes,No,Mismatch,No,Yes,No,70,82,0,1865.71,Invalid
+CLM-00486,TV,34,36,Inactive,Yes,No,No,Match,No,Yes,Yes,71,60,1,1944.26,Invalid
+CLM-01176,Camera,53,12,Active,No,Yes,No,Match,Unknown,No,No,31,49,0,998.68,Manual Review
+CLM-00941,TV,34,24,Unknown,Yes,No,No,Match,Yes,Yes,No,77,34,1,1409.8,Manual Review
+CLM-01161,Camera,21,36,Active,No,Yes,Yes,Match,Yes,No,No,78,5,1,343.85,Valid
+CLM-01233,Camera,58,36,Expired,Yes,No,Yes,Mismatch,No,No,Yes,88,76,2,822.33,Invalid
+CLM-01268,Washing Machine,42,60,Active,No,Yes,No,Match,Yes,No,No,75,2,0,1932.49,Valid
+CLM-00921,Camera,23,24,Active,No,Yes,No,Mismatch,Unknown,Yes,Yes,63,74,2,211.53,Manual Review
+CLM-01377,Washing Machine,10,60,Expired,Yes,No,No,Match,No,No,Yes,53,75,5,916.98,Invalid
+CLM-00525,TV,38,36,Inactive,No,Yes,No,Match,No,No,Yes,69,57,3,2213.82,Invalid
+CLM-00224,Washing Machine,13,12,Inactive,Yes,No,Yes,Match,No,Yes,Yes,71,89,2,2130.49,Invalid
+CLM-01348,Refrigerator,30,24,Expired,Yes,No,Yes,Match,No,Yes,Yes,65,42,2,1432.79,Manual Review
+CLM-00845,Washing Machine,51,36,Inactive,Yes,No,Yes,Match,Unknown,Yes,No,81,60,2,1992.88,Invalid
+CLM-00499,TV,6,24,Expired,No,No,Yes,Mismatch,No,Yes,No,75,35,5,1967.73,Manual Review
+CLM-00087,Refrigerator,57,36,Expired,No,Yes,No,Match,Unknown,Yes,No,90,98,4,218.95,Invalid
+CLM-00740,Washing Machine,4,48,Active,Yes,Yes,Yes,Match,Yes,No,No,87,31,1,799.7,Valid
+CLM-01404,Laptop,11,60,Active,Yes,No,Yes,Match,Yes,No,No,75,6,0,172.26,Valid
+CLM-00534,TV,65,48,Unknown,Yes,No,Yes,Unknown,Yes,No,No,39,57,3,683.83,Manual Review
+CLM-01115,Camera,55,18,Inactive,Yes,No,Yes,Match,Unknown,No,No,60,57,4,1992.61,Invalid
+CLM-00978,Washing Machine,62,24,Active,Yes,No,No,Match,Yes,No,No,88,7,3,162.81,Valid
+CLM-00686,Refrigerator,48,24,Active,Yes,Yes,Yes,Match,Yes,No,No,78,8,5,177.51,Valid
+CLM-00644,Refrigerator,4,48,Expired,Yes,Yes,Yes,Match,Unknown,No,Yes,30,46,0,1623.58,Manual Review
+CLM-01309,Mobile,21,12,Active,No,Yes,Yes,Match,Yes,No,No,89,31,3,960.35,Valid
+CLM-00558,Mobile,61,18,Expired,No,No,Yes,Match,Unknown,No,No,75,77,4,826.44,Manual Review
+CLM-00413,Refrigerator,56,60,Expired,Yes,No,No,Mismatch,Unknown,Yes,Yes,71,75,5,732.8,Invalid
+CLM-01425,TV,56,48,Expired,No,No,Yes,Match,No,No,Yes,55,99,5,2445.16,Invalid
+CLM-01329,TV,63,36,Expired,Yes,No,No,Match,Unknown,Yes,Yes,58,70,1,790.74,Invalid
+CLM-00155,Laptop,60,18,Inactive,No,Yes,No,Match,Unknown,Yes,Yes,69,90,3,704.77,Invalid
+CLM-01137,Laptop,8,12,Inactive,No,No,No,Match,Unknown,Yes,Yes,60,65,2,2198.72,Invalid
+CLM-01428,Washing Machine,4,36,Active,Yes,Yes,No,Unknown,Unknown,Yes,No,75,38,4,765.32,Manual Review
+CLM-01396,Mobile,28,12,Active,No,No,Yes,Match,Unknown,Yes,No,53,40,3,2236.65,Manual Review
+CLM-00020,Camera,62,24,Active,Yes,Yes,Yes,Match,Yes,No,No,82,27,3,1404.85,Valid
+CLM-00981,TV,3,18,Active,No,No,No,Match,Yes,No,No,96,33,3,1145.12,Valid
+CLM-01013,Camera,44,18,Active,Yes,Yes,Yes,Match,Yes,No,No,94,27,3,1413.96,Valid
+CLM-00910,Camera,60,36,Expired,No,Yes,Yes,Match,No,Yes,Yes,44,64,0,2032.89,Manual Review
+CLM-01087,TV,56,12,Unknown,No,Yes,No,Match,Unknown,Yes,Yes,59,32,1,62.18,Manual Review
+CLM-00327,Camera,19,18,Active,No,Yes,No,Match,Yes,No,No,96,22,3,1842.33,Valid
+CLM-01234,Washing Machine,50,18,Unknown,No,No,Yes,Mismatch,Yes,Yes,Yes,47,42,1,2164.67,Manual Review
+CLM-00247,Washing Machine,28,12,Unknown,Yes,No,Yes,Unknown,No,No,Yes,42,68,1,1913.04,Manual Review
+CLM-00890,Laptop,38,18,Active,Yes,No,Yes,Match,Yes,No,No,89,6,1,1000.35,Valid
+CLM-00469,Laptop,27,12,Inactive,No,No,No,Match,No,No,No,82,96,0,1186.64,Invalid
+CLM-01252,Washing Machine,5,18,Active,No,Yes,No,Match,Unknown,No,No,69,42,2,839.98,Manual Review
+CLM-01258,Camera,14,18,Active,Yes,No,Yes,Match,Yes,No,No,79,27,1,2451.79,Valid
+CLM-01054,Mobile,32,24,Expired,No,No,Yes,Mismatch,No,No,No,76,67,4,1590.43,Invalid
+CLM-01006,Laptop,18,60,Active,Yes,No,Yes,Match,Yes,No,No,76,16,0,1229.52,Valid
+CLM-00599,Laptop,23,48,Active,No,No,No,Match,Yes,No,No,81,23,0,1548.56,Valid
+CLM-00797,Camera,12,24,Inactive,Yes,Yes,No,Mismatch,Unknown,Yes,Yes,56,65,2,350.33,Invalid
+CLM-00061,Refrigerator,4,36,Inactive,Yes,No,Yes,Match,Unknown,Yes,Yes,60,70,4,1557.29,Invalid
+CLM-00239,Camera,13,12,Unknown,No,No,Yes,Match,No,Yes,No,63,38,3,1953.77,Manual Review
+CLM-00948,Mobile,25,60,Expired,No,No,No,Unknown,No,No,No,58,32,0,71.6,Manual Review
+CLM-00163,Laptop,11,36,Active,No,No,Yes,Match,Unknown,Yes,No,40,42,3,2381.0,Manual Review
+CLM-00418,Laptop,57,24,Active,No,No,Yes,Unknown,Yes,No,No,34,47,5,1941.77,Manual Review
+CLM-00241,TV,60,12,Expired,Yes,No,No,Mismatch,Unknown,Yes,No,88,92,3,1069.56,Invalid
+CLM-00731,Refrigerator,38,36,Active,Yes,No,Yes,Match,Yes,No,No,85,39,3,333.02,Valid
+CLM-00597,TV,27,12,Active,No,No,Yes,Match,Yes,No,No,80,25,4,2033.94,Valid
+CLM-00293,Washing Machine,18,60,Active,No,No,No,Match,Yes,No,No,84,13,3,419.18,Valid
+CLM-01027,Camera,55,48,Active,No,Yes,No,Match,Yes,No,No,84,29,0,2377.39,Valid
+CLM-01178,Camera,52,18,Active,Yes,No,No,Match,Yes,No,No,83,16,3,546.07,Valid
+CLM-01353,Laptop,71,36,Active,Yes,No,Yes,Match,Yes,Yes,No,33,38,0,1433.2,Manual Review
+CLM-01338,Mobile,16,48,Unknown,No,No,No,Mismatch,No,No,No,47,78,3,2145.32,Manual Review
+CLM-01062,Washing Machine,48,48,Expired,Yes,No,No,Match,No,Yes,Yes,58,98,2,2118.7,Invalid
+CLM-01188,Mobile,68,24,Active,No,No,No,Match,Yes,No,No,98,18,3,164.26,Valid
+CLM-00692,Laptop,61,24,Inactive,No,No,No,Mismatch,No,Yes,No,71,64,0,1786.27,Invalid
+CLM-01109,Laptop,11,18,Active,Yes,No,Yes,Match,Yes,No,No,75,22,1,88.25,Valid
+CLM-01095,Laptop,67,18,Active,Yes,Yes,Yes,Mismatch,Unknown,No,Yes,61,71,1,1105.76,Manual Review
+CLM-01310,Camera,16,48,Active,Yes,Yes,Yes,Match,Yes,No,No,76,8,4,1483.49,Valid
+CLM-01499,Laptop,13,18,Expired,No,Yes,No,Match,Unknown,Yes,Yes,70,34,5,376.69,Manual Review
+CLM-00674,Refrigerator,71,60,Active,Yes,No,No,Match,Yes,No,No,90,1,3,821.59,Valid
+CLM-00755,Washing Machine,35,48,Expired,Yes,No,No,Mismatch,No,Yes,Yes,52,77,4,2413.33,Invalid
+CLM-00419,Refrigerator,24,36,Expired,Yes,Yes,No,Mismatch,No,Yes,Yes,76,63,2,888.07,Invalid
+CLM-00167,Camera,27,12,Active,Yes,Yes,No,Mismatch,No,Yes,No,77,56,4,51.08,Manual Review
+CLM-00552,Refrigerator,60,18,Expired,Yes,Yes,No,Match,No,Yes,Yes,31,59,3,1677.9,Manual Review
+CLM-01201,Washing Machine,7,18,Expired,No,Yes,No,Match,No,Yes,Yes,59,74,1,680.66,Invalid
+CLM-01068,Camera,38,18,Active,No,Yes,Yes,Match,Yes,No,No,87,1,4,776.45,Valid
+CLM-00741,Laptop,34,12,Active,Yes,No,No,Match,Yes,No,No,100,13,3,548.66,Valid
+CLM-00524,TV,54,36,Expired,No,No,Yes,Match,No,No,Yes,84,87,1,1104.34,Invalid
+CLM-00640,Mobile,3,24,Unknown,Yes,Yes,No,Match,Yes,No,No,34,41,1,963.55,Manual Review
+CLM-01375,TV,45,12,Expired,Yes,No,Yes,Match,Unknown,No,Yes,51,76,4,603.04,Invalid
+CLM-01044,Mobile,35,12,Active,No,No,Yes,Match,Yes,No,No,96,7,3,104.29,Valid
+CLM-00752,Washing Machine,30,36,Active,Yes,Yes,No,Match,Yes,No,No,81,29,1,1496.43,Valid
+CLM-00614,Washing Machine,9,48,Unknown,Yes,Yes,No,Mismatch,Yes,Yes,No,67,50,2,1701.76,Manual Review
+CLM-00464,Mobile,66,24,Expired,Yes,No,No,Mismatch,Unknown,No,No,86,66,1,403.56,Invalid
+CLM-00802,Mobile,4,36,Inactive,No,No,Yes,Mismatch,No,Yes,No,58,91,3,245.48,Invalid
+CLM-00168,Mobile,71,12,Active,Yes,No,No,Unknown,No,Yes,No,80,30,4,129.91,Manual Review
+CLM-00245,Camera,22,36,Expired,Yes,Yes,Yes,Mismatch,No,No,No,69,95,1,1991.86,Invalid
+CLM-00947,Camera,48,60,Active,Yes,Yes,Yes,Match,Yes,No,No,86,34,3,1995.7,Valid
+CLM-00070,Mobile,66,18,Active,Yes,Yes,No,Match,Yes,No,No,91,30,5,688.75,Valid
+CLM-01202,Washing Machine,24,48,Expired,No,No,No,Match,No,No,No,64,58,4,1491.79,Invalid
+CLM-01143,Mobile,43,12,Inactive,Yes,Yes,Yes,Match,Unknown,No,Yes,56,55,5,971.56,Invalid
+CLM-00953,Mobile,7,60,Active,No,Yes,Yes,Match,Yes,No,No,90,13,3,144.14,Valid
+CLM-01358,Camera,66,60,Inactive,Yes,Yes,No,Mismatch,Unknown,No,Yes,69,68,1,1944.72,Invalid
+CLM-01200,Laptop,49,36,Active,No,No,No,Mismatch,Yes,No,Yes,42,48,1,689.05,Manual Review
+CLM-00537,Mobile,19,12,Expired,No,Yes,No,Match,No,No,No,53,32,3,1279.46,Manual Review
+CLM-01136,Refrigerator,9,18,Expired,No,Yes,Yes,Unknown,Unknown,No,No,71,67,5,392.36,Manual Review
+CLM-00369,Laptop,63,18,Active,Yes,No,No,Match,Yes,No,No,91,32,0,1338.9,Valid
+CLM-00615,TV,30,36,Inactive,Yes,Yes,Yes,Mismatch,Unknown,No,No,57,71,0,1725.5,Invalid
+CLM-00676,Camera,69,48,Active,Yes,Yes,Yes,Match,Yes,No,No,87,14,3,1232.88,Valid
+CLM-00273,Refrigerator,63,36,Active,Yes,Yes,Yes,Match,Yes,No,No,85,16,4,2150.12,Valid
+CLM-01169,Washing Machine,1,60,Active,Yes,Yes,Yes,Match,Yes,No,No,97,9,0,1894.34,Valid
+CLM-00863,Camera,51,36,Active,Yes,No,Yes,Match,Yes,No,No,78,8,5,2410.54,Valid
+CLM-00872,Camera,17,18,Active,Yes,Yes,No,Match,Yes,No,No,99,34,3,2095.81,Valid
+CLM-00856,Washing Machine,51,18,Expired,No,No,Yes,Mismatch,Unknown,No,Yes,60,73,0,1670.1,Invalid
+CLM-01325,Camera,29,24,Inactive,No,Yes,Yes,Mismatch,Unknown,Yes,Yes,56,67,4,2227.4,Invalid
+CLM-00054,Mobile,2,24,Active,Yes,Yes,Yes,Match,No,Yes,No,74,31,2,2071.95,Manual Review
+CLM-00394,Mobile,68,18,Inactive,Yes,No,Yes,Match,Unknown,No,Yes,57,94,5,1230.94,Invalid
+CLM-00492,TV,31,12,Inactive,No,Yes,No,Match,No,Yes,No,79,97,5,785.16,Invalid
+CLM-00616,Laptop,31,12,Expired,No,No,Yes,Mismatch,No,Yes,Yes,31,79,0,904.08,Manual Review
+CLM-00901,Washing Machine,36,12,Active,No,No,No,Match,Yes,No,No,86,1,5,2121.78,Valid
+CLM-01407,Camera,38,36,Active,Yes,No,Yes,Match,Yes,No,No,94,13,0,848.11,Valid
+CLM-00030,Mobile,37,48,Active,No,Yes,Yes,Match,Unknown,Yes,No,49,57,0,1778.19,Manual Review
+CLM-00052,Refrigerator,3,60,Expired,Yes,Yes,No,Match,Unknown,Yes,No,56,62,2,423.42,Invalid
+CLM-00568,TV,66,24,Expired,Yes,Yes,Yes,Match,No,No,No,89,71,4,2328.51,Invalid
+CLM-00133,Washing Machine,11,60,Active,Yes,Yes,No,Match,Yes,No,No,48,56,5,370.1,Manual Review
+CLM-00522,TV,10,12,Active,No,Yes,No,Match,No,No,No,55,51,5,1427.25,Manual Review
+CLM-01463,Camera,46,12,Inactive,No,Yes,Yes,Mismatch,No,Yes,No,75,97,5,559.32,Invalid
+CLM-01366,TV,49,24,Unknown,Yes,Yes,Yes,Unknown,No,No,No,62,53,0,1760.04,Manual Review
+CLM-00484,Mobile,25,48,Expired,Yes,Yes,Yes,Unknown,Yes,Yes,No,44,78,2,2378.18,Manual Review
+CLM-01209,Mobile,10,60,Inactive,No,Yes,Yes,Match,No,No,No,59,100,4,726.06,Invalid
+CLM-01010,Laptop,29,12,Active,Yes,No,Yes,Match,Yes,No,No,88,5,3,956.32,Valid
+CLM-00051,Washing Machine,31,12,Inactive,Yes,No,No,Match,Unknown,No,No,80,59,5,1085.59,Invalid
+CLM-01002,TV,18,24,Expired,Yes,No,No,Match,No,No,No,52,88,1,466.22,Invalid
+CLM-00858,Mobile,55,24,Expired,Yes,No,No,Match,No,Yes,No,30,46,0,2433.59,Manual Review
+CLM-01163,Mobile,22,48,Inactive,No,No,No,Mismatch,No,No,Yes,83,55,4,2456.55,Invalid
+CLM-00243,Refrigerator,53,60,Inactive,Yes,No,Yes,Mismatch,No,No,Yes,82,92,4,1046.06,Invalid
+CLM-00553,Mobile,58,24,Expired,Yes,No,Yes,Mismatch,No,No,Yes,68,56,0,2140.99,Invalid
+CLM-00384,Laptop,35,60,Expired,Yes,No,No,Mismatch,Unknown,Yes,Yes,82,62,3,522.53,Invalid
+CLM-01099,Mobile,7,24,Expired,No,Yes,Yes,Mismatch,No,No,Yes,62,98,1,1993.41,Invalid
+CLM-01386,TV,11,36,Unknown,Yes,Yes,Yes,Match,Yes,Yes,Yes,50,80,1,1339.96,Manual Review
+CLM-00209,Laptop,17,48,Active,Yes,No,Yes,Match,Yes,No,No,90,28,2,550.58,Valid
+CLM-00032,Mobile,51,60,Expired,No,No,No,Match,No,Yes,Yes,49,87,4,1225.75,Invalid
+CLM-00924,Washing Machine,30,48,Expired,No,Yes,No,Unknown,No,Yes,No,41,56,5,2141.03,Manual Review
+CLM-00067,Mobile,17,36,Active,Yes,No,Yes,Match,Yes,No,No,96,7,2,308.95,Valid
+CLM-00092,Mobile,24,48,Active,Yes,No,No,Match,Yes,No,No,97,32,1,1379.24,Valid
+CLM-01229,Refrigerator,63,18,Inactive,Yes,No,Yes,Mismatch,No,No,Yes,75,78,4,1701.36,Invalid
+CLM-00480,Refrigerator,5,18,Expired,No,Yes,Yes,Mismatch,No,Yes,No,69,89,0,2019.05,Invalid
+CLM-01182,Laptop,31,18,Active,No,No,Yes,Match,Yes,No,No,93,25,1,1353.69,Valid
+CLM-01488,TV,30,48,Active,Yes,No,Yes,Match,Yes,No,No,100,21,1,2072.02,Valid
+CLM-00949,TV,1,48,Active,No,Yes,No,Mismatch,No,Yes,Yes,38,34,5,668.46,Manual Review
+CLM-00528,Laptop,52,24,Expired,Yes,No,Yes,Match,No,Yes,Yes,50,70,0,1529.29,Invalid
+CLM-00529,Laptop,71,12,Active,Yes,No,No,Match,Yes,No,No,98,24,2,138.12,Valid
+CLM-00064,Washing Machine,45,36,Active,Yes,Yes,Yes,Match,Yes,No,No,95,17,3,1632.92,Valid
+CLM-01324,Camera,30,18,Active,No,Yes,No,Match,Yes,No,No,90,22,3,1759.62,Valid
+CLM-01272,Washing Machine,59,18,Inactive,No,Yes,Yes,Match,Unknown,Yes,Yes,51,94,0,566.08,Invalid
+CLM-00680,Mobile,52,24,Active,No,No,Yes,Match,Yes,No,No,84,28,3,607.7,Valid
+CLM-00387,Washing Machine,8,36,Active,Yes,No,No,Mismatch,No,Yes,No,65,39,4,1662.85,Manual Review
+CLM-00734,Camera,43,48,Active,No,No,Yes,Match,Yes,No,No,77,20,0,200.78,Valid
+CLM-00928,Refrigerator,21,60,Active,Yes,No,No,Match,Yes,No,No,80,33,5,2147.56,Valid
+CLM-01427,Laptop,6,24,Expired,Yes,No,Yes,Match,Unknown,Yes,Yes,83,79,2,141.43,Invalid
+CLM-00533,Mobile,57,48,Active,Yes,No,No,Unknown,Unknown,No,Yes,33,35,0,260.98,Manual Review
+CLM-00377,Camera,16,18,Active,No,Yes,Yes,Mismatch,No,Yes,Yes,54,39,3,1567.05,Manual Review
+CLM-00185,Camera,5,12,Expired,No,No,Yes,Unknown,Yes,Yes,Yes,41,46,5,655.47,Manual Review
+CLM-01282,TV,65,24,Active,Yes,No,Yes,Match,Yes,No,No,91,1,4,360.22,Valid
+CLM-01331,Laptop,47,18,Active,No,No,Yes,Unknown,Yes,No,No,45,74,1,152.78,Manual Review
+CLM-00849,Washing Machine,4,18,Expired,Yes,No,No,Unknown,Unknown,Yes,Yes,36,41,2,593.04,Manual Review
+CLM-01438,TV,19,60,Unknown,Yes,Yes,No,Match,Yes,No,No,40,37,0,1653.96,Manual Review
+CLM-00126,TV,43,24,Active,No,Yes,Yes,Unknown,Unknown,Yes,No,47,57,0,1708.95,Manual Review
+CLM-00796,Camera,44,60,Unknown,No,Yes,No,Mismatch,Unknown,No,Yes,48,35,0,763.89,Manual Review
+CLM-01025,Camera,52,60,Unknown,No,Yes,No,Unknown,No,No,Yes,58,79,1,664.29,Manual Review
+CLM-00882,Mobile,23,18,Active,No,Yes,Yes,Match,Yes,No,No,91,35,0,567.65,Valid
+CLM-00607,Mobile,12,48,Expired,No,No,No,Match,Yes,No,No,78,76,0,207.42,Manual Review
+CLM-00192,TV,22,36,Expired,No,No,Yes,Mismatch,Unknown,Yes,Yes,66,75,4,1049.97,Invalid
+CLM-01129,Refrigerator,36,60,Unknown,Yes,Yes,No,Mismatch,Yes,No,Yes,49,64,0,1518.26,Manual Review
+CLM-00986,TV,31,12,Active,No,Yes,Yes,Match,Yes,No,No,89,13,5,987.34,Valid
+CLM-00399,Washing Machine,40,48,Active,Yes,Yes,No,Mismatch,Unknown,Yes,Yes,52,58,5,1934.2,Manual Review
+CLM-01316,Camera,53,48,Active,No,No,Yes,Mismatch,Yes,No,Yes,40,73,2,933.98,Manual Review
+CLM-00787,Refrigerator,17,36,Inactive,Yes,No,Yes,Match,No,Yes,Yes,54,80,5,707.96,Invalid
+CLM-00335,TV,25,60,Expired,Yes,Yes,Yes,Mismatch,Unknown,No,No,73,73,1,492.92,Invalid
+CLM-00635,TV,56,60,Inactive,Yes,No,No,Mismatch,Unknown,No,No,66,88,5,598.26,Invalid
+CLM-00511,Washing Machine,9,12,Active,No,Yes,Yes,Match,Yes,No,No,94,15,4,1464.11,Valid
+CLM-01442,TV,8,24,Expired,No,Yes,No,Match,Unknown,Yes,Yes,76,83,2,649.66,Invalid
+CLM-01460,Camera,32,12,Inactive,No,Yes,Yes,Match,No,No,Yes,66,60,0,2393.7,Invalid
+CLM-00125,Laptop,56,36,Active,Yes,Yes,No,Match,Yes,No,No,75,23,4,2230.74,Valid
+CLM-00989,Camera,53,36,Inactive,No,No,No,Match,No,Yes,Yes,72,70,4,2095.41,Invalid
+CLM-01406,Mobile,67,60,Inactive,Yes,Yes,Yes,Match,Unknown,No,No,58,71,4,1141.03,Invalid
+CLM-01403,TV,62,18,Active,No,Yes,Yes,Match,Yes,No,No,92,12,2,1726.9,Valid
+CLM-00788,Washing Machine,27,18,Expired,No,No,No,Unknown,Yes,No,Yes,79,77,1,1510.07,Manual Review
+CLM-00485,Laptop,23,60,Inactive,No,Yes,Yes,Match,No,No,Yes,83,67,1,1490.36,Invalid
+CLM-01055,Refrigerator,59,12,Active,Yes,Yes,No,Match,Yes,No,No,99,22,0,389.18,Valid
+CLM-00354,Mobile,66,12,Unknown,Yes,No,No,Match,Yes,No,Yes,34,71,5,1868.62,Manual Review
+CLM-00675,Laptop,37,24,Active,No,Yes,Yes,Match,Yes,No,No,100,18,5,96.37,Valid
+CLM-00687,Laptop,3,36,Expired,No,Yes,No,Match,No,No,No,58,35,5,327.98,Manual Review
+CLM-00868,TV,47,18,Expired,No,No,No,Mismatch,No,Yes,Yes,59,55,3,830.25,Manual Review
+CLM-01405,Camera,50,60,Active,Yes,Yes,No,Match,Yes,No,No,80,17,3,1434.73,Valid
+CLM-01246,Refrigerator,9,18,Active,Yes,No,Yes,Match,Yes,No,No,90,14,4,1108.53,Valid
+CLM-01063,Laptop,69,48,Expired,Yes,Yes,Yes,Match,Unknown,Yes,No,73,86,3,2250.39,Invalid
+CLM-00238,TV,44,36,Expired,No,Yes,Yes,Mismatch,Yes,No,No,75,53,0,1175.98,Manual Review
+CLM-00774,Refrigerator,53,48,Expired,Yes,Yes,No,Match,No,Yes,No,67,82,4,1428.89,Invalid
+CLM-00367,Camera,29,18,Active,Yes,Yes,Yes,Match,Yes,No,No,76,32,4,407.75,Valid
+CLM-00885,Camera,56,60,Expired,Yes,No,No,Match,Unknown,Yes,Yes,57,56,1,619.22,Invalid
+CLM-00848,Refrigerator,44,12,Expired,Yes,No,Yes,Match,No,Yes,No,82,58,1,905.44,Invalid
+CLM-01144,Camera,47,48,Active,No,Yes,No,Match,Yes,No,No,95,25,4,1379.62,Valid
+CLM-01090,Mobile,4,48,Expired,Yes,No,No,Unknown,No,No,No,43,45,0,306.04,Manual Review
+CLM-00440,Laptop,36,60,Inactive,Yes,Yes,Yes,Match,Unknown,No,Yes,75,64,5,2289.0,Invalid
+CLM-01352,TV,29,36,Active,No,Yes,No,Match,Yes,No,No,81,32,5,1844.71,Valid
+CLM-01424,TV,57,18,Active,No,No,No,Match,Yes,No,No,84,9,1,1251.06,Valid
+CLM-01076,Camera,51,48,Active,No,Yes,Yes,Match,No,No,Yes,38,67,1,2162.64,Manual Review
+CLM-00753,Mobile,47,48,Active,Yes,Yes,Yes,Match,Yes,Yes,Yes,75,38,5,140.78,Manual Review
+CLM-01102,Refrigerator,15,18,Inactive,No,Yes,Yes,Mismatch,Unknown,Yes,No,64,63,0,739.81,Invalid
+CLM-01445,Washing Machine,36,60,Active,No,No,Yes,Match,Yes,No,No,96,22,5,228.75,Valid
+CLM-00281,Washing Machine,52,36,Unknown,Yes,Yes,Yes,Mismatch,Yes,Yes,No,43,39,2,1236.76,Manual Review
+CLM-01064,Mobile,4,24,Active,Yes,Yes,No,Match,Yes,No,No,91,1,1,1146.48,Valid
+CLM-01148,Camera,52,12,Unknown,No,Yes,No,Match,Yes,Yes,Yes,65,34,5,1554.29,Manual Review
+CLM-01069,TV,67,18,Expired,Yes,Yes,No,Mismatch,Unknown,No,No,61,60,0,2397.31,Manual Review
+CLM-00444,Laptop,10,48,Expired,No,No,No,Match,Yes,No,Yes,44,59,3,514.14,Manual Review
+CLM-00290,Mobile,42,48,Expired,No,No,Yes,Match,Yes,No,No,71,69,5,348.92,Manual Review
+CLM-00803,Refrigerator,29,60,Expired,No,No,No,Match,Unknown,Yes,No,54,95,1,1584.89,Invalid
+CLM-00172,Refrigerator,8,12,Active,No,Yes,No,Unknown,No,No,No,44,79,5,557.34,Manual Review
+CLM-00091,Washing Machine,49,24,Expired,Yes,Yes,Yes,Mismatch,Yes,Yes,Yes,52,55,3,906.29,Manual Review
+CLM-01333,Washing Machine,72,60,Expired,Yes,No,Yes,Mismatch,Unknown,Yes,No,32,76,1,2308.54,Manual Review
+CLM-00707,Camera,2,18,Active,Yes,Yes,Yes,Match,Yes,No,No,77,39,1,684.64,Valid
+CLM-00276,Mobile,58,60,Expired,Yes,Yes,Yes,Unknown,Yes,Yes,No,43,71,0,1671.21,Manual Review
+CLM-01360,Camera,24,48,Active,Yes,Yes,No,Match,Yes,No,No,95,20,5,1701.17,Valid
+CLM-00102,Camera,3,36,Expired,No,No,No,Match,Unknown,Yes,Yes,68,88,4,326.71,Invalid
+CLM-00628,Washing Machine,72,36,Unknown,No,No,Yes,Mismatch,No,No,No,36,62,0,726.79,Manual Review
+CLM-01160,Washing Machine,57,36,Expired,Yes,Yes,No,Match,Unknown,No,No,71,37,3,700.09,Manual Review
+CLM-01014,Laptop,6,24,Active,No,No,Yes,Mismatch,Yes,Yes,Yes,52,42,3,2496.47,Manual Review
+CLM-00667,Laptop,11,18,Inactive,Yes,No,No,Match,Unknown,No,Yes,50,92,2,306.42,Invalid
+CLM-00463,Camera,55,24,Active,Yes,Yes,No,Match,Yes,No,No,81,5,0,2049.34,Valid
+CLM-00526,Refrigerator,59,60,Expired,Yes,Yes,No,Mismatch,Unknown,No,No,62,99,1,1150.25,Invalid
+CLM-01384,Mobile,63,24,Active,Yes,Yes,No,Unknown,No,Yes,Yes,47,68,3,745.6,Manual Review
+CLM-00088,Refrigerator,14,18,Inactive,No,No,No,Match,Unknown,No,No,51,89,1,2119.73,Invalid
+CLM-00300,Washing Machine,70,48,Expired,No,Yes,Yes,Mismatch,Unknown,Yes,Yes,61,56,2,1859.34,Invalid
+CLM-01108,Mobile,49,18,Inactive,Yes,Yes,Yes,Mismatch,Unknown,Yes,No,87,88,4,1114.33,Invalid
+CLM-00681,TV,63,48,Inactive,No,Yes,No,Match,No,Yes,No,88,72,5,898.85,Invalid
+CLM-00214,TV,54,60,Unknown,No,No,Yes,Unknown,Yes,No,Yes,32,48,5,967.48,Manual Review
+CLM-00641,Refrigerator,45,12,Active,No,No,No,Mismatch,Yes,No,Yes,68,56,2,2102.79,Manual Review
+CLM-01492,Laptop,57,36,Active,No,No,Yes,Match,Yes,No,No,81,22,0,1288.59,Valid
+CLM-00655,Mobile,50,60,Active,Yes,Yes,Yes,Match,Yes,No,No,99,6,4,1811.61,Valid
+CLM-01351,Laptop,18,24,Active,No,No,No,Match,Yes,No,No,95,28,0,1065.99,Valid
+CLM-00775,Camera,17,12,Inactive,Yes,No,Yes,Match,No,Yes,No,59,88,2,339.97,Invalid
+CLM-00964,Laptop,15,24,Inactive,Yes,Yes,No,Mismatch,No,No,Yes,55,89,5,1940.29,Invalid
+CLM-00691,Camera,5,60,Active,Yes,No,No,Unknown,Yes,No,Yes,41,31,5,205.66,Manual Review
+CLM-00764,Camera,15,36,Active,No,No,No,Match,Yes,No,No,98,37,5,2087.87,Valid
+CLM-00202,Washing Machine,1,36,Expired,No,No,Yes,Mismatch,No,No,Yes,79,58,1,1362.11,Invalid
+CLM-00544,Laptop,38,12,Expired,No,No,Yes,Mismatch,Unknown,Yes,Yes,89,82,1,1123.15,Invalid
+CLM-00321,Mobile,44,12,Expired,No,Yes,No,Match,No,No,Yes,66,78,5,1162.98,Invalid
+CLM-00388,Camera,39,36,Expired,No,Yes,Yes,Match,No,No,Yes,73,79,0,853.32,Manual Review
+CLM-00876,Mobile,26,36,Active,Yes,Yes,Yes,Match,Yes,Yes,No,31,74,0,1936.48,Manual Review
+CLM-00679,Mobile,13,36,Active,Yes,No,No,Match,Yes,No,No,88,3,1,2018.0,Valid
+CLM-00365,Washing Machine,12,60,Expired,No,No,Yes,Unknown,Unknown,No,No,79,46,3,1675.24,Manual Review
+CLM-01139,Refrigerator,57,24,Active,Yes,Yes,No,Match,Yes,No,No,83,4,1,592.15,Valid
+CLM-00395,Laptop,53,12,Unknown,No,No,Yes,Mismatch,Unknown,No,Yes,41,53,4,453.27,Manual Review
+CLM-00648,Mobile,29,18,Unknown,No,Yes,Yes,Unknown,No,Yes,Yes,67,69,2,2212.05,Manual Review
+CLM-00649,Washing Machine,33,48,Active,Yes,No,Yes,Match,Yes,No,No,75,19,5,1752.33,Valid
+CLM-00117,Camera,9,48,Inactive,Yes,Yes,Yes,Mismatch,No,Yes,Yes,86,97,4,895.8,Invalid
+CLM-00374,Mobile,27,36,Inactive,Yes,Yes,Yes,Mismatch,Unknown,No,No,87,98,1,2302.06,Invalid
+CLM-01355,Laptop,48,12,Active,No,No,No,Match,No,Yes,Yes,69,63,4,219.82,Manual Review
+CLM-00123,Washing Machine,62,12,Active,Yes,Yes,Yes,Mismatch,Yes,No,Yes,72,30,0,215.09,Manual Review
+CLM-00577,Camera,57,48,Active,Yes,Yes,Yes,Match,Yes,No,No,82,24,5,126.12,Valid
+CLM-01219,Mobile,18,24,Active,Yes,Yes,No,Mismatch,Unknown,Yes,Yes,59,34,1,159.54,Manual Review
+CLM-01043,Washing Machine,32,36,Expired,Yes,Yes,Yes,Mismatch,Unknown,No,Yes,48,98,0,1294.34,Invalid
+CLM-00682,TV,33,60,Inactive,Yes,Yes,Yes,Mismatch,No,Yes,No,70,69,2,1205.44,Invalid
+CLM-00659,Refrigerator,69,48,Active,Yes,No,No,Match,Yes,No,No,83,12,5,1290.82,Valid
+CLM-01168,Washing Machine,31,18,Expired,No,Yes,Yes,Match,No,Yes,Yes,66,74,5,1596.9,Invalid
+CLM-00366,Washing Machine,23,18,Expired,Yes,Yes,Yes,Match,No,No,Yes,62,60,3,2425.56,Invalid
+CLM-01028,Washing Machine,6,36,Active,No,No,Yes,Match,Yes,No,No,77,29,5,2426.06,Valid
+CLM-01401,Camera,16,12,Unknown,Yes,No,Yes,Match,Yes,Yes,No,69,77,4,2318.68,Manual Review
+CLM-01416,Refrigerator,37,24,Active,No,No,No,Match,Yes,No,No,81,8,3,1389.29,Valid
+CLM-00821,Camera,71,36,Active,No,Yes,No,Match,Yes,No,No,90,34,3,1278.31,Valid
+CLM-00759,TV,38,60,Active,No,Yes,Yes,Match,Yes,No,No,93,11,4,1481.35,Valid
+CLM-00008,Laptop,63,36,Inactive,No,Yes,No,Mismatch,No,No,No,63,84,4,301.15,Invalid
+CLM-00867,Refrigerator,32,36,Expired,Yes,No,No,Mismatch,Unknown,No,Yes,58,71,4,380.25,Invalid
+CLM-00019,Laptop,44,12,Active,No,Yes,Yes,Match,Yes,No,No,92,14,2,2245.74,Valid
+CLM-00282,TV,55,36,Unknown,Yes,No,Yes,Unknown,No,Yes,No,50,66,5,899.07,Manual Review
+CLM-01482,TV,35,36,Inactive,No,Yes,Yes,Mismatch,Unknown,Yes,No,84,96,4,1386.03,Invalid
+CLM-00181,Refrigerator,18,12,Active,Yes,Yes,No,Match,Yes,No,No,89,35,2,77.97,Valid
+CLM-00240,Mobile,32,12,Unknown,No,No,No,Unknown,No,Yes,Yes,68,42,2,1330.76,Manual Review
+CLM-00556,Laptop,36,48,Active,No,No,No,Match,Yes,No,No,78,14,5,1528.34,Valid
+CLM-01357,Camera,68,48,Expired,Yes,No,No,Match,Unknown,No,Yes,81,61,5,611.5,Invalid
+CLM-00147,TV,19,12,Inactive,Yes,No,No,Match,No,Yes,No,55,55,3,1982.88,Invalid
+CLM-00446,TV,58,60,Active,No,Yes,Yes,Mismatch,Yes,Yes,No,65,70,4,1568.38,Manual Review
+CLM-00306,Refrigerator,54,12,Active,Yes,Yes,Yes,Match,Yes,No,No,81,10,1,1482.13,Valid
+CLM-01364,Laptop,54,18,Active,No,Yes,No,Match,Yes,No,No,80,34,5,1879.53,Valid
+CLM-00026,Laptop,8,36,Active,No,No,Yes,Match,Yes,No,No,75,34,1,631.98,Valid
+CLM-00618,TV,36,24,Expired,No,No,Yes,Match,Unknown,No,Yes,87,90,0,1512.94,Invalid
+CLM-00590,Washing Machine,52,48,Expired,No,No,No,Unknown,Yes,Yes,No,72,44,0,76.46,Manual Review
+CLM-00830,Refrigerator,16,60,Expired,No,No,No,Unknown,Yes,Yes,No,30,60,0,668.06,Manual Review
+CLM-00065,Laptop,52,36,Expired,No,No,Yes,Match,Unknown,Yes,Yes,70,58,0,1554.5,Invalid
+CLM-00660,Refrigerator,18,12,Unknown,Yes,No,Yes,Mismatch,Unknown,Yes,Yes,78,80,4,1487.28,Manual Review
+CLM-01156,Refrigerator,10,48,Inactive,Yes,Yes,Yes,Match,Unknown,Yes,No,45,57,5,145.48,Invalid
+CLM-00328,Laptop,40,60,Active,Yes,No,Yes,Unknown,Unknown,No,Yes,78,66,3,2491.49,Manual Review
+CLM-01448,TV,41,18,Inactive,Yes,No,No,Mismatch,No,No,Yes,88,84,5,2002.8,Invalid
+CLM-00403,Washing Machine,53,18,Active,Yes,Yes,No,Mismatch,Unknown,No,Yes,32,38,0,849.24,Manual Review
+CLM-01475,Mobile,14,24,Active,Yes,No,Yes,Match,Yes,No,No,81,9,4,2240.56,Valid
+CLM-01398,Mobile,55,18,Inactive,No,Yes,Yes,Match,Unknown,No,Yes,47,70,3,58.28,Invalid
+CLM-01430,Washing Machine,24,24,Unknown,No,Yes,No,Mismatch,Yes,No,Yes,38,38,1,2167.85,Manual Review
+CLM-00768,Laptop,6,60,Active,No,No,No,Match,Yes,No,No,87,35,3,265.61,Valid
+CLM-00999,Refrigerator,63,60,Expired,Yes,Yes,No,Mismatch,Unknown,No,Yes,71,78,4,1188.93,Manual Review
+CLM-00818,Camera,22,24,Active,No,No,Yes,Mismatch,No,Yes,No,65,37,3,1699.35,Manual Review
+CLM-01110,Laptop,62,60,Inactive,Yes,No,No,Mismatch,Unknown,Yes,No,84,94,1,1301.97,Invalid
+CLM-00689,Laptop,22,36,Inactive,Yes,No,Yes,Mismatch,Unknown,No,No,60,97,0,643.35,Invalid
+CLM-00098,Laptop,40,60,Active,Yes,No,Yes,Match,Yes,No,No,77,26,4,1844.96,Valid
+CLM-00677,Refrigerator,11,18,Active,No,Yes,No,Match,Yes,No,No,96,20,1,1587.12,Valid
+CLM-00249,Mobile,57,36,Unknown,Yes,No,Yes,Mismatch,Yes,No,Yes,52,59,0,2000.22,Manual Review
+CLM-00416,Laptop,59,36,Expired,Yes,Yes,Yes,Match,No,Yes,Yes,51,96,1,1152.36,Invalid
+CLM-00776,Mobile,13,60,Expired,Yes,No,Yes,Match,Unknown,No,Yes,63,87,5,2041.67,Invalid
+CLM-00244,TV,10,24,Active,No,Yes,No,Match,Yes,No,No,80,13,0,1837.19,Valid
+CLM-00920,Laptop,42,48,Active,No,No,No,Match,Yes,No,No,100,7,2,72.06,Valid
+CLM-00662,Mobile,3,48,Active,No,No,No,Mismatch,Yes,Yes,No,67,76,0,1204.16,Manual Review
+CLM-00110,TV,68,36,Expired,No,No,Yes,Mismatch,No,No,No,85,58,4,1503.39,Invalid
+CLM-00477,TV,66,12,Inactive,Yes,No,No,Mismatch,No,Yes,Yes,49,89,4,2458.01,Invalid
+CLM-01449,Camera,12,60,Active,Yes,No,No,Match,Yes,No,No,80,13,3,2273.7,Valid
+CLM-00619,TV,21,36,Inactive,No,Yes,No,Mismatch,Unknown,Yes,No,45,75,2,495.43,Invalid
+CLM-00726,Camera,27,12,Active,No,No,No,Match,Yes,No,No,82,28,4,391.28,Valid
+CLM-01187,Camera,34,24,Inactive,No,Yes,Yes,Mismatch,No,Yes,Yes,56,64,5,2107.09,Invalid
+CLM-01211,Refrigerator,39,24,Active,No,Yes,Yes,Match,Yes,No,No,81,27,1,2090.47,Valid
+CLM-00407,Refrigerator,67,60,Active,Yes,No,No,Match,Yes,No,No,86,29,0,2492.18,Valid
+CLM-01368,TV,68,18,Unknown,Yes,Yes,Yes,Match,Yes,Yes,Yes,40,64,5,990.49,Manual Review
+CLM-00405,Laptop,49,60,Active,No,Yes,No,Match,Yes,No,No,96,38,3,1767.69,Valid
+CLM-01379,TV,14,24,Expired,No,No,Yes,Match,Unknown,No,Yes,76,61,3,343.72,Manual Review
+CLM-00116,Mobile,46,12,Active,No,No,Yes,Match,Yes,No,No,87,37,3,314.66,Valid
+CLM-00148,Refrigerator,51,48,Unknown,Yes,No,Yes,Match,Unknown,Yes,Yes,35,77,1,1433.34,Manual Review
+CLM-01285,Refrigerator,33,36,Expired,No,Yes,No,Unknown,No,No,Yes,72,64,4,1434.29,Manual Review
+CLM-00461,Mobile,26,18,Inactive,No,Yes,No,Match,Unknown,Yes,Yes,70,84,3,1069.59,Invalid
+CLM-00813,Mobile,27,60,Active,Yes,No,No,Match,Yes,No,No,98,21,2,1732.97,Valid
+CLM-00259,Camera,38,48,Expired,Yes,No,No,Match,No,Yes,No,66,75,5,1510.4,Invalid
+CLM-00587,Refrigerator,66,36,Expired,Yes,No,Yes,Mismatch,No,No,No,59,67,2,1565.53,Invalid
+CLM-00034,Washing Machine,1,48,Expired,No,No,Yes,Mismatch,Yes,No,No,37,79,5,675.5,Manual Review
+CLM-00870,Laptop,43,24,Active,No,Yes,Yes,Mismatch,Yes,Yes,No,75,34,0,1135.97,Manual Review
+CLM-00319,Washing Machine,19,24,Active,No,No,Yes,Match,Yes,No,No,80,12,1,406.05,Valid
+CLM-00852,Washing Machine,50,36,Expired,Yes,No,Yes,Mismatch,Unknown,Yes,No,53,74,2,130.98,Invalid
+CLM-00468,Laptop,16,48,Unknown,Yes,Yes,No,Match,Unknown,Yes,No,79,59,0,370.15,Manual Review
+CLM-00493,Laptop,26,36,Unknown,No,No,Yes,Unknown,Unknown,Yes,Yes,44,58,3,1055.72,Manual Review
+CLM-00012,TV,56,36,Expired,Yes,Yes,Yes,Mismatch,Unknown,No,No,40,56,4,1614.39,Manual Review
+CLM-00410,Laptop,41,48,Unknown,Yes,Yes,No,Mismatch,No,Yes,Yes,39,61,1,674.13,Manual Review
+CLM-01319,Laptop,50,36,Unknown,No,No,No,Mismatch,Yes,Yes,Yes,41,39,5,1034.2,Manual Review
+CLM-01477,TV,51,48,Expired,No,Yes,Yes,Mismatch,Yes,No,No,76,72,1,534.74,Manual Review
+CLM-01208,Refrigerator,69,18,Active,Yes,No,Yes,Match,Yes,No,No,95,12,2,990.7,Valid
+CLM-00823,Mobile,37,60,Expired,No,Yes,Yes,Match,No,No,No,90,66,5,1542.05,Invalid
+CLM-00205,Washing Machine,32,60,Unknown,No,Yes,No,Match,No,Yes,Yes,66,52,4,454.95,Manual Review
+CLM-01131,Washing Machine,24,18,Active,No,Yes,No,Match,Yes,No,No,88,12,1,1016.78,Valid
+CLM-00271,Laptop,57,24,Active,No,No,No,Match,Yes,No,No,86,38,1,155.48,Valid
+CLM-00700,Mobile,25,18,Inactive,Yes,Yes,Yes,Match,No,No,Yes,89,89,5,1087.3,Invalid
+CLM-00331,Refrigerator,6,24,Unknown,Yes,Yes,Yes,Unknown,Unknown,No,Yes,79,77,0,2000.8,Manual Review
+CLM-01478,Laptop,27,60,Active,No,No,No,Match,Yes,No,No,83,10,4,785.39,Valid
+CLM-00370,Refrigerator,71,48,Expired,Yes,Yes,Yes,Match,Unknown,No,No,79,31,3,112.1,Manual Review
+CLM-00047,TV,7,48,Active,No,Yes,No,Match,Yes,No,No,99,1,5,1142.19,Valid
+CLM-00832,Mobile,30,18,Active,Yes,No,No,Match,Yes,No,No,80,17,2,1026.33,Valid
+CLM-01126,Washing Machine,63,18,Inactive,No,No,No,Mismatch,No,Yes,No,86,85,0,724.18,Invalid
+CLM-00873,Refrigerator,37,60,Inactive,Yes,Yes,Yes,Mismatch,Unknown,No,Yes,81,94,5,128.67,Invalid
+CLM-01077,Washing Machine,18,36,Expired,No,Yes,No,Mismatch,No,No,Yes,80,80,1,789.36,Invalid
+CLM-01074,TV,23,36,Active,No,No,No,Mismatch,Unknown,Yes,Yes,80,38,1,1131.05,Manual Review
+CLM-01065,Refrigerator,27,60,Expired,Yes,Yes,No,Mismatch,Unknown,Yes,Yes,72,62,5,1823.61,Invalid
+CLM-00786,Refrigerator,47,18,Expired,Yes,No,No,Match,Unknown,No,No,63,62,0,2206.61,Invalid
+CLM-01452,Laptop,18,36,Inactive,No,No,No,Match,Unknown,Yes,Yes,72,96,1,399.93,Invalid
+CLM-01458,Refrigerator,47,18,Inactive,No,No,No,Match,Unknown,No,No,48,82,4,1685.49,Invalid
+CLM-00974,Washing Machine,34,12,Active,Yes,Yes,Yes,Match,Yes,No,No,78,32,3,2160.06,Valid
+CLM-00602,Refrigerator,24,24,Inactive,Yes,No,No,Mismatch,No,No,No,58,61,2,1226.26,Invalid
+CLM-01119,Camera,21,60,Expired,Yes,Yes,No,Mismatch,Unknown,Yes,No,88,85,4,1650.52,Invalid
+CLM-00938,TV,7,36,Inactive,Yes,Yes,No,Mismatch,No,No,Yes,61,74,3,511.09,Invalid
+CLM-01124,Washing Machine,41,24,Expired,Yes,Yes,Yes,Match,No,No,No,63,86,2,284.63,Invalid
+CLM-00169,Laptop,45,36,Expired,Yes,No,Yes,Mismatch,No,Yes,No,58,71,2,1068.23,Invalid
+CLM-00859,Camera,2,48,Active,Yes,No,Yes,Mismatch,Unknown,Yes,Yes,67,50,4,947.91,Manual Review
+CLM-00409,Refrigerator,52,24,Active,Yes,No,Yes,Match,Yes,No,No,78,35,0,457.15,Valid
+CLM-00715,TV,18,48,Active,Yes,No,Yes,Match,Yes,No,No,81,7,3,2082.69,Valid
+CLM-01056,Mobile,33,36,Active,No,Yes,No,Match,Yes,No,No,83,22,1,1025.0,Valid
+CLM-00272,Washing Machine,23,60,Active,No,No,No,Match,Yes,No,No,80,3,1,1309.53,Valid
+CLM-01238,Washing Machine,16,60,Active,No,No,No,Mismatch,Yes,No,No,50,75,0,883.55,Manual Review
+CLM-00489,Laptop,47,48,Unknown,No,Yes,No,Unknown,Yes,Yes,Yes,35,74,1,2192.28,Manual Review
+CLM-00951,TV,22,48,Unknown,No,Yes,Yes,Match,No,Yes,No,54,64,2,431.96,Manual Review
+CLM-00496,TV,48,60,Expired,Yes,No,No,Mismatch,No,Yes,No,87,69,3,88.84,Invalid
+CLM-00361,Laptop,65,60,Inactive,No,No,Yes,Match,No,No,Yes,85,96,1,780.26,Invalid
+CLM-01332,TV,22,36,Expired,No,Yes,No,Unknown,Yes,No,No,43,43,1,2396.78,Manual Review
+CLM-00730,Washing Machine,57,18,Unknown,Yes,No,Yes,Match,Unknown,Yes,Yes,72,70,5,2224.53,Manual Review
+CLM-00132,TV,24,18,Active,Yes,Yes,Yes,Match,Yes,No,No,93,16,4,412.56,Valid
+CLM-00780,Mobile,18,60,Active,Yes,No,No,Match,Yes,No,No,90,13,2,2310.12,Valid
+CLM-01295,TV,57,60,Active,No,No,No,Match,Yes,No,No,95,26,4,1651.23,Valid
+CLM-00898,Camera,13,12,Active,Yes,Yes,Yes,Mismatch,No,No,Yes,31,59,5,266.67,Manual Review
+CLM-01194,Camera,14,48,Expired,No,Yes,Yes,Mismatch,No,No,No,49,74,0,624.29,Invalid
+CLM-00698,Washing Machine,64,12,Unknown,Yes,Yes,No,Unknown,No,Yes,Yes,47,66,1,2036.53,Manual Review
+CLM-00633,Laptop,56,36,Active,No,No,Yes,Match,Yes,No,No,93,17,4,1151.52,Valid
+CLM-00334,TV,62,12,Inactive,No,Yes,Yes,Match,No,No,Yes,68,99,0,2161.08,Invalid
+CLM-00466,Washing Machine,39,36,Inactive,Yes,Yes,Yes,Match,Unknown,Yes,No,63,96,4,1843.94,Invalid
+CLM-00894,Laptop,3,48,Active,No,Yes,Yes,Match,Yes,No,No,89,22,5,1595.88,Valid
+CLM-00620,Refrigerator,28,48,Inactive,No,Yes,Yes,Match,Unknown,No,No,59,59,3,1341.51,Invalid
+CLM-01001,Camera,46,60,Inactive,Yes,Yes,No,Mismatch,Unknown,Yes,Yes,47,71,4,2313.04,Invalid
+CLM-00815,Camera,6,48,Active,Yes,Yes,No,Match,Yes,No,No,77,1,1,1478.35,Valid
+CLM-01089,Washing Machine,11,36,Active,No,No,No,Match,Yes,No,No,96,24,5,1347.49,Valid
+CLM-00750,Washing Machine,35,60,Unknown,No,Yes,No,Mismatch,No,Yes,Yes,37,42,4,1315.54,Manual Review
+CLM-00742,TV,59,48,Inactive,No,Yes,No,Mismatch,Unknown,No,Yes,63,60,5,1419.16,Invalid
+CLM-00592,Mobile,13,18,Active,Yes,Yes,Yes,Match,Yes,No,No,84,8,4,1947.95,Valid
+CLM-00227,Laptop,4,60,Active,Yes,No,No,Match,Yes,No,No,95,11,5,1503.24,Valid
+CLM-00625,Mobile,33,48,Inactive,Yes,No,Yes,Mismatch,No,No,Yes,56,92,0,1477.29,Invalid
+CLM-01376,Mobile,67,36,Active,No,No,No,Match,Yes,No,No,96,33,4,2076.61,Valid
+CLM-00027,Mobile,62,60,Expired,No,Yes,Yes,Unknown,No,Yes,Yes,67,74,5,1311.3,Manual Review
+CLM-00044,Refrigerator,45,18,Inactive,Yes,Yes,Yes,Match,Unknown,No,No,51,55,5,2057.01,Invalid
+CLM-00414,Washing Machine,3,18,Active,Yes,Yes,Yes,Match,Yes,No,No,75,0,2,1838.5,Valid
+CLM-00390,Mobile,59,18,Active,No,No,Yes,Match,No,Yes,No,68,53,3,2101.81,Manual Review
+CLM-00278,TV,18,24,Expired,Yes,Yes,No,Mismatch,No,Yes,Yes,45,78,5,1964.96,Manual Review
+CLM-00871,TV,68,36,Expired,Yes,No,No,Mismatch,Unknown,Yes,No,60,52,0,2182.48,Manual Review
+CLM-01096,Laptop,27,36,Active,No,Yes,No,Mismatch,Unknown,Yes,Yes,67,73,3,1690.23,Manual Review
+CLM-01247,Camera,58,36,Active,No,No,Yes,Match,Yes,No,No,83,15,4,2379.56,Valid
+CLM-00063,Camera,21,60,Active,No,Yes,Yes,Match,Yes,No,No,97,1,1,1718.39,Valid
+CLM-00436,Laptop,47,48,Expired,Yes,No,Yes,Match,Unknown,Yes,Yes,70,61,3,1545.42,Invalid
+CLM-00345,TV,28,24,Active,Yes,No,Yes,Match,Unknown,No,No,40,55,5,1141.25,Manual Review
+CLM-00504,Washing Machine,71,60,Active,No,No,Yes,Match,Yes,No,No,81,22,1,1275.71,Valid
+CLM-00292,Refrigerator,36,60,Active,Yes,No,Yes,Unknown,No,No,No,30,80,0,2414.99,Manual Review
+CLM-00031,Camera,2,12,Unknown,Yes,Yes,No,Mismatch,Unknown,No,Yes,49,79,1,146.39,Manual Review
+CLM-00685,Washing Machine,63,12,Expired,No,No,No,Mismatch,Unknown,No,Yes,70,56,3,1483.73,Invalid
+CLM-01490,TV,36,24,Active,Yes,No,No,Match,Yes,No,No,96,33,1,529.67,Valid
+CLM-01024,Washing Machine,46,18,Expired,Yes,Yes,Yes,Match,No,Yes,Yes,88,69,2,752.32,Invalid
+CLM-00066,Mobile,1,18,Active,No,No,Yes,Match,Yes,No,No,98,8,0,2110.14,Valid
+CLM-00221,Refrigerator,8,12,Unknown,Yes,Yes,No,Mismatch,No,Yes,No,41,62,5,1067.34,Manual Review
+CLM-00664,Refrigerator,40,24,Expired,Yes,Yes,No,Match,No,Yes,No,86,95,1,1055.78,Invalid
+CLM-00373,Washing Machine,45,18,Expired,Yes,Yes,No,Match,Yes,No,No,77,49,0,331.52,Manual Review
+CLM-00932,Mobile,37,24,Expired,No,No,Yes,Match,Unknown,Yes,Yes,48,56,3,2192.03,Manual Review
+CLM-01399,Laptop,38,60,Active,Yes,No,No,Match,Yes,No,No,76,0,5,1924.72,Valid
+CLM-00267,Mobile,14,60,Inactive,Yes,Yes,No,Match,Unknown,No,Yes,62,58,3,335.08,Invalid
+CLM-01347,Laptop,56,18,Inactive,No,No,Yes,Match,Unknown,Yes,No,80,74,4,2332.16,Invalid
+CLM-00200,Refrigerator,7,48,Active,Yes,No,No,Match,Yes,No,No,85,12,3,564.57,Valid
+CLM-00554,TV,57,48,Expired,Yes,No,No,Mismatch,Yes,Yes,Yes,76,44,0,1489.0,Manual Review
+CLM-00976,Laptop,36,24,Expired,Yes,Yes,No,Match,Unknown,No,No,59,74,4,2056.95,Invalid
+CLM-00540,Refrigerator,43,24,Active,No,Yes,Yes,Match,Yes,No,No,80,35,4,139.03,Valid
+CLM-00002,Mobile,67,12,Expired,No,No,No,Match,Unknown,No,Yes,57,58,0,856.18,Manual Review
+CLM-00143,Washing Machine,19,12,Active,Yes,No,Yes,Mismatch,Yes,Yes,Yes,50,48,0,1813.49,Manual Review
+CLM-00122,TV,2,48,Active,No,Yes,No,Unknown,Yes,No,Yes,49,35,5,398.24,Manual Review
+CLM-01320,Laptop,12,24,Inactive,Yes,Yes,No,Match,No,No,Yes,85,84,0,1058.2,Invalid
+CLM-00452,Refrigerator,20,18,Inactive,Yes,No,No,Match,No,Yes,Yes,51,86,3,1326.17,Invalid
+CLM-01039,Mobile,55,18,Unknown,No,Yes,Yes,Mismatch,Yes,No,No,40,42,4,812.94,Manual Review
+CLM-00443,TV,63,48,Active,No,No,No,Match,Yes,No,No,80,20,1,1534.1,Valid
+CLM-00022,Washing Machine,8,48,Active,Yes,Yes,Yes,Mismatch,Unknown,Yes,Yes,75,65,2,446.1,Manual Review
+CLM-01053,Washing Machine,24,60,Unknown,No,Yes,No,Unknown,Unknown,No,Yes,44,47,5,1907.42,Manual Review
+CLM-01302,Washing Machine,49,24,Expired,Yes,No,Yes,Match,No,No,Yes,40,49,4,415.38,Manual Review
+CLM-01100,Mobile,33,24,Unknown,No,No,Yes,Match,Yes,No,Yes,52,48,2,1985.37,Manual Review
+CLM-00201,Camera,29,48,Expired,Yes,No,No,Mismatch,No,No,No,45,92,4,1879.6,Invalid
+CLM-00498,Refrigerator,66,18,Active,Yes,Yes,Yes,Match,Yes,No,No,86,35,0,1272.82,Valid
+CLM-00342,Mobile,68,12,Inactive,No,Yes,Yes,Mismatch,No,No,Yes,63,70,5,497.89,Invalid
+CLM-00263,Laptop,31,36,Inactive,Yes,No,Yes,Match,Unknown,Yes,Yes,75,75,5,604.98,Invalid
+CLM-00427,Refrigerator,6,24,Inactive,Yes,No,No,Match,Unknown,No,Yes,68,71,0,582.76,Invalid
+CLM-00507,TV,2,12,Active,Yes,No,Yes,Match,Yes,No,No,86,28,0,2097.07,Valid
+CLM-00279,Laptop,59,24,Active,Yes,Yes,Yes,Match,Yes,No,No,96,1,5,526.4,Valid
+CLM-01298,Mobile,8,18,Active,Yes,No,No,Match,Yes,No,No,97,37,3,2457.35,Valid
+CLM-00491,Laptop,9,36,Active,Yes,No,No,Match,Yes,No,No,92,36,3,1835.16,Valid
+CLM-00760,Refrigerator,18,48,Active,Yes,No,No,Match,Yes,No,No,99,1,5,1125.62,Valid
+CLM-00007,Washing Machine,46,24,Expired,Yes,Yes,Yes,Match,Yes,No,Yes,31,61,1,1603.31,Manual Review
+CLM-00714,Camera,51,12,Expired,Yes,No,Yes,Match,No,No,Yes,43,36,5,1538.89,Manual Review
+CLM-00575,TV,15,18,Active,Yes,No,No,Match,Yes,No,No,75,29,5,2261.93,Valid
+CLM-01257,Refrigerator,17,60,Active,Yes,Yes,Yes,Match,Yes,No,No,79,37,5,167.14,Valid
+CLM-00251,Mobile,32,18,Expired,Yes,Yes,Yes,Unknown,Unknown,Yes,Yes,60,46,5,946.42,Manual Review
+CLM-00265,Camera,45,60,Active,Yes,No,No,Mismatch,No,Yes,Yes,67,46,4,1462.36,Manual Review
+CLM-01121,Washing Machine,69,12,Inactive,Yes,No,Yes,Match,Unknown,No,No,70,91,3,1847.22,Invalid
+CLM-01339,TV,9,60,Expired,No,Yes,No,Match,No,Yes,Yes,84,94,3,788.43,Invalid
+CLM-00930,Laptop,57,12,Active,No,Yes,Yes,Match,Yes,No,No,79,34,5,1391.96,Valid
+CLM-01081,Laptop,64,12,Active,No,Yes,Yes,Match,Yes,No,No,79,24,5,1102.4,Valid
+CLM-01417,Camera,28,24,Unknown,Yes,Yes,Yes,Mismatch,No,No,No,69,75,0,1778.35,Manual Review
+CLM-01378,Mobile,72,12,Unknown,No,No,No,Mismatch,Yes,No,Yes,68,68,1,121.03,Manual Review
+CLM-01057,Refrigerator,4,24,Active,No,Yes,No,Match,Yes,No,No,87,2,2,209.36,Valid
+CLM-01410,Washing Machine,52,48,Inactive,No,No,No,Mismatch,Unknown,Yes,No,45,71,3,220.29,Invalid
+CLM-00643,Camera,49,12,Inactive,No,No,No,Mismatch,No,No,No,61,77,1,411.26,Invalid
+CLM-00969,TV,15,48,Inactive,Yes,Yes,No,Mismatch,No,No,Yes,85,61,2,1355.92,Invalid
+CLM-00187,Camera,20,48,Inactive,No,No,Yes,Mismatch,No,Yes,No,67,73,1,2291.09,Invalid
+CLM-00706,Washing Machine,61,18,Active,No,Yes,No,Match,Yes,No,No,92,10,4,2425.13,Valid
+CLM-00304,Refrigerator,65,24,Unknown,No,No,Yes,Mismatch,No,No,No,78,71,3,1839.04,Manual Review
+CLM-00903,Laptop,72,36,Inactive,Yes,Yes,Yes,Mismatch,No,Yes,No,84,97,4,1404.46,Invalid
+CLM-01157,Refrigerator,9,18,Active,No,No,Yes,Match,Yes,No,No,82,21,5,647.63,Valid
+CLM-00420,TV,59,60,Active,Yes,No,No,Match,Yes,Yes,Yes,39,76,1,2119.75,Manual Review
+CLM-00307,Mobile,36,60,Unknown,No,Yes,No,Mismatch,Yes,Yes,No,58,48,3,2494.49,Manual Review
+CLM-01164,Mobile,30,18,Inactive,Yes,No,Yes,Mismatch,Unknown,Yes,Yes,48,57,5,1137.01,Invalid
+CLM-00993,Camera,49,24,Active,Yes,Yes,Yes,Match,Yes,No,No,88,5,0,2259.27,Valid
+CLM-00769,Refrigerator,60,12,Expired,Yes,No,No,Match,Unknown,Yes,No,88,69,4,2166.64,Invalid
+CLM-00242,TV,60,18,Expired,No,Yes,No,Match,Yes,Yes,Yes,66,35,3,2427.08,Manual Review
+CLM-01395,Washing Machine,16,24,Inactive,Yes,No,Yes,Match,Unknown,No,No,46,70,1,469.64,Invalid
+CLM-00275,Washing Machine,47,48,Expired,Yes,No,No,Mismatch,No,Yes,Yes,54,73,5,1951.91,Invalid
+CLM-01374,TV,6,60,Active,No,No,Yes,Match,Yes,No,No,82,17,4,385.35,Valid
+CLM-01468,Refrigerator,32,12,Expired,No,No,No,Match,No,Yes,Yes,54,66,1,1117.06,Invalid
+CLM-00207,TV,39,60,Active,Yes,Yes,No,Match,Yes,No,No,83,27,5,2401.66,Valid
+CLM-01483,Refrigerator,38,60,Expired,Yes,Yes,Yes,Mismatch,Unknown,Yes,Yes,33,77,4,1562.77,Manual Review
+CLM-00839,Camera,21,12,Unknown,No,No,Yes,Match,No,No,Yes,32,31,2,146.17,Manual Review
+CLM-00879,Washing Machine,16,60,Unknown,No,Yes,No,Mismatch,Yes,No,Yes,44,74,1,2254.65,Manual Review
+CLM-00656,Washing Machine,35,18,Expired,Yes,Yes,Yes,Match,No,No,Yes,58,77,5,2248.38,Manual Review
+CLM-00935,Laptop,22,12,Active,No,Yes,Yes,Match,Yes,No,No,57,51,1,2459.92,Manual Review
+CLM-01267,Laptop,46,60,Active,Yes,Yes,Yes,Match,Yes,No,No,100,29,2,581.06,Valid
+CLM-00471,Laptop,51,18,Active,No,Yes,No,Match,Yes,No,No,99,12,2,256.32,Valid
+CLM-00748,Refrigerator,21,18,Active,Yes,No,Yes,Match,Yes,No,No,79,24,5,2171.03,Valid
+CLM-00101,Mobile,50,60,Inactive,Yes,No,No,Mismatch,Unknown,Yes,Yes,72,83,0,1204.36,Invalid
+CLM-00175,Camera,61,36,Active,Yes,No,Yes,Match,Yes,No,No,81,38,5,1836.89,Valid
+CLM-01224,Laptop,65,36,Unknown,No,Yes,Yes,Mismatch,No,No,No,43,47,2,120.06,Manual Review
+CLM-00408,Camera,53,36,Active,Yes,Yes,No,Match,Yes,No,No,100,22,4,1034.16,Valid
+CLM-01486,Camera,52,12,Active,Yes,Yes,Yes,Match,Yes,Yes,No,51,51,1,879.92,Manual Review
+CLM-01296,Laptop,11,60,Active,No,Yes,No,Match,Yes,No,No,79,8,3,2200.96,Valid
+CLM-01349,Laptop,54,48,Expired,Yes,No,Yes,Mismatch,Unknown,Yes,No,51,59,2,1504.94,Invalid
+CLM-00106,Laptop,6,24,Active,Yes,Yes,Yes,Match,Yes,No,No,87,14,2,1004.91,Valid
+CLM-00756,Mobile,58,48,Active,Yes,Yes,No,Match,Yes,No,No,94,17,5,1227.93,Valid
+CLM-01273,Laptop,52,36,Inactive,Yes,Yes,No,Match,No,Yes,No,59,75,2,1594.14,Invalid
+CLM-00717,Washing Machine,14,48,Expired,No,No,Yes,Match,Unknown,No,No,34,71,4,641.69,Manual Review
+CLM-01462,TV,49,24,Active,Yes,No,Yes,Match,Yes,No,No,77,36,1,121.77,Valid
+CLM-00317,Camera,39,36,Expired,No,No,Yes,Match,Unknown,Yes,Yes,65,70,0,1450.44,Invalid
+CLM-01481,Mobile,46,24,Active,Yes,Yes,No,Match,Yes,No,No,86,10,1,604.39,Valid
+CLM-00531,Laptop,68,24,Expired,Yes,No,Yes,Unknown,Yes,No,Yes,44,40,4,2273.99,Manual Review
+CLM-01120,Washing Machine,45,36,Inactive,No,Yes,Yes,Match,No,No,Yes,80,75,2,1094.07,Invalid
+CLM-00893,Washing Machine,52,12,Active,No,Yes,No,Match,Yes,No,No,82,10,1,2232.53,Valid
+CLM-01408,Laptop,40,12,Expired,No,No,Yes,Mismatch,No,No,No,46,81,5,2241.12,Invalid
+CLM-00177,Camera,21,12,Unknown,No,Yes,Yes,Unknown,No,No,No,51,50,1,1787.84,Manual Review
+CLM-01385,Camera,72,60,Active,No,No,Yes,Match,Yes,No,No,78,22,2,520.34,Valid
+CLM-01474,Refrigerator,54,12,Active,Yes,No,No,Unknown,Yes,No,Yes,33,69,1,1647.19,Manual Review
+CLM-00114,Washing Machine,67,60,Active,No,No,No,Match,Yes,No,No,96,11,1,1208.6,Valid
+CLM-00001,Camera,13,48,Expired,Yes,Yes,Yes,Match,No,No,Yes,61,64,3,1471.21,Manual Review
+CLM-00874,Camera,59,18,Active,Yes,Yes,Yes,Match,Unknown,Yes,No,33,46,5,1422.51,Manual Review
+CLM-00746,Refrigerator,72,36,Active,No,Yes,Yes,Match,Yes,No,No,100,2,3,907.13,Valid
+CLM-01135,Washing Machine,6,12,Active,No,No,No,Mismatch,No,Yes,Yes,77,44,2,473.66,Manual Review
+CLM-01423,Washing Machine,59,36,Inactive,Yes,Yes,No,Match,No,No,Yes,52,85,0,711.51,Invalid
+CLM-01012,TV,71,12,Active,No,Yes,Yes,Match,Yes,No,No,91,23,4,2074.59,Valid
+CLM-01420,Washing Machine,3,24,Expired,Yes,No,No,Match,No,Yes,No,76,77,0,295.03,Invalid
+CLM-00173,Mobile,67,24,Expired,No,Yes,Yes,Match,No,No,Yes,79,91,3,1749.36,Invalid
+CLM-01397,Mobile,63,18,Expired,Yes,Yes,Yes,Mismatch,Yes,No,Yes,67,41,0,2286.51,Manual Review
+CLM-01213,Laptop,24,12,Expired,Yes,Yes,Yes,Match,Unknown,Yes,No,54,68,3,1730.53,Manual Review
+CLM-00383,Washing Machine,37,12,Unknown,Yes,Yes,Yes,Unknown,Yes,Yes,No,32,34,5,568.78,Manual Review
+CLM-00352,Camera,56,60,Inactive,Yes,No,Yes,Mismatch,Unknown,No,No,61,91,4,1973.41,Invalid
+CLM-00343,Camera,51,18,Expired,No,No,No,Mismatch,Unknown,Yes,Yes,54,45,2,2194.95,Manual Review
+CLM-00158,Laptop,28,48,Active,Yes,No,Yes,Match,Yes,No,No,83,28,3,191.72,Valid
+CLM-00138,TV,19,18,Active,No,No,Yes,Match,Yes,No,No,99,29,5,85.07,Valid
+CLM-00254,Mobile,60,60,Expired,Yes,No,No,Match,Unknown,Yes,No,76,71,2,398.53,Invalid
+CLM-00190,Refrigerator,66,60,Expired,Yes,No,No,Match,Unknown,No,No,73,48,2,964.49,Manual Review
+CLM-01017,Camera,22,48,Expired,Yes,Yes,Yes,Mismatch,Yes,Yes,Yes,62,47,3,1706.77,Manual Review
+CLM-00283,Washing Machine,19,18,Expired,Yes,Yes,No,Mismatch,No,Yes,No,65,59,5,686.58,Manual Review
+CLM-00487,TV,16,60,Active,No,Yes,Yes,Match,Yes,No,No,81,15,4,2415.52,Valid
+CLM-00287,TV,1,24,Active,Yes,Yes,No,Match,Yes,No,No,81,30,1,1332.82,Valid
+CLM-00934,Refrigerator,54,24,Expired,Yes,Yes,No,Unknown,Unknown,Yes,No,34,31,2,1451.08,Manual Review
+CLM-00056,Laptop,30,60,Expired,No,Yes,No,Match,Unknown,No,Yes,79,84,3,2055.9,Invalid
+CLM-01134,Camera,2,36,Active,Yes,No,No,Match,Yes,No,No,79,3,5,2213.76,Valid
+CLM-00182,TV,29,24,Inactive,No,Yes,Yes,Match,No,No,Yes,48,78,0,1374.8,Invalid
+CLM-00359,Mobile,47,36,Inactive,No,Yes,No,Mismatch,Unknown,Yes,Yes,70,68,2,94.77,Invalid
+CLM-01439,Camera,70,60,Active,Yes,No,No,Match,Yes,No,No,91,19,4,1399.38,Valid
+CLM-00979,TV,3,36,Expired,No,No,Yes,Mismatch,No,No,Yes,59,83,2,563.24,Invalid
+CLM-01382,Washing Machine,68,24,Active,No,Yes,No,Match,Yes,No,No,87,18,2,464.66,Valid
+CLM-01467,Laptop,38,12,Active,No,No,Yes,Match,Yes,No,No,92,13,0,1826.27,Valid
+CLM-00225,Laptop,49,36,Active,No,Yes,Yes,Match,Yes,No,No,88,23,2,63.1,Valid
+CLM-01145,Refrigerator,34,60,Unknown,Yes,Yes,No,Unknown,Yes,Yes,No,48,79,4,1521.63,Manual Review
+CLM-00115,Laptop,27,24,Active,No,No,Yes,Match,Yes,No,No,86,5,0,861.8,Valid
+CLM-01393,Camera,54,36,Active,Yes,Yes,No,Unknown,No,Yes,Yes,30,50,3,1744.78,Manual Review
+CLM-00804,Washing Machine,57,48,Inactive,Yes,No,No,Mismatch,No,No,Yes,62,87,2,2361.4,Invalid
+CLM-00079,Laptop,4,48,Active,No,No,No,Match,Yes,No,No,93,36,5,1502.96,Valid
+CLM-00118,Refrigerator,19,36,Active,No,No,Yes,Match,Yes,No,No,87,0,4,682.52,Valid
+CLM-00013,Laptop,61,24,Inactive,No,Yes,Yes,Mismatch,No,Yes,Yes,45,92,3,1428.74,Invalid
+CLM-00666,Mobile,40,24,Inactive,Yes,No,Yes,Mismatch,Unknown,Yes,Yes,52,97,5,87.85,Invalid
+CLM-00857,Mobile,16,12,Active,No,No,No,Match,Yes,No,No,88,12,2,1978.76,Valid
+CLM-01093,Mobile,21,36,Inactive,Yes,Yes,No,Match,No,No,No,70,80,5,1864.98,Invalid
+CLM-01350,Mobile,72,60,Unknown,Yes,No,Yes,Match,Unknown,Yes,No,79,50,0,563.47,Manual Review
+CLM-00757,Refrigerator,45,24,Active,No,No,No,Match,Yes,No,No,82,33,0,771.02,Valid
+CLM-00650,TV,9,48,Expired,Yes,No,Yes,Mismatch,Unknown,Yes,No,48,84,3,734.7,Invalid
+CLM-00113,Mobile,19,18,Expired,No,Yes,No,Match,No,No,No,56,100,4,1596.7,Invalid
+CLM-00694,Mobile,41,12,Unknown,Yes,No,Yes,Unknown,No,Yes,Yes,63,54,5,178.06,Manual Review
+CLM-00646,Camera,72,24,Active,No,No,No,Match,Unknown,Yes,No,74,76,1,2338.96,Manual Review
+CLM-00401,Washing Machine,58,60,Inactive,Yes,No,No,Match,No,No,No,72,89,3,1589.83,Invalid
+CLM-00826,Camera,9,24,Active,Yes,Yes,No,Match,Yes,No,No,85,8,3,1199.2,Valid
+CLM-00128,Laptop,51,18,Expired,No,Yes,Yes,Match,Unknown,Yes,No,87,81,4,758.65,Invalid
+CLM-00929,Mobile,2,12,Inactive,No,Yes,Yes,Mismatch,Unknown,Yes,No,51,62,1,444.56,Invalid
+CLM-00967,Refrigerator,52,36,Expired,No,No,No,Match,No,Yes,Yes,61,78,3,1746.9,Invalid
+CLM-00445,Camera,29,24,Active,Yes,Yes,No,Match,Yes,No,No,90,37,3,1803.27,Valid
+CLM-01402,TV,6,24,Unknown,Yes,Yes,Yes,Match,Yes,No,No,45,38,3,129.82,Manual Review
+CLM-01289,TV,37,18,Inactive,No,Yes,Yes,Match,Unknown,Yes,Yes,85,85,2,1477.67,Invalid
+CLM-00166,Washing Machine,36,48,Active,No,No,No,Match,Yes,No,No,96,8,1,2021.65,Valid
+CLM-00636,Washing Machine,22,12,Inactive,Yes,Yes,Yes,Mismatch,No,No,Yes,77,73,0,1248.61,Invalid
+CLM-01245,Refrigerator,25,36,Active,Yes,No,Yes,Unknown,Yes,Yes,Yes,78,39,3,538.67,Manual Review
+CLM-00612,Camera,22,48,Active,Yes,No,Yes,Match,Yes,No,No,91,10,2,856.84,Valid
+CLM-00854,Laptop,68,12,Active,No,Yes,Yes,Match,Yes,No,No,98,3,1,1504.69,Valid
+CLM-00006,Laptop,10,24,Expired,Yes,No,Yes,Match,No,Yes,Yes,75,77,1,2054.02,Invalid
+CLM-00653,TV,32,18,Active,Yes,No,Yes,Match,Yes,No,No,98,25,3,1867.01,Valid
+CLM-01104,Mobile,15,60,Expired,No,No,No,Match,No,Yes,Yes,78,96,0,88.65,Invalid
+CLM-01312,Laptop,52,24,Unknown,Yes,Yes,Yes,Unknown,Yes,No,No,50,46,4,1807.38,Manual Review
+CLM-01367,Refrigerator,40,12,Active,Yes,No,No,Match,Unknown,No,No,47,35,3,1244.38,Manual Review
+CLM-00381,Refrigerator,16,24,Unknown,No,No,Yes,Unknown,No,Yes,No,69,31,5,217.68,Manual Review
+CLM-00422,Washing Machine,14,36,Expired,No,No,Yes,Match,No,No,Yes,79,72,3,841.32,Invalid
+CLM-00984,Refrigerator,36,60,Unknown,No,Yes,No,Unknown,Yes,Yes,Yes,79,74,1,856.28,Manual Review
+CLM-01369,TV,17,18,Inactive,Yes,Yes,No,Mismatch,No,Yes,Yes,63,56,2,1477.37,Invalid
+CLM-01361,Camera,67,48,Active,Yes,Yes,No,Match,Yes,No,No,79,4,4,663.48,Valid
+CLM-00039,Laptop,66,60,Expired,Yes,Yes,Yes,Unknown,No,Yes,No,75,43,1,2381.12,Manual Review
+CLM-00120,TV,28,36,Expired,Yes,Yes,No,Match,No,Yes,No,47,66,1,836.65,Manual Review
+CLM-00075,Refrigerator,22,24,Expired,Yes,Yes,Yes,Mismatch,Unknown,No,Yes,59,77,2,778.99,Invalid
+CLM-00968,TV,58,12,Active,Yes,Yes,No,Match,Yes,No,No,78,30,4,222.08,Valid
+CLM-00800,Camera,27,12,Expired,No,No,No,Mismatch,Unknown,Yes,No,70,74,4,1291.98,Invalid
+CLM-00301,Camera,45,24,Active,Yes,Yes,No,Match,Yes,No,No,93,18,0,747.13,Valid
+CLM-00844,Camera,10,48,Inactive,No,No,No,Match,Unknown,Yes,Yes,58,76,0,1636.79,Invalid
+CLM-01422,TV,1,18,Active,No,Yes,No,Match,Yes,No,No,76,18,1,886.21,Valid
+CLM-00817,Laptop,63,60,Active,No,Yes,No,Match,Yes,No,No,96,5,3,84.98,Valid
+CLM-00719,TV,58,36,Expired,No,Yes,Yes,Match,Unknown,No,No,70,60,4,53.87,Invalid
+CLM-00902,Laptop,51,36,Active,Yes,Yes,Yes,Match,Yes,No,No,88,40,1,1072.6,Valid
+CLM-00604,Camera,1,60,Unknown,No,Yes,No,Match,No,Yes,Yes,40,40,5,245.15,Manual Review
+CLM-00514,TV,68,36,Active,No,Yes,No,Unknown,No,Yes,No,60,67,4,2451.01,Manual Review
+CLM-00900,Laptop,25,48,Active,Yes,Yes,No,Match,Yes,No,No,97,16,4,451.88,Valid
+CLM-01186,Laptop,19,36,Active,No,No,Yes,Match,Unknown,Yes,No,67,30,5,2145.57,Manual Review
+CLM-00922,Mobile,26,12,Active,Yes,Yes,Yes,Match,Yes,No,No,95,15,0,1260.61,Valid
+CLM-00090,Washing Machine,42,18,Expired,No,No,No,Match,No,No,No,55,74,5,1840.51,Invalid
+CLM-01206,Refrigerator,4,36,Expired,Yes,Yes,No,Match,Unknown,Yes,Yes,54,66,3,894.94,Invalid
+CLM-01061,Laptop,32,24,Active,Yes,Yes,Yes,Mismatch,No,Yes,Yes,39,75,5,2315.3,Manual Review
+CLM-00795,Refrigerator,54,48,Active,No,Yes,Yes,Match,Yes,No,No,93,34,4,59.23,Valid
+CLM-00188,Laptop,41,12,Active,Yes,Yes,No,Match,Yes,No,No,83,4,2,1533.43,Valid
+CLM-00220,TV,7,60,Active,No,Yes,Yes,Match,Yes,No,No,95,12,3,1180.73,Valid
+CLM-01147,Washing Machine,54,24,Expired,No,Yes,No,Mismatch,Unknown,No,No,67,78,4,1501.59,Invalid
+CLM-00810,Washing Machine,24,36,Active,No,Yes,No,Match,Yes,No,No,99,37,1,2023.67,Valid
+CLM-01227,TV,50,48,Expired,No,No,Yes,Match,Unknown,Yes,No,74,80,3,2075.06,Manual Review
+CLM-00980,Washing Machine,21,36,Active,Yes,Yes,No,Match,Yes,No,No,90,31,2,94.49,Valid
+CLM-00688,TV,68,36,Inactive,Yes,No,Yes,Match,No,No,No,58,79,0,1262.33,Invalid
+CLM-00583,Camera,49,60,Active,Yes,Yes,Yes,Match,Yes,Yes,No,38,79,2,2201.72,Manual Review
+CLM-00124,Refrigerator,32,24,Active,Yes,No,No,Match,Yes,No,No,80,29,0,1105.91,Valid
+CLM-01308,Refrigerator,51,48,Expired,No,Yes,No,Mismatch,Unknown,Yes,Yes,87,79,5,1174.04,Invalid
+CLM-01004,Camera,58,18,Active,No,No,Yes,Match,Yes,No,No,81,7,2,960.92,Valid
+CLM-00178,Laptop,17,36,Expired,No,No,Yes,Mismatch,Unknown,No,Yes,61,65,0,368.36,Invalid
+CLM-01274,Washing Machine,68,48,Active,Yes,No,Yes,Match,Yes,No,No,86,37,4,2393.67,Valid
+CLM-01183,TV,19,48,Unknown,Yes,No,No,Unknown,Yes,Yes,No,58,34,5,910.63,Manual Review
+CLM-00578,Laptop,67,18,Active,Yes,Yes,Yes,Match,Yes,No,No,92,40,0,145.06,Valid
+CLM-00085,Mobile,51,48,Expired,Yes,No,Yes,Mismatch,No,No,No,89,60,5,602.58,Invalid
+CLM-00591,Camera,33,60,Active,Yes,Yes,No,Match,Yes,No,No,93,25,1,2365.55,Valid
+CLM-01472,Refrigerator,30,12,Unknown,Yes,Yes,Yes,Match,Yes,Yes,Yes,49,32,5,1206.42,Manual Review
+CLM-00869,Laptop,49,24,Expired,No,No,No,Unknown,Yes,Yes,Yes,48,74,5,937.96,Manual Review
+CLM-00722,TV,55,48,Expired,Yes,No,No,Mismatch,Yes,Yes,Yes,53,78,0,534.67,Manual Review
+CLM-00611,Mobile,53,48,Active,No,Yes,No,Match,Yes,No,No,86,30,3,707.83,Valid
+CLM-00661,Laptop,54,48,Active,Yes,No,No,Match,Yes,No,No,76,38,2,501.34,Valid
+CLM-01072,Refrigerator,26,24,Expired,No,No,No,Match,No,No,Yes,75,40,5,1992.83,Manual Review
+CLM-00977,TV,19,36,Active,Yes,No,Yes,Match,Yes,No,No,78,39,4,1867.07,Valid
+CLM-00950,TV,10,18,Inactive,Yes,No,Yes,Mismatch,Unknown,Yes,No,70,60,3,787.33,Invalid
+CLM-00197,TV,36,24,Inactive,Yes,Yes,No,Match,Unknown,Yes,No,62,92,5,1023.75,Invalid
+CLM-01171,Camera,22,18,Inactive,Yes,No,No,Match,No,Yes,Yes,84,57,3,129.58,Invalid
+CLM-00015,Mobile,9,60,Active,No,Yes,No,Match,Yes,No,No,88,6,5,1475.83,Valid
+CLM-01434,Refrigerator,34,24,Active,No,No,No,Match,Yes,No,No,91,33,2,1930.39,Valid
+CLM-01412,Mobile,13,12,Inactive,Yes,Yes,No,Mismatch,No,No,No,52,57,3,1570.15,Invalid
+CLM-01179,Washing Machine,31,12,Inactive,No,No,No,Match,Unknown,No,No,78,56,4,2031.09,Invalid
+CLM-00701,Camera,4,60,Active,No,Yes,Yes,Match,Yes,No,No,95,4,1,1709.49,Valid
+CLM-00289,Mobile,54,18,Active,Yes,No,No,Match,Yes,No,No,84,26,3,53.3,Valid
+CLM-00130,Mobile,13,18,Active,Yes,No,Yes,Match,Yes,No,No,79,40,2,2104.45,Valid
+CLM-00235,Camera,10,36,Expired,Yes,Yes,No,Mismatch,Unknown,No,Yes,49,79,2,2463.99,Manual Review
+CLM-00046,Mobile,33,48,Active,Yes,No,No,Match,Yes,No,No,75,4,4,1622.83,Valid
+CLM-00111,TV,64,60,Active,No,Yes,Yes,Match,Yes,No,No,86,34,4,205.92,Valid
+CLM-00651,Mobile,40,60,Active,No,Yes,No,Match,Yes,No,No,87,18,5,285.51,Valid
+CLM-00530,TV,39,12,Expired,No,No,Yes,Match,No,No,No,57,77,2,1295.77,Invalid
+CLM-00626,Washing Machine,3,24,Expired,No,No,No,Match,No,No,No,54,95,0,1126.69,Invalid
+CLM-00433,Camera,72,48,Active,Yes,No,Yes,Match,Yes,No,No,80,1,5,2026.6,Valid
+CLM-00585,Washing Machine,24,24,Active,No,No,No,Mismatch,Unknown,Yes,No,45,43,2,2315.01,Manual Review
+CLM-01123,Laptop,54,48,Active,Yes,Yes,No,Unknown,Yes,Yes,No,43,59,5,1665.85,Manual Review
+CLM-00987,Washing Machine,8,12,Active,No,No,Yes,Match,Yes,No,No,100,3,3,1861.8,Valid
+CLM-01346,Refrigerator,28,18,Unknown,Yes,No,No,Unknown,Unknown,No,No,69,42,3,871.36,Manual Review
+CLM-01130,Washing Machine,43,36,Active,Yes,No,No,Unknown,No,No,No,72,61,0,2036.13,Manual Review
+CLM-01162,Washing Machine,16,48,Expired,No,No,No,Mismatch,Unknown,No,No,85,69,1,631.01,Invalid
+CLM-01311,Refrigerator,70,36,Inactive,No,Yes,No,Mismatch,Unknown,Yes,Yes,68,96,4,2291.3,Invalid
+CLM-00904,Laptop,65,12,Expired,Yes,No,Yes,Match,Unknown,No,Yes,82,93,1,1794.56,Invalid
+CLM-00500,Laptop,44,36,Unknown,Yes,Yes,No,Unknown,Unknown,No,No,53,30,3,53.11,Manual Review
+CLM-00690,Mobile,68,12,Expired,Yes,No,No,Mismatch,Yes,Yes,Yes,50,40,4,692.65,Manual Review
+CLM-01159,TV,52,12,Expired,Yes,No,No,Match,Unknown,No,Yes,68,74,3,879.28,Invalid
+CLM-01205,Camera,64,12,Unknown,No,Yes,No,Mismatch,Yes,No,Yes,52,36,2,1399.92,Manual Review
+CLM-00210,Mobile,3,48,Expired,Yes,Yes,No,Mismatch,No,Yes,Yes,61,97,1,670.52,Invalid
+CLM-00045,Laptop,42,12,Expired,No,Yes,Yes,Mismatch,Yes,Yes,Yes,39,53,3,723.27,Manual Review
+CLM-00808,Laptop,70,60,Active,Yes,No,No,Match,Yes,Yes,Yes,61,35,4,2216.31,Manual Review
+CLM-00053,Camera,72,12,Active,Yes,No,No,Match,Yes,No,Yes,49,35,5,440.29,Manual Review
+CLM-01259,Mobile,59,48,Expired,Yes,No,Yes,Mismatch,Unknown,No,Yes,69,90,0,566.65,Invalid
+CLM-00099,Mobile,12,24,Unknown,No,Yes,No,Mismatch,Yes,No,No,48,61,0,1073.51,Manual Review
+CLM-01158,Washing Machine,47,48,Expired,No,Yes,No,Mismatch,Unknown,Yes,Yes,82,60,4,2351.73,Invalid
+CLM-01031,Washing Machine,58,12,Expired,Yes,No,No,Match,Yes,No,Yes,67,57,5,1286.37,Manual Review
+CLM-00437,Washing Machine,54,48,Expired,No,Yes,Yes,Match,Unknown,No,Yes,63,63,3,1186.8,Invalid
+CLM-00438,Camera,46,18,Active,Yes,No,Yes,Match,Yes,No,No,75,20,1,2204.34,Valid
+CLM-01294,Mobile,63,24,Expired,Yes,No,Yes,Unknown,No,No,Yes,46,42,1,497.37,Manual Review
+CLM-00050,Camera,2,36,Expired,No,No,Yes,Match,Unknown,Yes,No,47,76,2,1840.09,Invalid
+CLM-00180,Camera,6,36,Active,No,Yes,Yes,Unknown,No,Yes,Yes,38,42,0,1767.87,Manual Review
+CLM-00183,Refrigerator,43,18,Active,Yes,No,Yes,Match,Yes,No,No,77,18,3,1581.32,Valid
+CLM-00454,Mobile,18,60,Expired,No,Yes,No,Match,Unknown,No,No,62,70,3,1590.4,Invalid
+CLM-00004,Laptop,40,24,Active,Yes,Yes,Yes,Match,Yes,No,No,98,39,5,1327.09,Valid
+CLM-01242,Mobile,6,48,Active,No,No,No,Match,Yes,No,No,76,16,4,1784.51,Valid
+CLM-00093,Washing Machine,2,60,Active,No,Yes,No,Match,Yes,No,No,84,20,1,1182.62,Valid
+CLM-00738,Mobile,3,24,Active,No,No,No,Match,Yes,No,No,85,27,1,2009.42,Valid
+CLM-01304,Mobile,65,60,Active,Yes,No,No,Match,Yes,No,No,78,11,3,1347.43,Valid
+CLM-00170,Mobile,5,18,Active,Yes,Yes,No,Match,Yes,No,No,85,40,1,1714.9,Valid
+CLM-00299,Washing Machine,54,18,Active,No,Yes,No,Unknown,Unknown,Yes,Yes,53,40,5,1186.34,Manual Review
+CLM-01185,Mobile,16,36,Active,Yes,No,Yes,Unknown,No,No,Yes,35,30,2,1869.37,Manual Review
+CLM-00580,Mobile,13,36,Inactive,Yes,Yes,No,Mismatch,Unknown,Yes,Yes,65,70,3,609.01,Invalid
+CLM-01380,Refrigerator,38,18,Inactive,No,Yes,Yes,Match,No,Yes,No,61,59,5,1511.77,Invalid
+CLM-00899,Washing Machine,58,48,Active,Yes,Yes,No,Match,Yes,No,No,84,18,1,1481.46,Valid
+CLM-01419,Camera,57,60,Active,No,No,No,Match,Yes,No,No,76,6,3,500.87,Valid
+CLM-01172,Refrigerator,24,12,Inactive,No,Yes,No,Mismatch,No,No,No,70,67,5,1423.16,Invalid
+CLM-01323,Refrigerator,59,48,Unknown,Yes,Yes,No,Mismatch,Yes,Yes,No,40,64,5,300.92,Manual Review
+CLM-01193,Laptop,50,36,Active,No,Yes,No,Unknown,Unknown,No,Yes,52,40,4,477.39,Manual Review
+CLM-01051,Laptop,39,60,Inactive,No,Yes,Yes,Match,Unknown,No,No,62,100,4,1957.07,Invalid
+CLM-01250,Washing Machine,48,24,Active,Yes,Yes,Yes,Match,Yes,No,No,79,39,4,1479.37,Valid
+CLM-01125,Refrigerator,54,24,Expired,Yes,No,Yes,Match,No,Yes,Yes,72,86,5,1924.41,Invalid
+CLM-00820,Camera,60,60,Active,Yes,No,Yes,Match,Yes,No,No,96,36,2,240.71,Valid
+CLM-00083,Mobile,45,12,Active,Yes,No,No,Match,Yes,No,No,89,10,3,1974.85,Valid
+CLM-01327,Camera,17,48,Active,No,Yes,No,Unknown,Unknown,No,No,72,57,2,1563.75,Manual Review
+CLM-00596,Refrigerator,29,12,Unknown,No,No,Yes,Match,No,No,No,47,73,4,821.27,Manual Review
+CLM-00842,Mobile,24,12,Active,Yes,No,Yes,Match,Yes,No,No,88,2,4,831.73,Valid
+CLM-00297,TV,54,60,Expired,Yes,No,No,Mismatch,No,Yes,Yes,61,82,4,2396.2,Invalid
+CLM-00962,Camera,61,36,Active,Yes,Yes,No,Match,Yes,No,No,84,32,2,1081.07,Valid
+CLM-01070,TV,30,18,Active,Yes,No,No,Mismatch,Unknown,No,Yes,73,41,4,1172.3,Manual Review
+CLM-00567,Mobile,65,12,Inactive,No,Yes,No,Match,Unknown,No,No,72,91,2,2143.41,Invalid
+CLM-00364,Refrigerator,53,36,Expired,Yes,No,No,Mismatch,Yes,No,Yes,46,52,4,1013.64,Manual Review
+CLM-01084,TV,53,18,Active,Yes,Yes,Yes,Match,Yes,No,No,95,21,2,2313.38,Valid
+CLM-00495,TV,11,36,Expired,No,Yes,Yes,Mismatch,No,No,No,64,38,5,1288.12,Manual Review
+CLM-00380,Washing Machine,23,12,Active,No,No,No,Match,Yes,No,No,83,22,1,425.2,Valid
+CLM-00021,Refrigerator,14,24,Expired,No,No,No,Mismatch,No,No,Yes,32,70,3,440.88,Manual Review
+CLM-00206,Camera,22,60,Inactive,Yes,No,Yes,Match,No,Yes,No,88,72,5,456.08,Invalid
+CLM-01105,Laptop,51,24,Expired,Yes,Yes,No,Match,Unknown,No,No,52,55,3,364.48,Invalid
+CLM-01036,Mobile,62,36,Active,No,Yes,Yes,Match,Yes,No,No,80,24,4,1941.77,Valid
+CLM-00453,Mobile,69,24,Active,No,No,Yes,Match,Yes,No,No,90,18,4,533.1,Valid
+CLM-00670,TV,67,12,Active,Yes,Yes,Yes,Match,Yes,No,No,98,37,0,1717.43,Valid
+CLM-00010,TV,33,60,Active,Yes,Yes,No,Match,Yes,No,No,81,28,2,668.65,Valid
+CLM-00539,Refrigerator,44,48,Expired,Yes,Yes,No,Match,No,Yes,No,58,66,0,1399.19,Invalid
+CLM-00766,Refrigerator,41,60,Expired,No,No,No,Unknown,Unknown,No,No,58,37,5,2022.29,Manual Review
+CLM-00302,Refrigerator,72,18,Inactive,No,No,Yes,Mismatch,No,Yes,No,87,73,1,780.29,Invalid
+CLM-01435,Mobile,3,60,Expired,No,No,No,Mismatch,Unknown,Yes,Yes,51,74,1,1971.52,Invalid
+CLM-01344,TV,7,18,Active,Yes,Yes,Yes,Unknown,Unknown,No,Yes,33,50,4,2032.74,Manual Review
+CLM-00264,Washing Machine,22,60,Expired,Yes,Yes,No,Mismatch,No,Yes,Yes,86,96,5,2024.0,Invalid
+CLM-00754,Camera,14,36,Unknown,Yes,No,No,Match,No,No,No,34,38,3,832.83,Manual Review
+CLM-01228,Refrigerator,26,60,Active,No,No,No,Mismatch,Yes,Yes,Yes,78,71,3,2495.84,Manual Review
+CLM-00827,Laptop,40,24,Expired,Yes,Yes,Yes,Match,Unknown,Yes,Yes,51,55,2,1846.74,Manual Review
+CLM-01459,TV,16,36,Active,No,No,No,Match,Unknown,No,No,56,77,4,1036.62,Manual Review
+CLM-00634,Camera,37,12,Active,Yes,Yes,Yes,Match,Unknown,No,No,55,61,3,887.96,Manual Review
+CLM-00745,Refrigerator,22,60,Inactive,Yes,Yes,Yes,Mismatch,No,No,No,72,73,1,1333.21,Invalid
+CLM-00134,Camera,12,60,Unknown,Yes,Yes,Yes,Match,Unknown,Yes,No,49,70,1,2453.42,Manual Review
+CLM-01080,TV,62,36,Active,No,Yes,Yes,Mismatch,No,No,Yes,67,72,1,2137.98,Manual Review
+CLM-00806,TV,45,24,Active,No,No,Yes,Match,Yes,No,No,85,16,5,1272.24,Valid
+CLM-01387,Mobile,71,18,Active,No,No,No,Match,Yes,No,No,86,8,3,411.64,Valid
+CLM-00630,Mobile,51,18,Active,No,Yes,Yes,Match,Yes,No,No,93,25,1,1484.17,Valid
+CLM-00671,TV,36,24,Active,Yes,No,Yes,Match,Yes,No,No,96,19,4,1942.68,Valid
+CLM-00320,Washing Machine,67,12,Unknown,No,No,Yes,Unknown,Yes,Yes,No,52,45,4,169.3,Manual Review
+CLM-00990,Washing Machine,50,18,Active,No,Yes,No,Match,Yes,No,No,77,16,3,1063.07,Valid
+CLM-00340,Washing Machine,23,48,Inactive,No,No,Yes,Match,Unknown,No,Yes,83,94,4,1926.35,Invalid
+CLM-01256,Washing Machine,67,18,Unknown,Yes,No,Yes,Match,Yes,Yes,No,34,53,1,615.5,Manual Review
+CLM-00812,Laptop,71,36,Unknown,Yes,No,No,Unknown,Yes,Yes,Yes,68,30,2,1678.76,Manual Review
+CLM-00358,Laptop,7,60,Inactive,No,No,Yes,Match,Unknown,No,Yes,51,72,3,2480.73,Invalid
+CLM-01473,Mobile,61,60,Active,No,Yes,Yes,Match,Yes,No,No,78,35,0,777.84,Valid
+CLM-00542,Camera,11,36,Unknown,No,No,Yes,Match,No,No,No,65,41,2,2053.58,Manual Review
+CLM-00213,Refrigerator,57,12,Inactive,Yes,No,No,Match,Unknown,Yes,Yes,84,90,4,2019.35,Invalid
+CLM-00892,Refrigerator,53,48,Inactive,Yes,Yes,Yes,Match,Unknown,No,No,65,97,2,1805.56,Invalid
+CLM-00341,Refrigerator,70,24,Active,No,Yes,No,Match,Yes,No,No,87,38,2,1630.79,Valid
+CLM-00933,Laptop,17,60,Active,No,No,No,Match,Yes,No,No,90,19,3,1335.49,Valid
+CLM-00382,TV,6,36,Expired,Yes,Yes,Yes,Unknown,No,No,No,80,69,4,1953.16,Manual Review
+CLM-01020,Mobile,44,18,Active,No,No,No,Match,Yes,No,No,98,14,4,358.95,Valid
+CLM-01485,Refrigerator,26,36,Expired,Yes,Yes,No,Match,Unknown,Yes,No,75,80,1,1530.69,Invalid
+CLM-01117,Washing Machine,51,18,Active,No,Yes,No,Match,Yes,No,No,89,37,4,436.34,Valid
+CLM-00055,Camera,43,60,Inactive,No,Yes,No,Match,No,No,No,50,89,1,1277.82,Invalid
+CLM-00011,Mobile,13,12,Expired,Yes,Yes,Yes,Match,Unknown,No,No,73,58,4,1749.52,Invalid
+CLM-00846,Camera,69,18,Active,No,No,No,Mismatch,Yes,No,No,34,37,0,1459.44,Manual Review
+CLM-00337,Mobile,9,18,Active,No,Yes,No,Match,Yes,No,No,78,39,2,1415.64,Valid
+CLM-01450,Mobile,65,24,Expired,No,Yes,No,Match,Yes,Yes,No,46,48,0,1259.12,Manual Review
+CLM-00736,TV,26,48,Active,Yes,No,Yes,Match,Yes,No,No,96,0,5,428.98,Valid
+CLM-01091,Washing Machine,30,12,Active,No,No,No,Unknown,Unknown,Yes,Yes,30,30,5,1424.72,Manual Review
+CLM-00430,Washing Machine,39,48,Unknown,Yes,Yes,Yes,Unknown,Unknown,Yes,No,41,53,4,1543.72,Manual Review
+CLM-00516,Washing Machine,28,36,Active,Yes,Yes,Yes,Match,Yes,No,No,87,30,0,2084.0,Valid
+CLM-00961,Refrigerator,50,36,Inactive,No,Yes,No,Match,No,No,No,54,61,1,1507.54,Invalid
+CLM-01232,Laptop,23,12,Expired,Yes,Yes,No,Mismatch,No,No,Yes,73,63,4,451.9,Manual Review
+CLM-01443,Laptop,31,60,Active,Yes,No,No,Mismatch,Yes,Yes,No,35,72,0,812.68,Manual Review
+CLM-00822,Mobile,39,60,Inactive,No,Yes,Yes,Mismatch,No,Yes,No,72,59,5,576.1,Invalid
+CLM-00439,TV,2,18,Active,No,No,Yes,Match,Yes,No,No,94,2,1,185.0,Valid
+CLM-00574,Laptop,43,36,Active,Yes,Yes,No,Mismatch,Yes,No,Yes,76,77,3,931.57,Manual Review
+CLM-00896,Mobile,27,36,Unknown,No,Yes,Yes,Match,No,No,Yes,47,30,3,874.21,Manual Review
+CLM-00462,Refrigerator,47,18,Active,No,No,Yes,Match,Yes,No,No,83,30,5,1233.68,Valid
+CLM-00732,Camera,42,36,Inactive,No,Yes,No,Mismatch,No,Yes,Yes,65,69,3,1941.48,Invalid
+CLM-00794,Camera,52,24,Unknown,No,Yes,No,Match,No,No,No,56,41,3,1518.27,Manual Review
+CLM-00624,Camera,49,60,Active,No,Yes,Yes,Match,Yes,No,No,96,18,2,952.32,Valid
+CLM-00536,Camera,26,36,Inactive,Yes,No,No,Match,No,No,No,65,67,3,1610.21,Invalid
+CLM-00385,TV,62,24,Expired,Yes,No,Yes,Match,Unknown,Yes,No,61,71,3,477.75,Invalid
+CLM-00025,Laptop,66,18,Expired,No,No,Yes,Match,No,Yes,No,70,65,1,2480.73,Manual Review
+CLM-00270,Laptop,28,48,Expired,No,Yes,Yes,Match,Unknown,No,No,48,99,5,828.35,Invalid
+CLM-00049,Refrigerator,5,36,Expired,Yes,No,Yes,Mismatch,Unknown,Yes,No,57,56,5,1502.39,Invalid
+CLM-01264,Camera,1,48,Active,Yes,Yes,Yes,Match,Yes,No,No,81,7,3,543.49,Valid
+CLM-00985,Laptop,15,12,Expired,No,Yes,Yes,Unknown,No,Yes,Yes,80,77,3,1748.99,Manual Review
+CLM-00473,TV,22,36,Active,Yes,Yes,No,Match,Yes,No,No,87,15,5,2121.82,Valid
+CLM-00828,Refrigerator,5,18,Expired,Yes,No,Yes,Mismatch,No,Yes,Yes,62,71,3,227.07,Manual Review
+CLM-00923,Refrigerator,40,60,Inactive,Yes,No,No,Match,No,No,No,89,80,2,360.08,Invalid
+CLM-00729,Laptop,8,12,Active,Yes,No,Yes,Match,Yes,No,No,79,5,4,1606.13,Valid
+CLM-00140,TV,72,24,Active,No,No,Yes,Match,Yes,No,No,80,10,4,1759.5,Valid
+CLM-00720,Camera,3,36,Active,No,Yes,Yes,Match,Yes,No,No,98,27,3,1064.12,Valid
+CLM-00566,Mobile,31,48,Active,No,No,No,Match,Yes,No,No,87,34,2,1114.96,Valid
+CLM-01019,Refrigerator,29,48,Expired,Yes,No,No,Match,Unknown,No,Yes,83,61,4,1292.73,Invalid
+CLM-01297,TV,17,48,Active,No,No,No,Mismatch,Yes,Yes,No,58,65,1,388.3,Manual Review
+CLM-00391,Laptop,26,12,Inactive,Yes,Yes,No,Mismatch,Unknown,No,No,86,86,0,179.22,Invalid
+CLM-00426,TV,67,48,Active,No,Yes,No,Unknown,No,Yes,No,51,39,0,1569.58,Manual Review
+CLM-00386,Laptop,6,48,Active,Yes,Yes,Yes,Match,Yes,No,No,86,16,0,1526.05,Valid
+CLM-00956,Washing Machine,56,18,Expired,No,No,No,Match,Unknown,Yes,Yes,62,72,0,2476.15,Invalid
+CLM-00441,Laptop,26,48,Unknown,No,Yes,Yes,Match,No,No,No,50,74,0,79.2,Manual Review
+CLM-00094,Camera,60,24,Unknown,No,Yes,No,Unknown,Yes,No,No,53,76,2,1976.38,Manual Review
+CLM-00889,Camera,49,36,Expired,Yes,Yes,No,Mismatch,Unknown,Yes,No,56,73,5,1181.49,Invalid
+CLM-00601,Mobile,59,36,Inactive,No,Yes,Yes,Match,No,Yes,Yes,83,64,5,2178.56,Invalid
+CLM-00062,Laptop,63,48,Inactive,No,Yes,No,Match,No,No,No,82,93,4,917.88,Invalid
+CLM-00573,Laptop,58,12,Unknown,Yes,No,Yes,Match,Yes,Yes,No,57,31,3,227.35,Manual Review
+CLM-01345,Mobile,10,48,Expired,No,Yes,No,Match,No,No,No,68,67,3,290.16,Invalid
+CLM-00389,Mobile,51,18,Active,No,No,Yes,Match,Yes,No,No,100,5,1,1698.25,Valid
+CLM-00836,Laptop,45,18,Inactive,Yes,Yes,Yes,Match,No,Yes,No,81,56,5,95.39,Invalid
+CLM-01236,Camera,23,18,Inactive,Yes,Yes,Yes,Mismatch,No,No,Yes,55,97,5,2444.01,Invalid
+CLM-00744,Refrigerator,19,48,Expired,Yes,No,Yes,Mismatch,Unknown,No,Yes,72,71,4,2468.68,Invalid
+CLM-01321,Mobile,13,24,Expired,No,No,Yes,Mismatch,Yes,Yes,No,51,37,5,154.05,Manual Review
+CLM-01390,Washing Machine,62,36,Active,No,Yes,No,Match,Yes,No,No,77,35,0,780.0,Valid
+CLM-01033,Washing Machine,50,48,Inactive,Yes,Yes,No,Mismatch,No,No,No,73,58,2,961.06,Invalid
+CLM-01221,TV,55,48,Expired,No,No,Yes,Match,Unknown,Yes,Yes,66,95,2,272.7,Invalid
+CLM-00699,Refrigerator,26,24,Unknown,No,Yes,No,Match,Yes,No,No,46,77,4,1846.83,Manual Review
+CLM-01288,TV,39,12,Expired,Yes,Yes,No,Mismatch,Unknown,Yes,Yes,79,68,1,1736.01,Invalid
+CLM-01253,TV,58,24,Active,No,No,No,Match,Yes,No,No,94,0,2,1239.74,Valid
+CLM-01210,Laptop,42,48,Active,Yes,Yes,No,Match,Yes,No,No,83,34,5,606.46,Valid
+CLM-00569,Laptop,58,18,Expired,No,Yes,Yes,Match,Unknown,Yes,No,75,94,4,538.95,Invalid
+CLM-00771,TV,53,12,Active,Yes,Yes,Yes,Mismatch,No,Yes,No,44,60,4,1352.42,Manual Review
+CLM-00513,Camera,36,48,Unknown,No,No,Yes,Match,No,Yes,Yes,54,40,0,515.34,Manual Review
+CLM-00895,Refrigerator,20,36,Inactive,Yes,Yes,No,Mismatch,No,Yes,No,89,55,2,1636.79,Invalid
+CLM-00555,Laptop,63,12,Inactive,No,Yes,Yes,Match,No,Yes,Yes,85,60,0,441.39,Invalid
+CLM-01133,TV,29,60,Expired,No,No,Yes,Unknown,Unknown,No,Yes,37,61,2,1908.19,Manual Review
+CLM-00350,TV,62,48,Expired,Yes,No,No,Unknown,Unknown,No,No,37,44,4,391.17,Manual Review
+CLM-00274,TV,3,12,Expired,No,No,Yes,Mismatch,Unknown,Yes,No,51,77,5,1735.71,Manual Review
+CLM-00268,Laptop,48,36,Active,No,No,Yes,Match,Yes,No,No,78,34,4,964.97,Valid
+CLM-01050,Washing Machine,37,18,Active,No,Yes,No,Match,Yes,No,No,97,20,5,153.27,Valid
+CLM-00193,Mobile,10,36,Active,Yes,Yes,No,Unknown,Yes,Yes,Yes,65,48,1,1861.55,Manual Review
+CLM-00695,Refrigerator,18,18,Expired,No,Yes,Yes,Mismatch,Unknown,Yes,Yes,45,58,3,2278.83,Invalid
+CLM-00086,Laptop,4,60,Active,Yes,Yes,No,Match,Yes,No,No,78,5,2,1120.28,Valid
+CLM-00905,Mobile,50,60,Expired,No,No,No,Mismatch,Yes,No,Yes,76,73,5,1035.99,Manual Review
+CLM-01372,Refrigerator,28,48,Expired,No,No,No,Mismatch,Unknown,Yes,Yes,77,61,5,2332.88,Invalid
+CLM-00082,Camera,58,60,Active,Yes,Yes,No,Match,Yes,No,No,98,11,2,1128.49,Valid
+CLM-00605,Laptop,64,18,Unknown,No,No,No,Mismatch,No,No,Yes,34,65,0,788.57,Manual Review
+CLM-00600,TV,24,48,Active,Yes,No,No,Match,Yes,No,No,88,12,0,2371.2,Valid
+CLM-00652,Refrigerator,72,12,Expired,No,No,No,Mismatch,No,Yes,Yes,52,76,5,1431.47,Invalid
+CLM-00368,Laptop,43,12,Expired,Yes,Yes,No,Mismatch,No,Yes,Yes,76,85,3,1607.33,Invalid
+CLM-01356,Laptop,15,12,Inactive,Yes,Yes,No,Mismatch,Unknown,Yes,Yes,73,77,3,1853.33,Invalid
+CLM-00023,TV,3,36,Expired,No,Yes,Yes,Unknown,No,No,Yes,61,70,4,226.89,Manual Review
+CLM-01413,TV,46,60,Active,No,Yes,Yes,Match,Yes,No,No,91,18,1,616.96,Valid
+CLM-01314,TV,25,48,Expired,No,Yes,No,Mismatch,Unknown,No,Yes,60,30,2,2475.71,Manual Review
+CLM-01415,Refrigerator,72,24,Active,Yes,No,No,Match,Unknown,No,Yes,38,70,2,1985.64,Manual Review
+CLM-00570,Mobile,17,60,Inactive,Yes,Yes,No,Mismatch,Unknown,Yes,Yes,88,76,5,1069.37,Invalid
+CLM-00442,Washing Machine,66,60,Expired,Yes,No,No,Mismatch,Unknown,Yes,Yes,60,97,1,1453.26,Invalid
+CLM-01071,Refrigerator,3,12,Expired,No,Yes,Yes,Match,No,Yes,No,76,97,1,1331.8,Invalid
+CLM-01363,Refrigerator,32,24,Expired,Yes,No,Yes,Mismatch,Unknown,No,Yes,74,65,0,1479.31,Invalid
+CLM-01009,Camera,41,12,Active,Yes,Yes,No,Match,Yes,No,No,80,23,2,2317.58,Valid
+CLM-01400,Mobile,1,24,Active,No,Yes,No,Match,Yes,No,No,98,35,5,575.04,Valid
+CLM-00883,TV,34,12,Inactive,No,Yes,Yes,Mismatch,Unknown,No,Yes,85,89,2,747.9,Invalid
+CLM-00258,Refrigerator,48,12,Inactive,No,Yes,No,Mismatch,No,No,No,56,77,5,2353.54,Invalid
+CLM-00081,Laptop,55,36,Unknown,No,No,No,Match,Unknown,No,Yes,53,66,1,1518.45,Manual Review
+CLM-01305,Camera,63,36,Active,Yes,No,Yes,Mismatch,Unknown,No,Yes,68,57,4,1551.98,Manual Review
+CLM-00512,Refrigerator,57,60,Expired,No,No,Yes,Match,No,No,No,57,55,0,822.77,Invalid
+CLM-00909,Laptop,29,36,Expired,No,Yes,No,Match,No,Yes,Yes,79,68,1,1982.03,Invalid
+CLM-01212,Camera,21,12,Active,No,No,No,Match,Yes,No,No,79,34,3,625.62,Valid
+CLM-01330,Laptop,33,36,Expired,No,Yes,Yes,Match,Unknown,Yes,Yes,50,96,1,1271.43,Invalid
+CLM-01279,Laptop,38,60,Inactive,No,No,Yes,Match,No,Yes,No,58,71,5,1843.17,Invalid
+CLM-00184,Laptop,16,24,Active,Yes,No,No,Match,Yes,No,No,97,2,3,507.94,Valid
+CLM-00834,TV,65,18,Unknown,Yes,Yes,No,Match,No,Yes,No,57,72,5,2349.94,Manual Review
+CLM-00161,Refrigerator,52,12,Active,Yes,No,No,Match,Yes,No,No,92,4,0,2396.94,Valid
+CLM-00927,TV,58,60,Active,No,Yes,Yes,Match,Yes,No,No,92,19,0,1335.8,Valid
+CLM-00467,Washing Machine,69,12,Expired,No,Yes,No,Mismatch,Unknown,Yes,No,76,66,4,121.47,Invalid
+CLM-00697,Washing Machine,62,18,Expired,Yes,No,No,Unknown,No,No,No,46,79,4,759.48,Manual Review
+CLM-00613,Washing Machine,26,60,Active,Yes,No,Yes,Match,Yes,No,No,100,16,3,1161.92,Valid
+CLM-00501,Laptop,24,18,Active,No,Yes,Yes,Match,Yes,No,No,92,13,3,909.24,Valid
+CLM-00747,Camera,40,48,Active,No,No,No,Match,Yes,No,No,89,21,1,1677.11,Valid
+CLM-00058,Washing Machine,8,48,Active,No,No,Yes,Match,Yes,No,No,80,24,3,245.92,Valid
+CLM-01265,Laptop,10,36,Unknown,No,No,No,Unknown,Yes,Yes,No,33,34,2,709.08,Manual Review
+CLM-00639,Camera,22,24,Active,No,No,Yes,Match,Yes,No,No,88,24,3,1873.83,Valid
+CLM-00897,Washing Machine,27,48,Expired,Yes,No,No,Mismatch,Unknown,Yes,Yes,64,64,1,839.99,Invalid
+CLM-00043,Laptop,39,48,Expired,Yes,Yes,Yes,Mismatch,Yes,Yes,Yes,60,73,0,1439.91,Manual Review
+CLM-00223,Camera,38,24,Expired,No,No,Yes,Match,Unknown,No,No,55,87,4,1883.05,Invalid
+CLM-01000,Mobile,66,12,Active,No,Yes,Yes,Match,Yes,No,No,95,26,4,96.79,Valid
+CLM-00231,Camera,66,36,Expired,No,No,Yes,Match,No,Yes,No,66,78,3,919.57,Manual Review
+CLM-00323,Refrigerator,18,24,Expired,No,Yes,Yes,Match,No,No,Yes,87,68,3,1622.46,Invalid
+CLM-00847,Camera,6,24,Inactive,No,No,Yes,Match,Unknown,No,Yes,47,98,2,94.97,Invalid
+CLM-01322,TV,14,18,Unknown,Yes,Yes,No,Mismatch,Unknown,Yes,No,65,46,1,2126.73,Manual Review
+CLM-01078,Camera,7,60,Active,Yes,No,Yes,Match,Yes,No,No,94,35,1,1208.94,Valid
+CLM-00593,Mobile,32,36,Active,Yes,Yes,No,Match,Yes,No,No,87,20,4,2231.04,Valid
+CLM-00291,Laptop,66,36,Inactive,No,Yes,No,Mismatch,No,Yes,No,78,86,1,83.52,Invalid
+CLM-00761,Camera,8,48,Active,Yes,Yes,No,Match,Yes,No,No,86,13,5,1573.97,Valid
+CLM-00284,TV,19,60,Inactive,No,No,Yes,Match,Unknown,Yes,No,53,93,0,395.71,Invalid

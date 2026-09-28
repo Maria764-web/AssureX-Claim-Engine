@@ -1,0 +1,308 @@
+{% extends "base.html" %}
+
+{% block title %}Review Claim {{ claim.claim_uid }} - AssureX{% endblock %}
+
+{% block extra_css %}
+<style>
+    .review-layout { display: grid; grid-template-columns: 1fr 320px; gap: 1.5rem; }
+    @media (max-width: 900px) { .review-layout { grid-template-columns: 1fr; } }
+    .panel { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 1rem; padding: 1.5rem; margin-bottom: 1.5rem; }
+    .panel-title { font-size: 1rem; font-weight: 700; color: #fff; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem; padding-bottom: 0.75rem; border-bottom: 1px solid rgba(255,255,255,0.06); }
+    .rule-row { display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; padding: 0.65rem 0; border-bottom: 1px solid rgba(255,255,255,0.04); }
+    .rule-row:last-child { border-bottom: none; }
+    .status-pill { font-size: 0.75rem; font-weight: 600; padding: 0.2rem 0.65rem; border-radius: 1rem; white-space: nowrap; }
+    .pill-passed { background: var(--success-bg); color: #4ade80; }
+    .pill-failed { background: var(--danger-bg); color: #f87171; }
+    .pill-warning { background: var(--warning-bg); color: #fbbf24; }
+    .pill-inconclusive { background: rgba(148,163,184,0.15); color: #94a3b8; }
+    .conf-bar-wrap { background: rgba(255,255,255,0.07); border-radius: 99px; height: 8px; overflow: hidden; margin-top: 0.35rem; }
+    .conf-bar { height: 100%; border-radius: 99px; }
+    .bar-valid { background: linear-gradient(90deg, #22c55e, #4ade80); }
+    .bar-invalid { background: linear-gradient(90deg, #ef4444, #f87171); }
+    .bar-manual { background: linear-gradient(90deg, #f59e0b, #fbbf24); }
+    .decision-btn { width: 100%; padding: 0.8rem; font-weight: 700; font-size: 0.95rem; border-radius: 0.7rem; border: none; cursor: pointer; font-family: 'Outfit', sans-serif; transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 0.5rem; margin-bottom: 0.65rem; }
+    .btn-approve { background: linear-gradient(135deg, #16a34a, #22c55e); color: #fff; }
+    .btn-reject { background: linear-gradient(135deg, #dc2626, #ef4444); color: #fff; }
+    .btn-request { background: linear-gradient(135deg, #d97706, #f59e0b); color: #fff; }
+    .btn-escalate { background: rgba(255,255,255,0.07); color: #cbd5e1; border: 1px solid rgba(255,255,255,0.15); }
+    .decision-btn:hover { transform: translateY(-1px); opacity: 0.92; }
+    .info-row { display: flex; justify-content: space-between; padding: 0.45rem 0; border-bottom: 1px solid rgba(255,255,255,0.04); font-size: 0.88rem; }
+    .info-row:last-child { border-bottom: none; }
+    .info-key { color: var(--text-muted); }
+    .info-val { color: #fff; font-weight: 500; text-align: right; }
+    textarea.notes-field { width: 100%; background: rgba(15,23,42,0.8); border: 1px solid rgba(255,255,255,0.12); border-radius: 0.6rem; color: #fff; font-family: 'Outfit', sans-serif; font-size: 0.88rem; padding: 0.75rem 1rem; resize: vertical; min-height: 90px; outline: none; }
+    textarea.notes-field:focus { border-color: var(--accent); }
+    .claim-status-tag { display: inline-block; padding: 0.3rem 0.9rem; border-radius: 1.5rem; font-size: 0.82rem; font-weight: 600; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div style="max-width: 1100px; margin: 0 auto;">
+
+    <!-- Header -->
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.75rem; flex-wrap:wrap; gap:1rem;">
+        <div>
+            <h1 style="font-size:1.75rem; font-weight:700; color:#fff;">Claim Review</h1>
+            <p style="color:var(--text-muted); font-size:0.9rem; margin-top:0.2rem; font-family:monospace;">{{ claim.claim_uid }}</p>
+        </div>
+        <div style="display:flex; gap:0.75rem; flex-wrap:wrap;">
+            <a href="{{ url_for('reviewer.dashboard') }}" class="btn btn-secondary" style="font-size:0.88rem;">
+                ← Back to Queue
+            </a>
+            <button onclick="runEvaluation()" class="btn btn-primary" style="font-size:0.88rem;" id="eval-btn">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                Run AI Evaluation
+            </button>
+        </div>
+    </div>
+
+    <div class="review-layout">
+        <!-- LEFT: Claim Details -->
+        <div>
+            <!-- Claim Info -->
+            <div class="panel">
+                <div class="panel-title">
+                    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                    Claim Information
+                    <span style="margin-left:auto;">
+                        {% set st = claim.claim_status %}
+                        {% if st == 'Approved' %}<span class="claim-status-tag" style="background:var(--success-bg);color:#4ade80;">{{ st }}</span>
+                        {% elif st == 'Rejected' %}<span class="claim-status-tag" style="background:var(--danger-bg);color:#f87171;">{{ st }}</span>
+                        {% elif st == 'Manual Review' %}<span class="claim-status-tag" style="background:var(--warning-bg);color:#fbbf24;">{{ st }}</span>
+                        {% else %}<span class="claim-status-tag" style="background:rgba(148,163,184,0.15);color:#94a3b8;">{{ st }}</span>
+                        {% endif %}
+                    </span>
+                </div>
+                <div class="info-row"><span class="info-key">Final Decision</span><span class="info-val">{{ claim.final_decision or '—' }}</span></div>
+                <div class="info-row"><span class="info-key">Damage Type</span><span class="info-val">{{ claim.damage_type or '—' }}</span></div>
+                <div class="info-row"><span class="info-key">Fault Date</span><span class="info-val">{{ claim.fault_date.strftime('%d %b %Y') if claim.fault_date else '—' }}</span></div>
+                <div class="info-row"><span class="info-key">Product Age</span><span class="info-val">{{ claim.product_age or '—' }} months</span></div>
+                <div class="info-row"><span class="info-key">Submission Date</span><span class="info-val">{{ claim.submission_date.strftime('%d %b %Y') if claim.submission_date else '—' }}</span></div>
+                <div class="info-row"><span class="info-key">Documents</span><span class="info-val">{{ claim.documents | length }}</span></div>
+
+                <div style="margin-top:1rem; padding-top:1rem; border-top:1px solid rgba(255,255,255,0.06);">
+                    <div style="font-size:0.8rem; color:var(--text-muted); margin-bottom:0.4rem;">Fault Description</div>
+                    <div style="font-size:0.88rem; color:#cbd5e1; line-height:1.6;">{{ claim.fault_description or '—' }}</div>
+                </div>
+            </div>
+
+            <!-- Product & Warranty -->
+            {% if summary and summary.product %}
+            <div class="panel">
+                <div class="panel-title">
+                    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+                    Product & Warranty
+                </div>
+                {% set p = summary.product %}
+                <div class="info-row"><span class="info-key">Product</span><span class="info-val">{{ p.brand }} {{ p.model }}</span></div>
+                <div class="info-row"><span class="info-key">Serial Number</span><span class="info-val" style="font-family:monospace;">{{ p.serial_number }}</span></div>
+                <div class="info-row"><span class="info-key">Purchase Date</span><span class="info-val">{{ p.purchase_date or '—' }}</span></div>
+                {% if summary.warranty %}
+                {% set w = summary.warranty %}
+                <div class="info-row"><span class="info-key">Warranty Status</span><span class="info-val">{{ w.warranty_status or w.status }}</span></div>
+                <div class="info-row"><span class="info-key">Warranty Expiry</span><span class="info-val">{{ w.expiry_date or '—' }}</span></div>
+                {% endif %}
+            </div>
+            {% endif %}
+
+            <!-- Rule Engine Results -->
+            {% if summary and summary.rule_results %}
+            <div class="panel">
+                <div class="panel-title">
+                    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+                    Warranty Rule Checks
+                    <span style="margin-left:auto; font-size:0.8rem; color:var(--text-muted); font-weight:400;">
+                        {{ summary.rule_summary.passed }} / {{ summary.rule_summary.total }} passed
+                    </span>
+                </div>
+                {% for rule in summary.rule_results %}
+                <div class="rule-row">
+                    <div>
+                        <div style="font-size:0.88rem; color:#cbd5e1;">{{ rule.rule_name }}</div>
+                        <div style="font-size:0.78rem; color:var(--text-muted); margin-top:0.15rem;">{{ rule.details or rule.rule_result or '' }}</div>
+                    </div>
+                    <span class="status-pill {{ 'pill-passed' if rule.rule_status == 'Passed' else ('pill-failed' if rule.rule_status == 'Failed' else ('pill-warning' if rule.rule_status == 'Warning' else 'pill-inconclusive')) }}">
+                        {{ rule.rule_status }}
+                    </span>
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            <!-- AI Prediction -->
+            {% if summary and summary.latest_prediction %}
+            {% set pred = summary.latest_prediction %}
+            <div class="panel">
+                <div class="panel-title">
+                    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14"/></svg>
+                    AI Prediction: {{ pred.model_name or 'Python ML' }}
+                </div>
+                <div style="font-size:0.9rem; color:#cbd5e1; margin-bottom:1rem;">
+                    Predicted: <strong style="color:{% if pred.predicted_class == 'Valid' %}#4ade80{% elif pred.predicted_class == 'Invalid' %}#f87171{% else %}#fbbf24{% endif %};">{{ pred.predicted_class }}</strong>
+                </div>
+                <div style="display:flex; flex-direction:column; gap:0.75rem;">
+                    {% set vc = (pred.valid_confidence * 100) | round(1) %}
+                    {% set ic = (pred.invalid_confidence * 100) | round(1) %}
+                    {% set mc = (pred.manual_review_confidence * 100) | round(1) %}
+                    <div>
+                        <div style="display:flex;justify-content:space-between;font-size:0.82rem;margin-bottom:0.25rem;"><span style="color:#4ade80;">Valid</span><span style="color:#4ade80;">{{ vc }}%</span></div>
+                        <div class="conf-bar-wrap"><div class="conf-bar bar-valid" style="width:{{ vc }}%;"></div></div>
+                    </div>
+                    <div>
+                        <div style="display:flex;justify-content:space-between;font-size:0.82rem;margin-bottom:0.25rem;"><span style="color:#f87171;">Invalid</span><span style="color:#f87171;">{{ ic }}%</span></div>
+                        <div class="conf-bar-wrap"><div class="conf-bar bar-invalid" style="width:{{ ic }}%;"></div></div>
+                    </div>
+                    <div>
+                        <div style="display:flex;justify-content:space-between;font-size:0.82rem;margin-bottom:0.25rem;"><span style="color:#fbbf24;">Manual Review</span><span style="color:#fbbf24;">{{ mc }}%</span></div>
+                        <div class="conf-bar-wrap"><div class="conf-bar bar-manual" style="width:{{ mc }}%;"></div></div>
+                    </div>
+                </div>
+                <div style="margin-top:1rem;">
+                    <button onclick="compareModels()" class="btn btn-secondary" style="font-size:0.82rem; padding:0.5rem 1rem; width:100%;">
+                        Compare Python vs Teachable Machine
+                    </button>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Documents -->
+            {% if summary and summary.documents %}
+            <div class="panel">
+                <div class="panel-title">
+                    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
+                    Evidence Documents ({{ summary.documents | length }})
+                </div>
+                {% for doc in summary.documents %}
+                <div class="rule-row">
+                    <div>
+                        <div style="font-size:0.88rem; color:#cbd5e1;">{{ doc.document_type }}</div>
+                        <div style="font-size:0.78rem; color:var(--text-muted); font-family:monospace;">{{ doc.original_filename }}</div>
+                    </div>
+                    <span class="status-pill pill-passed">Uploaded</span>
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- RIGHT: Decision Panel -->
+        <div>
+            <div class="panel" style="position:sticky; top:80px;">
+                <div class="panel-title">
+                    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                    Reviewer Decision
+                </div>
+
+                <form id="decision-form" method="POST" action="{{ url_for('reviewer.apply_decision', claim_id=claim.id) }}">
+                    <div style="margin-bottom:1rem;">
+                        <label style="font-size:0.82rem; color:var(--text-muted); display:block; margin-bottom:0.5rem;">Reviewer Notes (optional)</label>
+                        <textarea name="notes" class="notes-field" placeholder="Add justification, observations, or policy references..."></textarea>
+                    </div>
+                    <input type="hidden" name="action" id="decision-action" value="">
+
+                    <button type="button" onclick="submitDecision('approve')" class="decision-btn btn-approve">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                        Approve Claim
+                    </button>
+                    <button type="button" onclick="submitDecision('reject')" class="decision-btn btn-reject">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                        Reject Claim
+                    </button>
+                    <button type="button" onclick="submitDecision('request_info')" class="decision-btn btn-request">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                        Request More Info
+                    </button>
+                    <button type="button" onclick="submitDecision('escalate')" class="decision-btn btn-escalate">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="17 11 21 7 17 3"/><line x1="21" y1="7" x2="9" y2="7"/><polyline points="7 21 3 17 7 13"/><line x1="3" y1="17" x2="15" y2="17"/></svg>
+                        Escalate
+                    </button>
+                </form>
+
+                <div id="model-comparison-result" style="display:none; margin-top:1rem; padding:1rem; background:rgba(15,23,42,0.7); border-radius:0.75rem; border:1px solid #1e293b;"></div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+const claimId = {{ claim.id }};
+
+function submitDecision(action) {
+    const confirmMessages = {
+        approve: 'Approve this claim? This action will notify the customer.',
+        reject: 'Reject this claim? Please ensure reviewer notes explain the reason.',
+        request_info: 'Request additional information from the customer?',
+        escalate: 'Escalate this claim for further review?'
+    };
+    if (!confirm(confirmMessages[action] || 'Continue with this action?')) return;
+    document.getElementById('decision-action').value = action;
+    document.getElementById('decision-form').submit();
+}
+
+function runEvaluation() {
+    const btn = document.getElementById('eval-btn');
+    btn.disabled = true;
+    btn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="animation:spin 1s linear infinite"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.65"/></svg> Evaluating...';
+
+    fetch(`/reviewer/claims/${claimId}/evaluate`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' }
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (data.success) {
+            alert(`Evaluation complete!\nDecision: ${data.final_decision}\n${data.reasoning || ''}`);
+            location.reload();
+        } else {
+            alert('Evaluation failed: ' + (data.error || 'Unknown error'));
+            btn.disabled = false;
+            btn.innerHTML = '▶ Run AI Evaluation';
+        }
+    })
+    .catch(e => {
+        alert('Network error: ' + e.message);
+        btn.disabled = false;
+        btn.innerHTML = '▶ Run AI Evaluation';
+    });
+}
+
+function compareModels() {
+    const resultDiv = document.getElementById('model-comparison-result');
+    resultDiv.style.display = 'block';
+    resultDiv.innerHTML = '<p style="color:var(--text-muted); font-size:0.85rem;">Comparing models...</p>';
+
+    fetch(`/reviewer/claims/${claimId}/compare-models`)
+    .then(r => r.json())
+    .then(data => {
+        if (!data.success) {
+            resultDiv.innerHTML = `<p style="color:#f87171; font-size:0.85rem;">Error: ${data.message || 'Model comparison failed.'}</p>`;
+            return;
+        }
+        const cmp = data.comparison.comparison;
+        const pm = data.comparison.python_model;
+        const tm = data.comparison.teachable_machine;
+        resultDiv.innerHTML = `
+            <div style="font-size:0.82rem; color:var(--text-muted); margin-bottom:0.5rem; font-weight:600; text-transform:uppercase;">Model Comparison</div>
+            <div style="font-size:0.85rem; color:#cbd5e1; margin-bottom:0.35rem;">
+                Python ML: <strong style="color:#4ade80;">${pm.predicted_class || '—'}</strong> (${(pm.confidence*100).toFixed(1)}%)
+            </div>
+            <div style="font-size:0.85rem; color:#cbd5e1; margin-bottom:0.75rem;">
+                Teachable Machine: <strong style="color:#38bdf8;">${tm.predicted_class || '—'}</strong> (${(tm.confidence*100).toFixed(1)}%)
+            </div>
+            <div style="font-size:0.82rem;">
+                Agreement: <strong style="color:${cmp.models_agree ? '#4ade80' : '#fbbf24'};">${cmp.agreement_level}</strong>
+            </div>
+            <div style="font-size:0.82rem; margin-top:0.35rem;">
+                Combined Recommendation: <strong style="color:#38bdf8;">${cmp.recommendation}</strong>
+            </div>
+        `;
+    })
+    .catch(e => {
+        resultDiv.innerHTML = `<p style="color:#f87171; font-size:0.85rem;">Network error: ${e.message}</p>`;
+    });
+}
+</script>
+<style>@keyframes spin { to { transform: rotate(360deg); } }</style>
+{% endblock %}

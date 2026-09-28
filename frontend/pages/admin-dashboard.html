@@ -1,0 +1,1026 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Administrator Console — AssureX</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <style>
+        :root {
+            --bg:        #070b14;
+            --card-bg:   rgba(14,20,36,0.85);
+            --card-b:    rgba(56,189,248,0.15);
+            --accent:    #38bdf8;
+            --primary:   #0284c7;
+            --purple:    #a78bfa;
+            --green:     #4ade80;
+            --amber:     #fbbf24;
+            --red:       #f87171;
+            --muted:     #64748b;
+            --text:      #f1f5f9;
+        }
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+        }
+
+        /* ─── Animated BG ─────────────────────────────── */
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background:
+                radial-gradient(ellipse 80% 60% at 10% 0%,   rgba(56,189,248,.08) 0%, transparent 60%),
+                radial-gradient(ellipse 60% 50% at 90% 100%, rgba(167,139,250,.07) 0%, transparent 60%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* ─── Navbar ──────────────────────────────────── */
+        .navbar {
+            position: sticky; top: 0; z-index: 200;
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 0.9rem 2rem;
+            background: rgba(7,11,20,0.85);
+            border-bottom: 1px solid rgba(56,189,248,0.12);
+            backdrop-filter: blur(20px);
+        }
+        .brand {
+            display: flex; align-items: center; gap: 0.75rem;
+            text-decoration: none;
+        }
+        .brand-logo {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.45rem; font-weight: 700;
+            color: #fff; letter-spacing: -0.03em;
+            text-shadow: 0 0 20px rgba(56,189,248,0.4);
+        }
+        .brand-logo span { color: var(--accent); }
+        .brand-pill {
+            background: rgba(239,68,68,0.12);
+            border: 1px solid rgba(239,68,68,0.3);
+            color: #fca5a5;
+            font-size: 0.65rem; font-weight: 700;
+            padding: 0.18rem 0.6rem; border-radius: 1rem;
+            text-transform: uppercase; letter-spacing: 0.06em;
+            animation: pillPulse 3s ease-in-out infinite;
+        }
+        @keyframes pillPulse {
+            0%,100% { box-shadow: 0 0 0 0 rgba(239,68,68,0); }
+            50%      { box-shadow: 0 0 8px 2px rgba(239,68,68,0.25); }
+        }
+        .user-nav {
+            display: flex; align-items: center; gap: 1rem;
+        }
+        .role-tag {
+            background: rgba(239,68,68,0.12);
+            border: 1px solid rgba(239,68,68,0.28);
+            color: #fca5a5;
+            font-size: 0.75rem; font-weight: 600;
+            padding: 0.28rem 0.75rem; border-radius: 1rem;
+        }
+        .user-name { font-size: 0.88rem; color: #cbd5e1; font-weight: 500; }
+        .btn-logout {
+            display: flex; align-items: center; gap: 0.35rem;
+            color: #f87171; text-decoration: none;
+            font-size: 0.82rem; font-weight: 600;
+            padding: 0.38rem 0.9rem; border-radius: 0.5rem;
+            border: 1px solid rgba(239,68,68,0.28);
+            background: rgba(239,68,68,0.06);
+            transition: all 0.2s;
+        }
+        .btn-logout:hover {
+            background: rgba(239,68,68,0.14);
+            border-color: rgba(239,68,68,0.5);
+            transform: translateY(-1px);
+        }
+
+        /* ─── Main container ─────────────────────────── */
+        .container {
+            position: relative; z-index: 1;
+            max-width: 1280px; width: 100%;
+            margin: 2rem auto; padding: 0 1.5rem;
+            flex: 1;
+        }
+
+        /* ─── Alerts ─────────────────────────────────── */
+        .alert {
+            padding: 0.8rem 1.2rem; border-radius: 0.75rem;
+            font-size: 0.9rem; margin-bottom: 1.25rem;
+            display: flex; align-items: center; gap: 0.5rem;
+        }
+        .alert-success { background: rgba(34,197,94,.12); border: 1px solid rgba(34,197,94,.4); color: #86efac; }
+        .alert-error   { background: rgba(239,68,68,.12); border: 1px solid rgba(239,68,68,.4); color: #fca5a5; }
+        .alert-info    { background: rgba(56,189,248,.1);  border: 1px solid rgba(56,189,248,.35); color: #7dd3fc; }
+
+        /* ─── Page Title ─────────────────────────────── */
+        .page-header {
+            display: flex; align-items: center; justify-content: space-between;
+            margin-bottom: 1.75rem; flex-wrap: wrap; gap: 1rem;
+        }
+        .page-title {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.8rem; font-weight: 700; color: #fff;
+            background: linear-gradient(90deg, #fff 40%, var(--accent));
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+        .page-sub { font-size: 0.85rem; color: var(--muted); margin-top: 0.2rem; }
+
+        /* ─── Quick Nav ──────────────────────────────── */
+        .quick-nav {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 0.75rem;
+            margin-bottom: 2rem;
+        }
+        .nav-pill {
+            display: flex; align-items: center; justify-content: center;
+            gap: 0.5rem;
+            padding: 0.85rem 1rem;
+            border-radius: 0.85rem;
+            font-size: 0.85rem; font-weight: 700;
+            text-decoration: none;
+            border: 1px solid;
+            backdrop-filter: blur(12px);
+            transition: all 0.25s cubic-bezier(.22,.68,0,.97);
+            position: relative; overflow: hidden;
+            letter-spacing: 0.01em;
+        }
+        /* shimmer sweep */
+        .nav-pill::before {
+            content: '';
+            position: absolute;
+            top: 0; left: -100%; width: 60%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+            transition: left 0.45s ease;
+        }
+        /* bottom glow line */
+        .nav-pill::after {
+            content: '';
+            position: absolute; bottom: 0; left: 10%; right: 10%; height: 2px;
+            background: currentColor;
+            border-radius: 2px;
+            opacity: 0; transform: scaleX(0);
+            transition: opacity 0.25s, transform 0.25s;
+        }
+        .nav-pill:hover::before { left: 140%; }
+        .nav-pill:hover::after  { opacity: 0.6; transform: scaleX(1); }
+        .nav-pill:hover {
+            transform: translateY(-3px) scale(1.03);
+            box-shadow: 0 8px 28px rgba(0,0,0,0.4), 0 0 0 1px currentColor;
+        }
+        .nav-pill:active { transform: translateY(0) scale(0.97); }
+        .nav-pill i { font-size: 1rem; }
+
+        .np-blue   { background: rgba(56,189,248,.1);  border-color: rgba(56,189,248,.35); color: #38bdf8; }
+        .np-green  { background: rgba(34,197,94,.1);   border-color: rgba(34,197,94,.35);  color: #4ade80; }
+        .np-purple { background: rgba(167,139,250,.1); border-color: rgba(167,139,250,.35);color: #c4b5fd; }
+        .np-amber  { background: rgba(245,158,11,.1);  border-color: rgba(245,158,11,.35); color: #fbbf24; }
+        .np-indigo { background: rgba(168,85,247,.1);  border-color: rgba(168,85,247,.35); color: #c084fc; }
+        .np-slate  { background: rgba(148,163,184,.1); border-color: rgba(148,163,184,.35);color: #94a3b8; }
+        .np-red    { background: rgba(239,68,68,.1);   border-color: rgba(239,68,68,.35);  color: #f87171; }
+
+        /* ─── Metric Cards ───────────────────────────── */
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(175px, 1fr));
+            gap: 1.1rem;
+            margin-bottom: 2rem;
+        }
+        .metric-card {
+            background: linear-gradient(145deg, rgba(14,20,38,0.95), rgba(10,14,26,0.9));
+            border: 1px solid rgba(255,255,255,0.07);
+            border-radius: 1.15rem;
+            padding: 1.5rem 1.4rem 1.3rem;
+            backdrop-filter: blur(20px);
+            position: relative; overflow: hidden;
+            cursor: default;
+            transition: transform 0.28s cubic-bezier(.22,.68,0,.97), box-shadow 0.28s, border-color 0.28s;
+            transform-style: preserve-3d;
+        }
+        /* colored left accent bar */
+        .metric-card::before {
+            content: '';
+            position: absolute; left: 0; top: 20%; bottom: 20%; width: 3px;
+            background: var(--mc-accent, var(--accent));
+            border-radius: 0 3px 3px 0;
+            box-shadow: 0 0 12px var(--mc-accent, var(--accent));
+            opacity: 0.8;
+        }
+        /* scan line on hover */
+        .metric-card::after {
+            content: '';
+            position: absolute; top: -100%; left: 0; right: 0; height: 40%;
+            background: linear-gradient(180deg, transparent, rgba(255,255,255,0.03), transparent);
+            transition: top 0.6s ease;
+        }
+        .metric-card:hover {
+            transform: translateY(-6px) rotateX(4deg);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.55), 0 0 0 1px var(--mc-accent, var(--accent));
+            border-color: var(--mc-accent, var(--accent));
+        }
+        .metric-card:hover::after { top: 140%; }
+        .metric-label {
+            font-size: 0.7rem; font-weight: 700;
+            color: var(--muted); text-transform: uppercase; letter-spacing: 0.07em;
+            margin-bottom: 0.6rem;
+        }
+        .metric-value {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 2.4rem; font-weight: 700;
+            color: var(--mc-accent, #fff);
+            line-height: 1;
+            text-shadow: 0 0 30px var(--mc-accent, transparent);
+        }
+        .metric-icon {
+            position: absolute; right: 1rem; bottom: 1rem;
+            font-size: 2rem; opacity: 0.08;
+            transition: opacity 0.25s, transform 0.25s;
+        }
+        .metric-card:hover .metric-icon { opacity: 0.18; transform: scale(1.15) rotate(-8deg); }
+        .metric-sub {
+            font-size: 0.7rem; color: var(--muted);
+            margin-top: 0.5rem;
+        }
+
+        /* ─── Section title ──────────────────────────── */
+        .section-title {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1rem; font-weight: 700; color: #fff;
+            display: flex; align-items: center; gap: 0.6rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+            margin-bottom: 1.1rem;
+        }
+        .section-title i { color: var(--accent); font-size: 1rem; }
+
+        /* ─── Glass Panel ────────────────────────────── */
+        .glass-panel {
+            background: var(--card-bg);
+            border: 1px solid var(--card-b);
+            border-radius: 1.1rem;
+            padding: 1.6rem;
+            backdrop-filter: blur(16px);
+            margin-bottom: 1.75rem;
+            position: relative; overflow: hidden;
+        }
+        .glass-panel::before {
+            content: '';
+            position: absolute; top: 0; left: 0; right: 0; height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(56,189,248,0.4), transparent);
+        }
+
+        /* ─── Claims stat row ────────────────────────── */
+        .stat-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 1rem; margin-bottom: 1.5rem;
+        }
+        .stat-box {
+            background: linear-gradient(145deg, rgba(12,18,32,0.95), rgba(8,12,22,0.9));
+            border: 1px solid rgba(255,255,255,0.07);
+            border-radius: 1rem;
+            padding: 1.4rem 1rem 1.2rem;
+            text-align: center;
+            position: relative; overflow: hidden;
+            transition: all 0.25s cubic-bezier(.22,.68,0,.97);
+            cursor: default;
+        }
+        /* top glow arc */
+        .stat-box::before {
+            content: '';
+            position: absolute; top: -30px; left: 50%;
+            transform: translateX(-50%);
+            width: 80px; height: 60px;
+            background: radial-gradient(ellipse, var(--sb-color, rgba(56,189,248,0.25)), transparent 70%);
+            opacity: 0; transition: opacity 0.3s;
+        }
+        /* bottom accent line */
+        .stat-box::after {
+            content: '';
+            position: absolute; bottom: 0; left: 15%; right: 15%; height: 2px;
+            background: var(--sb-color, var(--accent));
+            border-radius: 2px;
+            transform: scaleX(0); transition: transform 0.3s ease;
+            box-shadow: 0 0 8px var(--sb-color, var(--accent));
+        }
+        .stat-box:hover {
+            border-color: var(--sb-color, var(--accent));
+            box-shadow: 0 10px 35px rgba(0,0,0,0.5), 0 0 20px var(--sb-glow, rgba(56,189,248,0.12));
+            transform: translateY(-5px) scale(1.03);
+        }
+        .stat-box:hover::before { opacity: 1; }
+        .stat-box:hover::after  { transform: scaleX(1); }
+
+        .stat-box-icon {
+            font-size: 1.4rem; margin-bottom: 0.5rem;
+            color: var(--sb-color, var(--accent));
+            opacity: 0.7;
+            display: block;
+            transition: opacity 0.2s, transform 0.2s;
+        }
+        .stat-box:hover .stat-box-icon { opacity: 1; transform: scale(1.15); }
+        .stat-box-label {
+            font-size: 0.68rem; color: var(--muted);
+            text-transform: uppercase; letter-spacing: 0.07em;
+            margin-bottom: 0.5rem; font-weight: 700;
+        }
+        .stat-box-val {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 2.2rem; font-weight: 700;
+            line-height: 1;
+            color: var(--sb-color, #fff);
+            text-shadow: 0 0 20px var(--sb-glow, transparent);
+        }
+
+        /* ─── Table ──────────────────────────────────── */
+        .data-table { width: 100%; border-collapse: collapse; font-size: 0.82rem; table-layout: fixed; }
+        .data-table thead tr { border-bottom: 1px solid rgba(56,189,248,0.14); }
+        .data-table th {
+            padding: 0.6rem 0.7rem;
+            text-align: left; font-size: 0.68rem; font-weight: 700;
+            color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em;
+            background: rgba(10,15,26,0.4); white-space: nowrap;
+        }
+        .data-table td {
+            padding: 0.6rem 0.7rem;
+            border-bottom: 1px solid rgba(255,255,255,0.04);
+            color: #cbd5e1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+        }
+        .data-table tbody tr { transition: background 0.15s; }
+        .data-table tbody tr:hover td { background: rgba(56,189,248,0.04); }
+
+        /* Column widths for users table */
+        #users-table col.col-uid    { width: 95px; }
+        #users-table col.col-name   { width: 140px; }
+        #users-table col.col-email  { width: auto; min-width: 160px; }
+        #users-table col.col-role   { width: 160px; }
+        #users-table col.col-status { width: 90px; }
+        #users-table col.col-action { width: 110px; }
+
+        /* don't clip badge/status cells — users table */
+        #users-table td:nth-child(4),
+        #users-table td:nth-child(5) {
+            overflow: visible; text-overflow: clip; white-space: nowrap;
+        }
+        /* don't clip status in claims table */
+        .claims-table td:nth-child(3) {
+            overflow: visible; text-overflow: clip; white-space: nowrap;
+        }
+
+        .uid-code {
+            font-family: monospace; font-size: 0.72rem;
+            color: var(--accent);
+            background: rgba(56,189,248,0.08);
+            padding: 0.1rem 0.35rem; border-radius: 0.3rem;
+            white-space: nowrap; display: inline-block;
+        }
+        .status-pill {
+            display: inline-block;
+            font-size: 0.68rem; font-weight: 700;
+            padding: 0.18rem 0.5rem; border-radius: 1rem;
+            white-space: nowrap;
+        }
+        /* user role badges */
+        .badge-admin    { background: rgba(239,68,68,.14);   color: #fca5a5; border: 1px solid rgba(239,68,68,.3); }
+        .badge-reviewer { background: rgba(167,139,250,.14); color: #d8b4fe; border: 1px solid rgba(167,139,250,.3); }
+        .badge-service  { background: rgba(245,158,11,.14);  color: #fde047; border: 1px solid rgba(245,158,11,.3); }
+        .badge-customer { background: rgba(34,197,94,.14);   color: #86efac; border: 1px solid rgba(34,197,94,.3); }
+
+        /* claim status badges */
+        .cs-submitted   { background: rgba(56,189,248,.12);  color: #7dd3fc; border: 1px solid rgba(56,189,248,.35); }
+        .cs-approved    { background: rgba(34,197,94,.12);   color: #86efac; border: 1px solid rgba(34,197,94,.35); }
+        .cs-rejected    { background: rgba(239,68,68,.12);   color: #fca5a5; border: 1px solid rgba(239,68,68,.35); }
+        .cs-manual      { background: rgba(251,191,36,.12);  color: #fde68a; border: 1px solid rgba(251,191,36,.35); }
+        .cs-evaluation  { background: rgba(167,139,250,.12); color: #d8b4fe; border: 1px solid rgba(167,139,250,.35); }
+        .cs-info        { background: rgba(251,146,60,.12);  color: #fdba74; border: 1px solid rgba(251,146,60,.35); }
+        .cs-draft       { background: rgba(100,116,139,.12); color: #94a3b8; border: 1px solid rgba(100,116,139,.3); }
+        .cs-closed      { background: rgba(71,85,105,.12);   color: #64748b; border: 1px solid rgba(71,85,105,.3); }
+
+        /* ─── Content Grid ───────────────────────────── */
+        .content-grid {
+            display: grid;
+            grid-template-columns: 360px 1fr;
+            gap: 1.5rem;
+        }
+        @media (max-width: 960px) { .content-grid { grid-template-columns: 1fr; } }
+
+        /* ─── Form ───────────────────────────────────── */
+        .form-group { margin-bottom: 1rem; }
+        .form-label {
+            display: block; font-size: 0.78rem; font-weight: 600;
+            color: #94a3b8; margin-bottom: 0.4rem; text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+        .form-input {
+            width: 100%;
+            background: rgba(8,12,22,0.8);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 0.6rem;
+            color: #f1f5f9; font-size: 0.9rem;
+            font-family: 'Outfit', sans-serif;
+            padding: 0.65rem 0.9rem;
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+        .form-input:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(56,189,248,0.12);
+        }
+        select.form-input option { background: #0f172a; }
+
+        /* ─── 3D Button ──────────────────────────────── */
+        .btn-3d {
+            width: 100%; padding: 0.8rem 1rem;
+            border: none; border-radius: 0.7rem;
+            font-family: 'Outfit', sans-serif;
+            font-size: 0.95rem; font-weight: 700;
+            cursor: pointer; color: #fff;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+            box-shadow: 0 4px 0 #0369a1, 0 6px 20px rgba(56,189,248,0.3);
+            transform: translateY(0);
+            transition: transform 0.12s, box-shadow 0.12s;
+            letter-spacing: 0.02em;
+            margin-top: 0.5rem;
+        }
+        .btn-3d:hover {
+            box-shadow: 0 6px 0 #0369a1, 0 10px 28px rgba(56,189,248,0.4);
+            transform: translateY(-2px);
+        }
+        .btn-3d:active {
+            box-shadow: 0 1px 0 #0369a1, 0 2px 8px rgba(56,189,248,0.2);
+            transform: translateY(3px);
+        }
+
+        /* ─── Small action buttons ───────────────────── */
+        .btn-sm-edit {
+            font-size: 0.68rem; font-weight: 600;
+            padding: 0.2rem 0.45rem; border-radius: 0.35rem;
+            border: 1px solid rgba(56,189,248,0.3);
+            background: rgba(56,189,248,0.08); color: #38bdf8;
+            cursor: pointer; font-family: 'Outfit', sans-serif;
+            transition: all 0.15s; white-space: nowrap;
+        }
+        .btn-sm-edit:hover { background: rgba(56,189,248,0.18); transform: scale(1.04); }
+
+        .btn-sm-danger {
+            font-size: 0.68rem; font-weight: 600;
+            padding: 0.2rem 0.45rem; border-radius: 0.35rem;
+            border: 1px solid rgba(239,68,68,0.3);
+            background: rgba(239,68,68,0.08); color: #f87171;
+            cursor: pointer; font-family: 'Outfit', sans-serif;
+            transition: all 0.15s; white-space: nowrap;
+        }
+        .btn-sm-danger:hover { background: rgba(239,68,68,0.18); transform: scale(1.04); }
+
+        /* ─── Search input ───────────────────────────── */
+        .search-wrap { position: relative; margin-bottom: 1rem; }
+        .search-wrap i {
+            position: absolute; left: 0.8rem; top: 50%;
+            transform: translateY(-50%); color: var(--muted); font-size: 0.9rem;
+        }
+        .search-input {
+            width: 100%; padding: 0.6rem 0.9rem 0.6rem 2.2rem;
+            background: rgba(8,12,22,0.8);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 0.6rem; color: #f1f5f9;
+            font-size: 0.88rem; font-family: 'Outfit', sans-serif;
+            outline: none; transition: border-color 0.2s;
+        }
+        .search-input:focus { border-color: var(--accent); }
+
+        /* ─── Modal ──────────────────────────────────── */
+        .modal-overlay {
+            display: none; position: fixed; inset: 0;
+            background: rgba(0,0,0,0.7);
+            backdrop-filter: blur(6px);
+            z-index: 999;
+            align-items: center; justify-content: center;
+        }
+        .modal-box {
+            background: linear-gradient(160deg, #0f172a, #1a2540);
+            border: 1px solid rgba(56,189,248,0.25);
+            border-radius: 1.1rem; padding: 2rem;
+            width: 100%; max-width: 440px; margin: 1rem;
+            box-shadow: 0 24px 60px rgba(0,0,0,0.6);
+            animation: modalIn 0.22s cubic-bezier(.22,.68,0,.97);
+        }
+        @keyframes modalIn { from { opacity:0; transform:scale(.94) translateY(12px); } to { opacity:1; transform:none; } }
+        .modal-title { font-family: 'Space Grotesk', sans-serif; font-size: 1.1rem; font-weight: 700; color: #fff; margin-bottom: 0.3rem; }
+        .modal-sub   { font-size: 0.83rem; color: var(--muted); margin-bottom: 1.25rem; }
+        .modal-actions { display: flex; gap: 0.75rem; margin-top: 1.25rem; }
+        .btn-modal-save {
+            flex: 1; padding: 0.7rem;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            color: #fff; border: none; border-radius: 0.6rem;
+            font-size: 0.92rem; font-weight: 700;
+            font-family: 'Outfit', sans-serif; cursor: pointer;
+            box-shadow: 0 3px 0 #0369a1;
+            transition: transform 0.12s, box-shadow 0.12s;
+        }
+        .btn-modal-save:hover { transform: translateY(-1px); box-shadow: 0 5px 0 #0369a1; }
+        .btn-modal-save:active { transform: translateY(2px); box-shadow: 0 1px 0 #0369a1; }
+        .btn-modal-cancel {
+            padding: 0.7rem 1.2rem;
+            background: transparent;
+            border: 1px solid rgba(255,255,255,0.12);
+            border-radius: 0.6rem; color: #94a3b8;
+            font-family: 'Outfit', sans-serif; cursor: pointer;
+            transition: all 0.15s;
+        }
+        .btn-modal-cancel:hover { background: rgba(255,255,255,0.06); color: #fff; }
+        .modal-error { display: none; margin-top: 0.75rem; color: #fca5a5; font-size: 0.83rem; }
+
+        /* ─── Footer ─────────────────────────────────── */
+        .site-footer {
+            margin-top: auto; position: relative; z-index: 1;
+            border-top: 1px solid rgba(255,255,255,0.05);
+            background: rgba(7,11,20,0.7);
+            padding: 1.25rem 2rem; text-align: center;
+            font-size: 0.82rem; color: var(--muted);
+        }
+
+        /* ─── Live dot ───────────────────────────────── */
+        .live-dot {
+            display: inline-block;
+            width: 7px; height: 7px; border-radius: 50%;
+            background: var(--green);
+            box-shadow: 0 0 6px var(--green);
+            animation: livePulse 1.8s ease-in-out infinite;
+        }
+        @keyframes livePulse { 0%,100% { opacity:1; } 50% { opacity:0.4; } }
+
+        @media (max-width: 600px) {
+            .navbar { padding: 0.75rem 1rem; }
+            .container { padding: 0 1rem; }
+            .metrics-grid { grid-template-columns: 1fr 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ── Navbar ───────────────────────────────────────── -->
+    <header class="navbar">
+        <a href="{{ url_for('admin.dashboard') }}" class="brand">
+            <div class="brand-logo">Assure<span>X</span></div>
+            <span class="brand-pill">Admin Console</span>
+        </a>
+        <div class="user-nav">
+            <span class="live-dot"></span>
+            <span class="role-tag">{{ current_user.role }}</span>
+            <span class="user-name">{{ current_user.name }}</span>
+            <a href="{{ url_for('auth.logout') }}" class="btn-logout">
+                <i class="bi bi-box-arrow-right"></i> Sign Out
+            </a>
+        </div>
+    </header>
+
+    <main class="container">
+
+        <!-- Flash Messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ 'error' if category in ['error','danger'] else ('success' if category == 'success' else 'info') }}">
+                        <i class="bi bi-{{ 'check-circle' if category == 'success' else 'exclamation-triangle' }}-fill"></i>
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <!-- Page Header -->
+        <div class="page-header">
+            <div>
+                <h1 class="page-title">System Administration</h1>
+                <p class="page-sub">Manage users, claims, and system governance from a single console.</p>
+            </div>
+        </div>
+
+        <!-- Quick Nav Pills -->
+        <div class="quick-nav">
+            <a href="{{ url_for('admin.analytics_dashboard') }}" class="nav-pill np-blue">
+                <i class="bi bi-bar-chart-line-fill"></i> Analytics
+            </a>
+            <a href="{{ url_for('admin.all_claims_view') }}" class="nav-pill np-green">
+                <i class="bi bi-clipboard2-pulse-fill"></i> All Claims
+            </a>
+            <a href="{{ url_for('reviewer.dashboard') }}" class="nav-pill np-purple">
+                <i class="bi bi-person-check-fill"></i> Review Queue
+            </a>
+            <a href="{{ url_for('warranties.list_warranties') }}" class="nav-pill np-amber">
+                <i class="bi bi-shield-fill-check"></i> Warranties
+            </a>
+            <a href="{{ url_for('admin.warranty_policies') }}" class="nav-pill np-indigo">
+                <i class="bi bi-file-earmark-text-fill"></i> Policies
+            </a>
+            <a href="{{ url_for('admin.audit_log_view') }}" class="nav-pill np-slate">
+                <i class="bi bi-journal-text"></i> Audit Log
+            </a>
+            <a href="{{ url_for('admin.system_monitoring') }}" class="nav-pill np-red">
+                <i class="bi bi-activity"></i> Monitoring
+            </a>
+        </div>
+
+        <!-- User Metrics -->
+        <div class="metrics-grid">
+            <div class="metric-card" style="--mc-accent:#38bdf8;">
+                <i class="bi bi-people-fill metric-icon"></i>
+                <div class="metric-label">Total Users</div>
+                <div class="metric-value" data-count="{{ total_users }}">0</div>
+                <div class="metric-sub">All registered accounts</div>
+            </div>
+            <div class="metric-card" style="--mc-accent:#4ade80;">
+                <i class="bi bi-person-fill metric-icon"></i>
+                <div class="metric-label">Customers</div>
+                <div class="metric-value" data-count="{{ customers_count }}">0</div>
+                <div class="metric-sub">Active claimants</div>
+            </div>
+            <div class="metric-card" style="--mc-accent:#fde047;">
+                <i class="bi bi-wrench-adjustable metric-icon"></i>
+                <div class="metric-label">Service Staff</div>
+                <div class="metric-value" data-count="{{ service_count }}">0</div>
+                <div class="metric-sub">Service centre employees</div>
+            </div>
+            <div class="metric-card" style="--mc-accent:#d8b4fe;">
+                <i class="bi bi-person-check-fill metric-icon"></i>
+                <div class="metric-label">Reviewers</div>
+                <div class="metric-value" data-count="{{ reviewers_count }}">0</div>
+                <div class="metric-sub">Claim review team</div>
+            </div>
+            <div class="metric-card" style="--mc-accent:#fca5a5;">
+                <i class="bi bi-shield-lock-fill metric-icon"></i>
+                <div class="metric-label">Admins</div>
+                <div class="metric-value" data-count="{{ admins_count }}">0</div>
+                <div class="metric-sub">System administrators</div>
+            </div>
+        </div>
+
+        <!-- Claims Overview -->
+        <div class="glass-panel">
+            <div class="section-title">
+                <i class="bi bi-clipboard2-pulse-fill"></i> Claims Overview
+                <span style="margin-left:auto;font-size:0.75rem;font-weight:400;color:var(--muted);">System-wide statistics</span>
+            </div>
+
+            <div class="stat-row">
+                <div class="stat-box" style="--sb-color:#e2e8f0;--sb-glow:rgba(226,232,240,0.08);">
+                    <i class="bi bi-stack stat-box-icon"></i>
+                    <div class="stat-box-label">Total Claims</div>
+                    <div class="stat-box-val" data-count="{{ claims_total or 0 }}">0</div>
+                </div>
+                <div class="stat-box" style="--sb-color:#38bdf8;--sb-glow:rgba(56,189,248,0.18);">
+                    <i class="bi bi-hourglass-split stat-box-icon"></i>
+                    <div class="stat-box-label">Pending</div>
+                    <div class="stat-box-val" data-count="{{ claims_pending or 0 }}">0</div>
+                </div>
+                <div class="stat-box" style="--sb-color:#4ade80;--sb-glow:rgba(74,222,128,0.18);">
+                    <i class="bi bi-check-circle-fill stat-box-icon"></i>
+                    <div class="stat-box-label">Approved</div>
+                    <div class="stat-box-val" data-count="{{ claims_approved or 0 }}">0</div>
+                </div>
+                <div class="stat-box" style="--sb-color:#f87171;--sb-glow:rgba(248,113,113,0.18);">
+                    <i class="bi bi-x-circle-fill stat-box-icon"></i>
+                    <div class="stat-box-label">Rejected</div>
+                    <div class="stat-box-val" data-count="{{ claims_rejected or 0 }}">0</div>
+                </div>
+                <div class="stat-box" style="--sb-color:#fbbf24;--sb-glow:rgba(251,191,36,0.18);">
+                    <i class="bi bi-eye-fill stat-box-icon"></i>
+                    <div class="stat-box-label">Manual Review</div>
+                    <div class="stat-box-val" data-count="{{ claims_manual or 0 }}">0</div>
+                </div>
+            </div>
+
+            {% if recent_claims %}
+            <div style="overflow-x:auto;">
+                <table class="data-table claims-table" style="table-layout:fixed; min-width:600px;">
+                    <colgroup>
+                        <col style="width:130px;">
+                        <col style="width:auto;">
+                        <col style="width:150px;">
+                        <col style="width:100px;">
+                    </colgroup>
+                    <thead>
+                        <tr>
+                            <th>Claim ID</th>
+                            <th>Damage Type</th>
+                            <th>Status</th>
+                            <th>Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for c in recent_claims %}
+                        <tr>
+                            <td><span class="uid-code">{{ c.claim_uid }}</span></td>
+                            <td style="color:#e2e8f0;">{{ c.damage_type or '—' }}</td>
+                            <td>
+                                <span class="status-pill
+                                    {% if c.claim_status == 'Approved' %}cs-approved
+                                    {% elif c.claim_status == 'Rejected' %}cs-rejected
+                                    {% elif c.claim_status == 'Manual Review' %}cs-manual
+                                    {% elif c.claim_status == 'Under Evaluation' %}cs-evaluation
+                                    {% elif c.claim_status == 'Additional Info Required' %}cs-info
+                                    {% elif c.claim_status == 'Submitted' %}cs-submitted
+                                    {% elif c.claim_status == 'Closed' %}cs-closed
+                                    {% else %}cs-draft{% endif %}">
+                                    {{ c.claim_status }}
+                                </span>
+                            </td>
+                            <td style="color:var(--muted); font-size:0.8rem;">
+                                {{ c.created_at.strftime('%d %b %Y') if c.created_at else '—' }}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <p style="text-align:center; color:var(--muted); padding:1.5rem 0; font-size:0.88rem;">No claims submitted yet.</p>
+            {% endif %}
+        </div>
+
+        <!-- Create User + Users Table -->
+        <div class="content-grid">
+
+            <!-- Create Staff User -->
+            <div class="glass-panel" style="margin-bottom:0; height:fit-content;">
+                <div class="section-title">
+                    <i class="bi bi-person-plus-fill"></i> Create Staff / User
+                </div>
+                <p style="font-size:0.82rem; color:var(--muted); margin-bottom:1.25rem;">Authorize a new account across all 4 system roles.</p>
+
+                <form method="POST" action="{{ url_for('admin.create_privileged_user') }}" id="admin-create-user-form">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+
+                    <div class="form-group">
+                        <label class="form-label" for="role">Assign Role</label>
+                        <select name="role" id="role" class="form-input" required>
+                            <option value="Service-Centre Employee">Service-Centre Employee</option>
+                            <option value="Claim Reviewer">Claim Reviewer</option>
+                            <option value="Administrator">Administrator</option>
+                            <option value="Customer">Customer</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="name">Full Name</label>
+                        <input type="text" id="name" name="name" class="form-input" placeholder="Staff Full Name" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="email">Email Address</label>
+                        <input type="email" id="email" name="email" class="form-input" placeholder="staff@example.com" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="phone">Phone (Optional)</label>
+                        <input type="tel" id="phone" name="phone" class="form-input" placeholder="+1 555-0199">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="password">Initial Password</label>
+                        <input type="password" id="password" name="password" class="form-input" placeholder="Min 8 chars with letters & numbers" required>
+                    </div>
+
+                    <button type="submit" class="btn-3d" id="btn-create-staff">
+                        <i class="bi bi-person-plus-fill"></i> Create User Account
+                    </button>
+                </form>
+            </div>
+
+            <!-- Users Directory -->
+            <div class="glass-panel" style="margin-bottom:0;">
+                <div class="section-title">
+                    <i class="bi bi-people-fill"></i> System Users Directory
+                    <span style="margin-left:auto;font-size:0.75rem;font-weight:400;color:var(--muted);">All registered accounts</span>
+                </div>
+
+                <div class="search-wrap">
+                    <i class="bi bi-search"></i>
+                    <input type="text" id="user-search-input" class="search-input"
+                        placeholder="Search by name, email or UID..."
+                        oninput="filterUsers(this.value)">
+                </div>
+
+                <div style="overflow-x:auto;">
+                    <table class="data-table" id="users-table">
+                        <colgroup>
+                            <col class="col-uid">
+                            <col class="col-name">
+                            <col class="col-email">
+                            <col class="col-role">
+                            <col class="col-status">
+                            <col class="col-action">
+                        </colgroup>
+                        <thead>
+                            <tr>
+                                <th>UID</th>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Role</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="users-tbody">
+                            {% for u in users %}
+                            <tr data-search="{{ u.name|lower }} {{ u.email|lower }} {{ u.user_uid|lower }}">
+                                <td><span class="uid-code">{{ u.user_uid }}</span></td>
+                                <td><strong style="color:#fff;">{{ u.name }}</strong></td>
+                                <td style="font-size:0.82rem; color:#94a3b8;">{{ u.email }}</td>
+                                <td>
+                                    <span class="status-pill {% if u.role == 'Administrator' %}badge-admin{% elif u.role == 'Claim Reviewer' %}badge-reviewer{% elif u.role == 'Service-Centre Employee' %}badge-service{% else %}badge-customer{% endif %}">
+                                        {{ u.role }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <span style="font-size:0.78rem; font-weight:600; color:{% if u.is_active %}#4ade80{% else %}#ef4444{% endif %};">
+                                        <span style="font-size:0.55rem; vertical-align:middle;">●</span>
+                                        {{ 'Active' if u.is_active else 'Disabled' }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <div style="display:flex; gap:0.35rem;">
+                                        {% if u.id != current_user.id %}
+                                        <button class="btn-sm-edit"
+                                            onclick="openEditModal({{ u.id }}, '{{ u.name|e }}', '{{ u.role|e }}')">
+                                            Edit
+                                        </button>
+                                        {% if u.is_active %}
+                                        <button class="btn-sm-danger"
+                                            onclick="deactivateUser({{ u.id }}, '{{ u.name|e }}')">
+                                            Off
+                                        </button>
+                                        {% else %}
+                                        <span style="font-size:0.73rem; color:var(--muted);">Inactive</span>
+                                        {% endif %}
+                                        {% else %}
+                                        <span style="font-size:0.73rem; color:var(--muted);">(You)</span>
+                                        {% endif %}
+                                    </div>
+                                </td>
+                            </tr>
+                            {% else %}
+                            <tr>
+                                <td colspan="6" style="text-align:center; color:var(--muted); padding:2.5rem;">No users found in database.</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                <div id="no-results-msg" style="display:none; text-align:center; padding:1.5rem; color:var(--muted); font-size:0.88rem;">No users match your search.</div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Edit Role Modal -->
+    <div id="edit-modal" class="modal-overlay">
+        <div class="modal-box">
+            <div class="modal-title">Edit User Role</div>
+            <p id="modal-user-name" class="modal-sub"></p>
+            <div class="form-group">
+                <label class="form-label">New Role</label>
+                <select id="modal-role-select" class="form-input">
+                    <option value="Customer">Customer</option>
+                    <option value="Service-Centre Employee">Service-Centre Employee</option>
+                    <option value="Claim Reviewer">Claim Reviewer</option>
+                    <option value="Administrator">Administrator</option>
+                </select>
+            </div>
+            <div class="modal-actions">
+                <button class="btn-modal-save" onclick="submitRoleChange()">
+                    <i class="bi bi-floppy-fill"></i> Save Changes
+                </button>
+                <button class="btn-modal-cancel" onclick="closeEditModal()">Cancel</button>
+            </div>
+            <div id="modal-error" class="modal-error"></div>
+        </div>
+    </div>
+
+    <!-- GSAP for counter animations -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script>
+        /* ─── Animated Counters ─────────────────────── */
+        function animateCounters() {
+            document.querySelectorAll('[data-count]').forEach(el => {
+                const target = parseInt(el.getAttribute('data-count')) || 0;
+                if (target === 0) { el.textContent = '0'; return; }
+                gsap.fromTo(el,
+                    { innerText: 0 },
+                    { innerText: target, duration: 1.4, ease: 'power2.out', snap: { innerText: 1 },
+                      onUpdate() { el.textContent = Math.round(parseFloat(el.innerText)); }
+                    }
+                );
+            });
+        }
+
+        const obs = new IntersectionObserver(entries => {
+            entries.forEach(e => { if (e.isIntersecting) { animateCounters(); obs.disconnect(); } });
+        }, { threshold: 0.1 });
+        obs.observe(document.querySelector('.metrics-grid'));
+
+        /* ─── Metric card 3D tilt ───────────────────── */
+        document.querySelectorAll('.metric-card').forEach(card => {
+            card.style.transformStyle = 'preserve-3d';
+            card.style.transition = 'transform 0.08s ease, box-shadow 0.28s, border-color 0.28s';
+
+            card.addEventListener('mousemove', e => {
+                const r = card.getBoundingClientRect();
+                const x = (e.clientX - r.left) / r.width  - 0.5;
+                const y = (e.clientY - r.top)  / r.height - 0.5;
+                card.style.transform = `translateY(-6px) rotateX(${-y * 12}deg) rotateY(${x * 12}deg) scale(1.02)`;
+            });
+            card.addEventListener('mouseleave', () => {
+                card.style.transition = 'transform 0.35s cubic-bezier(.22,.68,0,.97), box-shadow 0.28s, border-color 0.28s';
+                card.style.transform = '';
+                setTimeout(() => {
+                    card.style.transition = 'transform 0.08s ease, box-shadow 0.28s, border-color 0.28s';
+                }, 350);
+            });
+        });
+
+        /* ─── User Search ───────────────────────────── */
+        function filterUsers(query) {
+            const q = query.toLowerCase().trim();
+            let visible = 0;
+            document.querySelectorAll('#users-tbody tr').forEach(row => {
+                const text = row.getAttribute('data-search') || '';
+                const show = !q || text.includes(q);
+                row.style.display = show ? '' : 'none';
+                if (show) visible++;
+            });
+            document.getElementById('no-results-msg').style.display = (q && visible === 0) ? 'block' : 'none';
+        }
+
+        /* ─── Edit Modal ────────────────────────────── */
+        let editingUserId = null;
+
+        function openEditModal(userId, userName, currentRole) {
+            editingUserId = userId;
+            document.getElementById('modal-user-name').textContent = 'Editing: ' + userName;
+            document.getElementById('modal-role-select').value = currentRole;
+            document.getElementById('modal-error').style.display = 'none';
+            document.getElementById('edit-modal').style.display = 'flex';
+        }
+        function closeEditModal() {
+            editingUserId = null;
+            document.getElementById('edit-modal').style.display = 'none';
+        }
+
+        async function submitRoleChange() {
+            if (!editingUserId) return;
+            const newRole = document.getElementById('modal-role-select').value;
+            const errEl  = document.getElementById('modal-error');
+            errEl.style.display = 'none';
+            try {
+                const resp = await fetch(`/admin/users/${editingUserId}/role`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'X-CSRFToken': '{{ csrf_token() }}' },
+                    body: JSON.stringify({ role: newRole })
+                });
+                const data = await resp.json();
+                if (data.success) { closeEditModal(); location.reload(); }
+                else { errEl.textContent = data.message || 'Failed to update role.'; errEl.style.display = 'block'; }
+            } catch(e) {
+                errEl.textContent = 'Network error. Please try again.';
+                errEl.style.display = 'block';
+            }
+        }
+
+        async function deactivateUser(userId, userName) {
+            if (!confirm(`Deactivate "${userName}"? They will no longer be able to log in.`)) return;
+            try {
+                const resp = await fetch(`/admin/users/${userId}/deactivate`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'X-CSRFToken': '{{ csrf_token() }}' }
+                });
+                const data = await resp.json();
+                if (data.success) { location.reload(); }
+                else { alert(data.message || 'Failed to deactivate user.'); }
+            } catch(e) { alert('Network error. Please try again.'); }
+        }
+
+        document.getElementById('edit-modal').addEventListener('click', function(e) {
+            if (e.target === this) closeEditModal();
+        });
+
+        /* ─── Create user btn loading state ────────── */
+        document.getElementById('admin-create-user-form').addEventListener('submit', function() {
+            const btn = document.getElementById('btn-create-staff');
+            btn.disabled = true;
+            btn.innerHTML = '<i class="bi bi-hourglass-split"></i> Creating...';
+        });
+    </script>
+
+    <footer class="site-footer">
+        &copy; 2026 AssureX Claim Engine &bull; System Governance &amp; Administration Console
+    </footer>
+</body>
+</html>

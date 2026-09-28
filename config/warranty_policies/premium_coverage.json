@@ -1,0 +1,94 @@
+{
+  "policy_id": "WP-PREM-001",
+  "policy_name": "Premium Coverage Plan",
+  "display_name": "Premium Coverage",
+  "version": "1.0",
+  "effective_date": "2026-01-01",
+
+  "coverage": {
+    "duration_months": 24,
+    "max_claims_per_product": 4,
+    "max_claim_value_pkr": 150000,
+    "covers_parts": true,
+    "covers_labour": true
+  },
+
+  "eligible_product_categories": [
+    "Laptop",
+    "Desktop PC",
+    "Mobile Phone",
+    "Tablet",
+    "Smart Watch",
+    "Camera",
+    "Gaming Console",
+    "Television",
+    "Refrigerator",
+    "Washing Machine"
+  ],
+
+  "covered_damage_types": [
+    "Manufacturing Defect",
+    "Electrical Fault",
+    "Accidental Damage",
+    "Physical Damage",
+    "Screen Crack",
+    "Water Damage (up to IPX4 rating)",
+    "Battery Failure",
+    "Display Fault",
+    "Hardware Malfunction",
+    "Mechanical Failure"
+  ],
+
+  "excluded_damage_types": [
+    "Intentional Damage",
+    "Theft",
+    "Fire Damage",
+    "Natural Disaster",
+    "Cosmetic Damage (scratches, dents)",
+    "Damage from unauthorized repair",
+    "Loss of device"
+  ],
+
+  "required_documents": [
+    "Original Purchase Receipt or Invoice"
+  ],
+
+  "optional_documents": [
+    "Damage Photo",
+    "Technician Diagnostic Report"
+  ],
+
+  "auto_rejection_conditions": [
+    "Warranty period expired at time of claim",
+    "Damage type in excluded_damage_types list",
+    "Max claims per product exceeded",
+    "Serial number mismatch with registered product",
+    "Evidence of intentional damage"
+  ],
+
+  "auto_approval_conditions": [
+    "All warranty rules pass",
+    "ML model confidence >= 0.80 for Valid class",
+    "No duplicate claim detected",
+    "No contradiction detected in claim data",
+    "Covered damage type confirmed"
+  ],
+
+  "manual_review_triggers": [
+    "ML model confidence between 0.60 and 0.80",
+    "Water damage claim (needs assessment)",
+    "Accidental damage with claim value > 50,000 PKR",
+    "Missing or unclear damage documentation"
+  ],
+
+  "premium_benefits": [
+    "24-month coverage (double standard plan)",
+    "Accidental and physical damage covered",
+    "Labour costs fully covered",
+    "Priority claim processing (48-hour SLA)",
+    "Free device pickup and drop-off for repairs",
+    "Replacement device provided if repair > 7 days"
+  ],
+
+  "notes": "Premium 24-month plan covering virtually all damage types including accidental damage. Labour and parts fully covered. Ideal for high-value electronics and mobile devices. Intentional damage, theft, and natural disaster damage are not covered under any plan."
+}

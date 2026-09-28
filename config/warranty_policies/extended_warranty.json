@@ -1,0 +1,110 @@
+{
+  "policy_id": "WP-EXT-001",
+  "policy_name": "Extended Warranty Plan",
+  "display_name": "Extended Warranty",
+  "version": "1.0",
+  "effective_date": "2026-01-01",
+
+  "coverage": {
+    "duration_months": 36,
+    "max_claims_per_product": 5,
+    "max_claim_value_pkr": 250000,
+    "covers_parts": true,
+    "covers_labour": true
+  },
+
+  "eligible_product_categories": [
+    "Laptop",
+    "Desktop PC",
+    "Server Equipment",
+    "Industrial Equipment",
+    "Medical Devices",
+    "Smart Home Devices",
+    "Refrigerator",
+    "Washing Machine",
+    "Air Conditioner",
+    "Microwave",
+    "Dishwasher"
+  ],
+
+  "covered_damage_types": [
+    "Manufacturing Defect",
+    "Electrical Fault",
+    "Mechanical Failure",
+    "Parts Failure",
+    "Battery Degradation",
+    "Motor Failure",
+    "Compressor Failure",
+    "Circuit Board Failure",
+    "Sensor Malfunction",
+    "Software Malfunction (firmware)"
+  ],
+
+  "excluded_damage_types": [
+    "Physical Damage from misuse",
+    "Accidental Damage",
+    "Theft",
+    "Fire Damage",
+    "Flood Damage",
+    "Natural Disaster",
+    "Damage from unauthorized modifications",
+    "Normal Wear and Tear",
+    "Cosmetic Damage"
+  ],
+
+  "required_documents": [
+    "Original Purchase Receipt or Invoice",
+    "Previous Service History (if any)"
+  ],
+
+  "optional_documents": [
+    "Technician Diagnostic Report",
+    "Damage Photo",
+    "Serial Number Verification"
+  ],
+
+  "auto_rejection_conditions": [
+    "Warranty period (36 months) expired at time of claim",
+    "Damage type in excluded_damage_types list",
+    "Max 5 claims per product exceeded",
+    "Serial number mismatch",
+    "Claim within 30-day waiting period after purchase",
+    "Evidence of unauthorized modifications"
+  ],
+
+  "auto_approval_conditions": [
+    "All warranty rules pass",
+    "ML model confidence >= 0.80 for Valid class",
+    "No duplicate claim in last 90 days",
+    "No contradiction detected",
+    "Parts failure confirmed by diagnostic"
+  ],
+
+  "manual_review_triggers": [
+    "ML model confidence between 0.60 and 0.80",
+    "Claim value > 100,000 PKR",
+    "Third or more claim for same product",
+    "Product older than 30 months",
+    "Missing service history for appliances"
+  ],
+
+  "extended_benefits": [
+    "36-month comprehensive parts and labour coverage",
+    "Annual preventive maintenance service included",
+    "24/7 technical support hotline",
+    "Next business day on-site service for critical equipment",
+    "Genuine parts guarantee",
+    "Dedicated claim manager assigned",
+    "Monthly claim status updates"
+  ],
+
+  "waiting_period_days": 30,
+
+  "renewal_policy": {
+    "renewable": true,
+    "renewal_discount_percent": 15,
+    "max_renewals": 2
+  },
+
+  "notes": "Extended 36-month plan for home appliances and professional equipment. Covers mechanical and electrical defects with full parts and labour for 3 years. Includes annual preventive maintenance. Accidental damage and physical misuse are excluded. A 30-day waiting period applies from date of purchase."
+}

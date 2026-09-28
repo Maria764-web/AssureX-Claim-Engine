@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ document.original_filename }} - Document Preview - AssureX Claim Engine</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-dark: #070a12;
+            --header-bg: rgba(15, 23, 42, 0.96);
+            --header-border: rgba(56, 189, 248, 0.18);
+            --accent: #38bdf8;
+            --accent-glow: rgba(56, 189, 248, 0.25);
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --card-border: rgba(255, 255, 255, 0.1);
+            --danger: #ef4444;
+            --danger-bg: rgba(239, 68, 68, 0.14);
+            --danger-hover: rgba(239, 68, 68, 0.26);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html, body {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            font-family: 'Outfit', sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+        }
+
+        /* App Wrapper */
+        .viewer-container {
+            display: flex;
+            flex-direction: column;
+            width: 100vw;
+            height: 100vh;
+            background: radial-gradient(circle at center top, #111a2e 0%, var(--bg-dark) 75%);
+        }
+
+        /* Top Header Bar */
+        .viewer-header {
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            height: 68px;
+            min-height: 68px;
+            background: var(--header-bg);
+            border-bottom: 1px solid var(--header-border);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 1.5rem;
+            gap: 1rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.45);
+        }
+
+        /* Left Side: Metadata & Label */
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            min-width: 0;
+            flex: 1;
+        }
+
+        .back-nav-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: 500;
+            padding: 0.4rem 0.65rem;
+            border-radius: 0.4rem;
+            border: 1px solid transparent;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+
+        .back-nav-link:hover {
+            color: var(--text-main);
+            background: rgba(255, 255, 255, 0.06);
+            border-color: rgba(255, 255, 255, 0.12);
+        }
+
+        .divider {
+            width: 1px;
+            height: 28px;
+            background: rgba(255, 255, 255, 0.12);
+            flex-shrink: 0;
+        }
+
+        .doc-meta-container {
+            display: flex;
+            flex-direction: column;
+            gap: 0.15rem;
+            min-width: 0;
+        }
+
+        .badge-row {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .preview-badge {
+            background: rgba(56, 189, 248, 0.15);
+            border: 1px solid rgba(56, 189, 248, 0.35);
+            color: var(--accent);
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            padding: 0.15rem 0.55rem;
+            border-radius: 0.8rem;
+            white-space: nowrap;
+        }
+
+        .doc-type-badge {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.16);
+            color: #cbd5e1;
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            padding: 0.15rem 0.5rem;
+            border-radius: 0.8rem;
+            white-space: nowrap;
+        }
+
+        .filename-row {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            min-width: 0;
+        }
+
+        .doc-icon {
+            font-size: 1rem;
+            flex-shrink: 0;
+        }
+
+        .doc-filename {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: #ffffff;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 320px;
+        }
+
+        .doc-submeta {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            white-space: nowrap;
+        }
+
+        /* Right Side: Actions & Close Button */
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            flex-shrink: 0;
+        }
+
+        .btn-download {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.45rem;
+            padding: 0.48rem 0.9rem;
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            border-radius: 0.5rem;
+            color: #e2e8f0;
+            font-size: 0.85rem;
+            font-weight: 500;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+
+        .btn-download:hover {
+            background: rgba(56, 189, 248, 0.15);
+            border-color: var(--accent);
+            color: #ffffff;
+            transform: translateY(-1px);
+        }
+
+        /* Dedicated Accessible Close (×) Button */
+        .btn-close-viewer {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.45rem;
+            min-width: 44px;
+            min-height: 44px;
+            padding: 0.48rem 1rem;
+            background: var(--danger-bg);
+            border: 1.5px solid rgba(239, 68, 68, 0.45);
+            border-radius: 0.5rem;
+            color: #ffffff;
+            font-family: inherit;
+            font-size: 0.9rem;
+            font-weight: 600;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            flex-shrink: 0;
+            box-shadow: 0 2px 8px rgba(239, 68, 68, 0.15);
+        }
+
+        .btn-close-viewer:hover {
+            background: var(--danger-hover);
+            border-color: var(--danger);
+            color: #ffffff;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 14px rgba(239, 68, 68, 0.35);
+        }
+
+        .btn-close-viewer:focus,
+        .btn-close-viewer:focus-visible {
+            outline: 2px solid var(--accent);
+            outline-offset: 2px;
+            background: rgba(239, 68, 68, 0.35);
+        }
+
+        .btn-close-viewer:active {
+            transform: translateY(0);
+        }
+
+        .close-icon {
+            font-size: 1.6rem;
+            line-height: 1;
+            font-weight: 700;
+            color: #fca5a5;
+            transition: color 0.2s;
+        }
+
+        .btn-close-viewer:hover .close-icon {
+            color: #ffffff;
+        }
+
+        .close-label {
+            display: inline-block;
+            letter-spacing: 0.02em;
+        }
+
+        /* Viewer Body / Canvas */
+        .viewer-body {
+            position: relative;
+            flex: 1;
+            width: 100%;
+            height: calc(100vh - 68px);
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Image Viewer Styling */
+        .image-viewport {
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1.5rem;
+            position: relative;
+        }
+
+        .image-card {
+            max-width: 95%;
+            max-height: 95%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.2s ease-out;
+        }
+
+        .preview-img {
+            max-width: 100%;
+            max-height: calc(100vh - 120px);
+            object-fit: contain;
+            border-radius: 0.5rem;
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            background: rgba(15, 23, 42, 0.5);
+            user-select: none;
+            -webkit-user-drag: none;
+        }
+
+        /* Image Floating Toolbar */
+        .image-toolbar {
+            position: absolute;
+            bottom: 24px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            background: rgba(15, 23, 42, 0.92);
+            border: 1px solid rgba(56, 189, 248, 0.25);
+            padding: 0.35rem 0.65rem;
+            border-radius: 2rem;
+            backdrop-filter: blur(12px);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+            z-index: 50;
+        }
+
+        .toolbar-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            font-weight: 600;
+            padding: 0.35rem 0.65rem;
+            border-radius: 1rem;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+
+        .toolbar-btn:hover {
+            color: #ffffff;
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .zoom-level-text {
+            font-size: 0.75rem;
+            font-family: monospace;
+            color: var(--accent);
+            padding: 0 0.3rem;
+            min-width: 44px;
+            text-align: center;
+        }
+
+        /* PDF Viewer Styling */
+        .pdf-viewport {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            background: #1e293b;
+        }
+
+        .pdf-frame {
+            width: 100%;
+            height: 100%;
+            border: none;
+            flex: 1;
+        }
+
+        /* Fallback Box for Unsupported Media */
+        .unsupported-box {
+            background: rgba(15, 23, 42, 0.85);
+            border: 1px solid var(--card-border);
+            border-radius: 1rem;
+            padding: 2.5rem;
+            text-align: center;
+            max-width: 480px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        .unsupported-icon {
+            font-size: 3rem;
+        }
+
+        /* Responsive Breakpoints */
+        @media (max-width: 768px) {
+            .viewer-header {
+                padding: 0 1rem;
+                height: 62px;
+                min-height: 62px;
+            }
+
+            .divider, .back-nav-link {
+                display: none;
+            }
+
+            .doc-filename {
+                max-width: 180px;
+                font-size: 0.85rem;
+            }
+
+            .doc-submeta {
+                display: none;
+            }
+
+            .btn-download {
+                padding: 0.4rem 0.6rem;
+                font-size: 0.8rem;
+            }
+
+            .btn-close-viewer {
+                padding: 0.4rem 0.6rem;
+                min-width: 40px;
+                min-height: 40px;
+            }
+
+            .btn-close-viewer .close-label {
+                display: none;
+            }
+
+            .btn-close-viewer .close-icon {
+                font-size: 1.5rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .btn-download {
+                display: none;
+            }
+
+            .doc-type-badge {
+                display: none;
+            }
+
+            .doc-filename {
+                max-width: 130px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="viewer-container">
+        <!-- Proper Header as required by Step 5A Document Viewer UX -->
+        <header class="viewer-header">
+            <div class="header-left">
+                <!-- Return Link to Claim Details -->
+                <a href="{{ fallback_url }}" 
+                   class="back-nav-link" 
+                   id="link-back-claim"
+                   onclick="handleCloseViewer(event)" 
+                   title="Return to Claim Details">
+                    &larr; Claim
+                </a>
+
+                <div class="divider"></div>
+
+                <div class="doc-meta-container">
+                    <div class="badge-row">
+                        <span class="preview-badge">Document Preview</span>
+                        <span class="doc-type-badge">{{ document.document_type }}</span>
+                    </div>
+                    <div class="filename-row">
+                        <span class="doc-icon">
+                            {% if is_pdf %}📄{% else %}🖼️{% endif %}
+                        </span>
+                        <span class="doc-filename" id="doc-filename-display" title="{{ document.original_filename }}">
+                            {{ document.original_filename }}
+                        </span>
+                        <span class="doc-submeta">
+                            &bull; {{ (document.file_size / 1024)|round(1) }} KB
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Header Right: Download & Clear Close (×) Button -->
+            <div class="header-right">
+                <a href="{{ download_url }}" 
+                   class="btn-download" 
+                   id="btn-download-file" 
+                   title="Download Original File">
+                    ⬇️ Download
+                </a>
+
+                <!-- High-visibility, accessible Close (×) Button in top-right corner -->
+                <a href="{{ fallback_url }}" 
+                   id="btn-close-viewer" 
+                   class="btn-close-viewer" 
+                   aria-label="Close document preview" 
+                   title="Close document preview (Esc)" 
+                   tabindex="0"
+                   onclick="handleCloseViewer(event)">
+                    <span class="close-icon" aria-hidden="true">&times;</span>
+                    <span class="close-label">Close</span>
+                </a>
+            </div>
+        </header>
+
+        <!-- Main Viewer Canvas -->
+        <main class="viewer-body">
+            {% if is_image %}
+                <!-- Image Viewer for JPG, JPEG, PNG, WEBP -->
+                <div class="image-viewport" id="image-viewport">
+                    <div class="image-card" id="image-card">
+                        <img src="{{ raw_url }}" 
+                             alt="{{ document.original_filename }}" 
+                             id="preview-img" 
+                             class="preview-img" 
+                             loading="eager" />
+                    </div>
+
+                    <!-- Floating Image Zoom Controls -->
+                    <div class="image-toolbar" role="toolbar" aria-label="Image zoom controls">
+                        <button type="button" class="toolbar-btn" id="btn-zoom-out" onclick="adjustZoom(-0.25)" title="Zoom Out" aria-label="Zoom out">&minus;</button>
+                        <span class="zoom-level-text" id="zoom-text">100%</span>
+                        <button type="button" class="toolbar-btn" id="btn-zoom-in" onclick="adjustZoom(0.25)" title="Zoom In" aria-label="Zoom in">+</button>
+                        <button type="button" class="toolbar-btn" id="btn-zoom-fit" onclick="resetZoom()" title="Fit to Screen" aria-label="Fit to screen">Fit</button>
+                    </div>
+                </div>
+            {% elif is_pdf %}
+                <!-- PDF Viewer with native browser rendering and fallback -->
+                <div class="pdf-viewport">
+                    <iframe src="{{ raw_url }}#toolbar=1&navpanes=0" 
+                            id="pdf-frame" 
+                            class="pdf-frame" 
+                            title="{{ document.original_filename }}">
+                        <div class="unsupported-box" style="margin: 2rem auto;">
+                            <span class="unsupported-icon">📄</span>
+                            <h3>PDF Preview Not Supported by Browser</h3>
+                            <p>You can download the full PDF document directly to review its contents.</p>
+                            <a href="{{ download_url }}" class="btn-download" style="background: var(--accent); color: #000;">
+                                Download {{ document.original_filename }}
+                            </a>
+                        </div>
+                    </iframe>
+                </div>
+            {% else %}
+                <!-- Fallback for other file classifications -->
+                <div class="unsupported-box">
+                    <span class="unsupported-icon">📎</span>
+                    <h3>Preview Not Available</h3>
+                    <p>Inline preview is not supported for <strong>.{{ document.file_extension }}</strong> files.</p>
+                    <a href="{{ download_url }}" class="btn-download" style="background: var(--accent); color: #000; font-weight: 600;">
+                        ⬇️ Download File
+                    </a>
+                </div>
+            {% endif %}
+        </main>
+    </div>
+
+    <!-- Navigation & Close Logic -->
+    <script>
+        const FALLBACK_URL = "{{ fallback_url }}";
+
+        /**
+         * Handle Close action:
+         * 1. Prefer returning via browser history to preserve prior claim scroll & state.
+         * 2. If opened in a new tab/window without history, attempt to close window.
+         * 3. Always guarantee safe fallback navigation to the relevant Claim Detail page.
+         */
+        function handleCloseViewer(event) {
+            if (event) {
+                event.preventDefault();
+            }
+
+            // Check if user came from within this application session
+            const hasAppReferrer = document.referrer && document.referrer.indexOf(window.location.host) !== -1;
+            const hasHistory = window.history.length > 1;
+
+            if (hasAppReferrer && hasHistory) {
+                // Navigate back in history to exact claim detail view
+                window.history.back();
+
+                // Safety timeout fallback if browser blocks or ignores back navigation
+                setTimeout(function() {
+                    window.location.href = FALLBACK_URL;
+                }, 250);
+                return;
+            }
+
+            // If opened via target="_blank" / window.open in a popup or new tab
+            if (window.opener && !window.opener.closed) {
+                window.close();
+                // If browser refuses window.close() on non-scripted windows
+                setTimeout(function() {
+                    window.location.href = FALLBACK_URL;
+                }, 200);
+                return;
+            }
+
+            // Safe fallback directly to Claim Details page
+            window.location.href = FALLBACK_URL;
+        }
+
+        // Keyboard accessibility: press ESC to close viewer
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape' || event.key === 'Esc') {
+                handleCloseViewer(event);
+            }
+        });
+
+        // Image Zoom controls logic (only active for image files)
+        let currentScale = 1.0;
+        const imgCard = document.getElementById('image-card');
+        const zoomText = document.getElementById('zoom-text');
+
+        function adjustZoom(delta) {
+            if (!imgCard || !zoomText) return;
+            currentScale = Math.min(Math.max(0.4, currentScale + delta), 3.0);
+            applyZoom();
+        }
+
+        function resetZoom() {
+            if (!imgCard || !zoomText) return;
+            currentScale = 1.0;
+            applyZoom();
+        }
+
+        function applyZoom() {
+            if (!imgCard || !zoomText) return;
+            imgCard.style.transform = `scale(${currentScale})`;
+            zoomText.textContent = `${Math.round(currentScale * 100)}%`;
+        }
+
+        // Double click image to toggle between 100% and 175% zoom
+        const previewImg = document.getElementById('preview-img');
+        if (previewImg) {
+            previewImg.addEventListener('dblclick', function() {
+                if (currentScale > 1.1) {
+                    resetZoom();
+                } else {
+                    currentScale = 1.75;
+                    applyZoom();
+                }
+            });
+        }
+    </script>
+</body>
+</html>

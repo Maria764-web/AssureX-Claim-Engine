@@ -1,0 +1,2509 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About AssureX - AI-Powered Warranty Claim Validation</title>
+    <meta name="description" content="Learn about AssureX Claim Engine - an AI-powered warranty claim validation platform combining document OCR, dual AI models, warranty business rules, and human review.">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            /* Palette: Clean, Soft, Light, Tech-focused */
+            --bg-body: #f8fafc;
+            --bg-surface: #ffffff;
+            --bg-subtle: #f1f5f9;
+            --bg-card: #ffffff;
+            
+            --border-light: #e2e8f0;
+            --border-focus: #bae6fd;
+
+            --primary: #0284c7;
+            --primary-hover: #0369a1;
+            --primary-light: #e0f2fe;
+            --primary-soft: #f0f9ff;
+            --accent-blue: #38bdf8;
+            --accent-indigo: #6366f1;
+            --accent-lavender: #ede9fe;
+
+            --text-title: #0f172a;
+            --text-body: #475569;
+            --text-muted: #64748b;
+            --text-light: #94a3b8;
+
+            --success: #16a34a;
+            --success-bg: #dcfce7;
+            --success-border: #bbf7d0;
+
+            --warning: #d97706;
+            --warning-bg: #fef3c7;
+            --warning-border: #fde68a;
+
+            --info: #0284c7;
+            --info-bg: #e0f2fe;
+            --info-border: #bae6fd;
+            
+            --shadow-subtle: 0 4px 20px -2px rgba(15, 23, 42, 0.05), 0 2px 6px -1px rgba(15, 23, 42, 0.03);
+            --shadow-card: 0 10px 30px -4px rgba(15, 23, 42, 0.06), 0 4px 12px -2px rgba(15, 23, 42, 0.03);
+            --shadow-float: 0 20px 40px -8px rgba(2, 132, 199, 0.12), 0 8px 16px -4px rgba(15, 23, 42, 0.04);
+            
+            --radius-sm: 8px;
+            --radius-md: 12px;
+            --radius-lg: 18px;
+            --radius-pill: 9999px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-body);
+            color: var(--text-body);
+            line-height: 1.6;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        h1, h2, h3, h4, .brand-logo, .nav-link, .btn, .step-number, .card-title {
+            font-family: 'Outfit', sans-serif;
+        }
+
+        /* Ambient Background Mesh */
+        .ambient-mesh {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            pointer-events: none;
+            z-index: 0;
+            background: 
+                radial-gradient(at 0% 0%, rgba(224, 242, 254, 0.45) 0px, transparent 45%),
+                radial-gradient(at 100% 0%, rgba(240, 249, 255, 0.6) 0px, transparent 45%),
+                radial-gradient(at 50% 60%, rgba(237, 233, 254, 0.28) 0px, transparent 40%),
+                radial-gradient(at 100% 100%, rgba(224, 242, 254, 0.35) 0px, transparent 50%);
+        }
+
+        .page-content-wrapper {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* Container */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1.5rem;
+            width: 100%;
+        }
+
+        /* -------------------------------------------------------------
+           HEADER / NAVBAR
+        -------------------------------------------------------------- */
+        .site-header {
+            position: sticky;
+            top: 0;
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+            border-bottom: 1px solid var(--border-light);
+            z-index: 100;
+            transition: all 0.25s ease;
+        }
+
+        .nav-wrapper {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 72px;
+        }
+
+        .brand-container {
+            display: flex;
+            align-items: center;
+            gap: 0.65rem;
+            text-decoration: none;
+        }
+
+        .brand-icon-shield {
+            width: 36px;
+            height: 36px;
+            background: linear-gradient(135deg, var(--primary), var(--accent-blue));
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 10px rgba(2, 132, 199, 0.25);
+            color: #ffffff;
+        }
+
+        .brand-text {
+            display: flex;
+            align-items: baseline;
+            gap: 0.35rem;
+        }
+
+        .brand-logo {
+            font-size: 1.55rem;
+            font-weight: 800;
+            color: var(--text-title);
+            letter-spacing: -0.03em;
+        }
+
+        .brand-logo span {
+            color: var(--primary);
+        }
+
+        .brand-badge {
+            background: var(--primary-light);
+            color: var(--primary);
+            font-size: 0.72rem;
+            font-weight: 600;
+            padding: 0.15rem 0.55rem;
+            border-radius: var(--radius-pill);
+            letter-spacing: 0.02em;
+            border: 1px solid rgba(56, 189, 248, 0.3);
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            list-style: none;
+            gap: 1.75rem;
+        }
+
+        .nav-link {
+            text-decoration: none;
+            color: var(--text-body);
+            font-size: 0.95rem;
+            font-weight: 500;
+            transition: color 0.15s ease;
+            position: relative;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            color: var(--primary);
+        }
+
+        .nav-link.active::after {
+            content: '';
+            position: absolute;
+            bottom: -6px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background-color: var(--primary);
+            border-radius: var(--radius-pill);
+        }
+
+        .nav-actions {
+            display: flex;
+            align-items: center;
+            gap: 0.85rem;
+        }
+
+        /* Buttons */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            padding: 0.65rem 1.35rem;
+            font-size: 0.95rem;
+            font-weight: 600;
+            border-radius: var(--radius-md);
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+            border: 1px solid transparent;
+            white-space: nowrap;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), #2563eb);
+            color: #ffffff;
+            box-shadow: 0 4px 12px rgba(2, 132, 199, 0.25);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-1.5px);
+            box-shadow: 0 8px 20px rgba(2, 132, 199, 0.35);
+            background: linear-gradient(135deg, var(--primary-hover), #1d4ed8);
+            color: #ffffff;
+        }
+
+        .btn-secondary {
+            background: #ffffff;
+            color: var(--text-title);
+            border-color: var(--border-light);
+            box-shadow: 0 2px 6px rgba(15, 23, 42, 0.03);
+        }
+
+        .btn-secondary:hover {
+            background: var(--bg-subtle);
+            border-color: #cbd5e1;
+            color: var(--text-title);
+            transform: translateY(-1px);
+        }
+
+        .btn-ghost {
+            background: transparent;
+            color: var(--text-body);
+        }
+
+        .btn-ghost:hover {
+            background: var(--primary-soft);
+            color: var(--primary);
+        }
+
+        .btn-hero {
+            padding: 0.85rem 1.85rem;
+            font-size: 1.05rem;
+            border-radius: var(--radius-md);
+        }
+
+        .mobile-toggle {
+            display: none;
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: var(--text-title);
+            padding: 0.5rem;
+        }
+
+        /* -------------------------------------------------------------
+           SHARED SECTION ELEMENTS
+        -------------------------------------------------------------- */
+        .section-padding {
+            padding: 5.5rem 0;
+        }
+
+        .section-header {
+            text-align: center;
+            max-width: 720px;
+            margin: 0 auto 3.5rem auto;
+        }
+
+        .section-pill-tag {
+            display: inline-block;
+            background: var(--primary-soft);
+            color: var(--primary);
+            border: 1px solid var(--border-focus);
+            font-size: 0.78rem;
+            font-weight: 700;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            padding: 0.3rem 0.85rem;
+            border-radius: var(--radius-pill);
+            margin-bottom: 0.85rem;
+        }
+
+        .section-heading {
+            font-size: 2.35rem;
+            font-weight: 800;
+            color: var(--text-title);
+            letter-spacing: -0.02em;
+            margin-bottom: 0.85rem;
+            line-height: 1.2;
+        }
+
+        .section-subtext {
+            font-size: 1.05rem;
+            color: var(--text-body);
+            line-height: 1.65;
+        }
+
+        .gradient-text {
+            background: linear-gradient(135deg, var(--primary) 0%, #2563eb 60%, var(--accent-indigo) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* -------------------------------------------------------------
+           HERO SECTION
+        -------------------------------------------------------------- */
+        .hero-section {
+            padding: 4.5rem 0 5rem 0;
+            position: relative;
+        }
+
+        .hero-grid {
+            display: grid;
+            grid-template-columns: 1.15fr 0.95fr;
+            gap: 3.5rem;
+            align-items: center;
+        }
+
+        .hero-badge-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: var(--primary-soft);
+            border: 1px solid var(--border-focus);
+            padding: 0.35rem 0.95rem;
+            border-radius: var(--radius-pill);
+            margin-bottom: 1.5rem;
+            animation: fadeIn 0.8s ease backwards;
+        }
+
+        .pulse-dot {
+            width: 8px;
+            height: 8px;
+            background-color: var(--primary);
+            border-radius: 50%;
+            box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.2);
+            animation: pulseGlow 2s infinite ease-in-out;
+        }
+
+        .hero-badge-text {
+            font-size: 0.78rem;
+            font-weight: 700;
+            letter-spacing: 0.05em;
+            color: var(--primary);
+            text-transform: uppercase;
+        }
+
+        .hero-title {
+            font-size: 3.2rem;
+            font-weight: 800;
+            color: var(--text-title);
+            line-height: 1.15;
+            letter-spacing: -0.03em;
+            margin-bottom: 1.25rem;
+            animation: fadeInUp 0.8s ease backwards 0.1s;
+        }
+
+        .hero-subtext {
+            font-size: 1.12rem;
+            color: var(--text-body);
+            line-height: 1.65;
+            margin-bottom: 2.25rem;
+            max-width: 560px;
+            animation: fadeInUp 0.8s ease backwards 0.2s;
+        }
+
+        .hero-actions {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin-bottom: 2rem;
+            animation: fadeInUp 0.8s ease backwards 0.3s;
+        }
+
+        /* Hero Right Visual Mockup */
+        .hero-visual-wrapper {
+            position: relative;
+            animation: fadeInRight 1s ease backwards 0.2s;
+        }
+
+        .glow-orb-backdrop {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(186, 230, 253, 0.45) 0%, rgba(237, 233, 254, 0.25) 50%, transparent 75%);
+            filter: blur(45px);
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .ui-mockup-card {
+            position: relative;
+            z-index: 1;
+            background: var(--bg-card);
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius-lg);
+            padding: 1.75rem;
+            box-shadow: var(--shadow-float);
+            animation: floatSubtle 6s ease-in-out infinite;
+        }
+
+        .mockup-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1.25rem;
+            border-bottom: 1px solid var(--border-light);
+            padding-bottom: 1rem;
+        }
+
+        .device-meta {
+            display: flex;
+            align-items: center;
+            gap: 0.85rem;
+        }
+
+        .device-avatar {
+            width: 44px;
+            height: 44px;
+            background: var(--primary-soft);
+            border: 1px solid var(--border-focus);
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary);
+            flex-shrink: 0;
+        }
+
+        .device-name {
+            font-weight: 700;
+            font-size: 1.02rem;
+            color: var(--text-title);
+        }
+
+        .device-serial {
+            font-size: 0.78rem;
+            font-family: monospace;
+            color: var(--text-muted);
+        }
+
+        .badge-status-active {
+            background: var(--success-bg);
+            color: var(--success);
+            border: 1px solid var(--success-border);
+            padding: 0.3rem 0.75rem;
+            border-radius: var(--radius-pill);
+            font-size: 0.75rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 0.35rem;
+        }
+
+        .mockup-body {
+            display: flex;
+            flex-direction: column;
+            gap: 0.85rem;
+        }
+
+        .mockup-check-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.65rem 0.85rem;
+            background: var(--bg-subtle);
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius-sm);
+            font-size: 0.85rem;
+        }
+
+        .m-left {
+            display: flex;
+            align-items: center;
+            gap: 0.55rem;
+            color: var(--text-title);
+            font-weight: 500;
+        }
+
+        .m-icon {
+            color: var(--primary);
+            flex-shrink: 0;
+        }
+
+        .m-tag {
+            font-size: 0.75rem;
+            font-weight: 600;
+            padding: 0.2rem 0.55rem;
+            border-radius: 4px;
+            background: #ffffff;
+            color: var(--text-muted);
+            border: 1px solid var(--border-light);
+        }
+
+        .m-tag.verified {
+            color: var(--success);
+            background: var(--success-bg);
+            border-color: var(--success-border);
+        }
+
+        /* Floating Badges */
+        .float-badge {
+            position: absolute;
+            background: #ffffff;
+            border: 1px solid var(--border-light);
+            padding: 0.55rem 0.95rem;
+            border-radius: var(--radius-pill);
+            box-shadow: var(--shadow-card);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.82rem;
+            font-weight: 600;
+            color: var(--text-title);
+            z-index: 2;
+        }
+
+        .float-badge svg {
+            flex-shrink: 0;
+        }
+
+        .float-badge-tr {
+            top: -18px;
+            right: -15px;
+            animation: floatDelay 5s ease-in-out infinite 0.5s;
+        }
+
+        .float-badge-tl {
+            top: 25%;
+            left: -25px;
+            animation: floatDelay 5s ease-in-out infinite 1.2s;
+        }
+
+        .float-badge-br {
+            bottom: -15px;
+            right: -10px;
+            animation: floatDelay 5s ease-in-out infinite 1.8s;
+        }
+
+        .float-badge-bl {
+            bottom: 20%;
+            left: -22px;
+            animation: floatDelay 5s ease-in-out infinite 0.8s;
+        }
+
+        /* -------------------------------------------------------------
+           SECTION 1: WHAT IS ASSUREX?
+        -------------------------------------------------------------- */
+        .section-what-is {
+            background: #ffffff;
+            border-top: 1px solid var(--border-light);
+            border-bottom: 1px solid var(--border-light);
+        }
+
+        .split-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 3.5rem;
+            align-items: center;
+        }
+
+        .what-is-text h3 {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--text-title);
+            margin-bottom: 1rem;
+        }
+
+        .what-is-text p {
+            font-size: 1.02rem;
+            color: var(--text-body);
+            line-height: 1.7;
+            margin-bottom: 1.5rem;
+        }
+
+        .processed-items-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0.75rem;
+            margin-top: 1.5rem;
+        }
+
+        .item-chip {
+            display: flex;
+            align-items: center;
+            gap: 0.55rem;
+            padding: 0.55rem 0.85rem;
+            background: var(--bg-subtle);
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius-sm);
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: var(--text-title);
+        }
+
+        .item-chip svg {
+            color: var(--primary);
+            flex-shrink: 0;
+        }
+
+        /* Claim Validation Engine Diagram Card */
+        .engine-card {
+            background: var(--bg-body);
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius-lg);
+            padding: 2.25rem 2rem;
+            box-shadow: var(--shadow-subtle);
+            position: relative;
+        }
+
+        .engine-card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1.75rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border-light);
+        }
+
+        .engine-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--text-title);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .engine-flow {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            position: relative;
+        }
+
+        .flow-node {
+            background: #ffffff;
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius-md);
+            padding: 0.85rem 1.15rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 2px 6px rgba(15, 23, 42, 0.02);
+            transition: all 0.2s ease;
+        }
+
+        .flow-node:hover {
+            border-color: var(--border-focus);
+            transform: translateY(-1.5px);
+            box-shadow: var(--shadow-card);
+        }
+
+        .node-left {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .node-icon-box {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            background: var(--primary-soft);
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.85rem;
+            font-weight: 700;
+        }
+
+        .node-name {
+            font-weight: 600;
+            font-size: 0.92rem;
+            color: var(--text-title);
+        }
+
+        .node-meta {
+            font-size: 0.78rem;
+            color: var(--text-muted);
+        }
+
+        .node-badge {
+            font-size: 0.72rem;
+            font-weight: 600;
+            padding: 0.2rem 0.55rem;
+            border-radius: var(--radius-pill);
+            background: var(--bg-subtle);
+            color: var(--text-muted);
+            border: 1px solid var(--border-light);
+        }
+
+        .node-badge.active-step {
+            background: var(--primary-light);
+            color: var(--primary);
+            border-color: rgba(56, 189, 248, 0.4);
+        }
+
+        .flow-connector {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 22px;
+            color: var(--text-light);
+        }
+
+        /* -------------------------------------------------------------
+           SECTION 2: THE PROBLEM
+        -------------------------------------------------------------- */
+        .problems-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 1.75rem;
+        }
+
+        .problem-card {
+            background: #ffffff;
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius-lg);
+            padding: 2rem 1.85rem;
+            box-shadow: var(--shadow-subtle);
+            transition: all 0.25s ease;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .problem-card:hover {
+            transform: translateY(-4px);
+            border-color: #cbd5e1;
+            box-shadow: var(--shadow-card);
+        }
+
+        .problem-icon-wrapper {
+            width: 48px;
+            height: 48px;
+            border-radius: var(--radius-md);
+            background: #fff1f2;
+            color: #e11d48;
+            border: 1px solid #ffe4e6;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .problem-card h3 {
+            font-size: 1.18rem;
+            font-weight: 700;
+            color: var(--text-title);
+        }
+
+        .problem-card p {
+            font-size: 0.92rem;
+            color: var(--text-body);
+            line-height: 1.65;
+        }
+
+        /* -------------------------------------------------------------
+           SECTION 3: OUR APPROACH (6-Step Timeline)
+        -------------------------------------------------------------- */
+        .section-approach {
+            background: #ffffff;
+            border-top: 1px solid var(--border-light);
+            border-bottom: 1px solid var(--border-light);
+        }
+
+        .timeline-grid {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 1.25rem;
+            position: relative;
+        }
+
+        .timeline-card {
+            background: var(--bg-body);
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius-lg);
+            padding: 1.85rem 1.35rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.85rem;
+            transition: all 0.25s ease;
+            position: relative;
+        }
+
+        .timeline-card:hover {
+            background: #ffffff;
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-card);
+            border-color: var(--border-focus);
+        }
+
+        .step-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 0.25rem;
+        }
+
+        .step-number {
+            font-size: 1.15rem;
+            font-weight: 800;
+            color: var(--primary);
+        }
+
+        .step-icon-box {
+            width: 38px;
+            height: 38px;
+            border-radius: 10px;
+            background: var(--primary-soft);
+            color: var(--primary);
+            border: 1px solid var(--border-focus);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .timeline-card h3 {
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: var(--text-title);
+            line-height: 1.3;
+        }
+
+        .timeline-card p {
+            font-size: 0.85rem;
+            color: var(--text-body);
+            line-height: 1.55;
+        }
+
+        /* -------------------------------------------------------------
+           SECTION 4: TWO AI OPINIONS
+        -------------------------------------------------------------- */
+        .ai-models-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2.25rem;
+            margin-bottom: 3.5rem;
+        }
+
+        .ai-card {
+            background: #ffffff;
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius-lg);
+            padding: 2.5rem 2.25rem;
+            box-shadow: var(--shadow-subtle);
+            transition: all 0.25s ease;
+            display: flex;
+            flex-direction: column;
+            gap: 1.25rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .ai-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-card);
+            border-color: var(--border-focus);
+        }
+
+        .ai-card-stripe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary), var(--accent-blue));
+        }
+
+        .ai-card-stripe.secondary {
+            background: linear-gradient(90deg, #6366f1, #a855f7);
+        }
+
+        .ai-card-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.45rem;
+            background: var(--primary-soft);
+            color: var(--primary);
+            border: 1px solid var(--border-focus);
+            padding: 0.25rem 0.75rem;
+            border-radius: var(--radius-pill);
+            font-size: 0.78rem;
+            font-weight: 700;
+            width: fit-content;
+        }
+
+        .ai-card-badge.purple {
+            background: #f5f3ff;
+            color: #7c3aed;
+            border-color: #ddd6fe;
+        }
+
+        .ai-card h3 {
+            font-size: 1.45rem;
+            font-weight: 800;
+            color: var(--text-title);
+        }
+
+        .ai-card p {
+            font-size: 0.96rem;
+            color: var(--text-body);
+            line-height: 1.65;
+        }
+
+        .ai-attributes {
+            display: flex;
+            flex-direction: column;
+            gap: 0.6rem;
+            margin-top: 0.5rem;
+        }
+
+        .ai-attr-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.65rem 0.85rem;
+            background: var(--bg-subtle);
+            border-radius: var(--radius-sm);
+            font-size: 0.85rem;
+        }
+
+        .ai-attr-label {
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .ai-attr-val {
+            color: var(--text-title);
+            font-weight: 600;
+        }
+
+        /* Consensus Flow Comparison Banner */
+        .consensus-banner {
+            background: #ffffff;
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius-lg);
+            padding: 2.25rem;
+            box-shadow: var(--shadow-subtle);
+        }
+
+        .consensus-heading {
+            text-align: center;
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: var(--text-title);
+            margin-bottom: 1.5rem;
+        }
+
+        .consensus-pipeline {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.85rem;
+            flex-wrap: wrap;
+        }
+
+        .c-step {
+            background: var(--bg-subtle);
+            border: 1px solid var(--border-light);
+            padding: 0.75rem 1.15rem;
+            border-radius: var(--radius-md);
+            font-size: 0.88rem;
+            font-weight: 600;
+            color: var(--text-title);
+            display: flex;
+            align-items: center;
+            gap: 0.45rem;
+        }
+
+        .c-step.highlight {
+            background: var(--primary-soft);
+            color: var(--primary);
+            border-color: var(--border-focus);
+        }
+
+        .c-step.outcome {
+            background: var(--success-bg);
+            color: var(--success);
+            border-color: var(--success-border);
+        }
+
+        .c-arrow {
+            color: var(--text-light);
+        }
+
+        .consensus-note {
+            text-align: center;
+            font-size: 0.88rem;
+            color: var(--text-muted);
+            margin-top: 1.5rem;
+            padding-top: 1.25rem;
+            border-top: 1px solid var(--border-light);
+        }
+
+        /* -------------------------------------------------------------
+           SECTION 5: HUMAN REVIEW SAFETY NET
+        -------------------------------------------------------------- */
+        .section-human-review {
+            background: #ffffff;
+            border-top: 1px solid var(--border-light);
+            border-bottom: 1px solid var(--border-light);
+        }
+
+        .review-situations-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1.5rem;
+            margin-bottom: 2.5rem;
+        }
+
+        .situation-card {
+            background: var(--bg-body);
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius-md);
+            padding: 1.65rem 1.35rem;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.65rem;
+            transition: all 0.2s ease;
+        }
+
+        .situation-card:hover {
+            background: #ffffff;
+            border-color: var(--border-focus);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-subtle);
+        }
+
+        .sit-icon-box {
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            background: #fffbeb;
+            color: #d97706;
+            border: 1px solid #fef3c7;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .situation-card h4 {
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: var(--text-title);
+        }
+
+        .situation-card p {
+            font-size: 0.85rem;
+            color: var(--text-body);
+            line-height: 1.5;
+        }
+
+        /* Safety Net Destination Banner */
+        .safety-net-banner {
+            background: linear-gradient(135deg, #f8fafc 0%, #f0fdf4 100%);
+            border: 1px solid var(--success-border);
+            border-radius: var(--radius-lg);
+            padding: 2rem 2.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 2rem;
+        }
+
+        .safety-left {
+            display: flex;
+            align-items: center;
+            gap: 1.25rem;
+        }
+
+        .safety-icon-circle {
+            width: 54px;
+            height: 54px;
+            border-radius: 50%;
+            background: var(--success-bg);
+            color: var(--success);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            border: 1px solid var(--success-border);
+        }
+
+        .safety-left h3 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-title);
+            margin-bottom: 0.25rem;
+        }
+
+        .safety-left p {
+            font-size: 0.92rem;
+            color: var(--text-body);
+        }
+
+        .safety-badge {
+            background: #ffffff;
+            color: var(--text-title);
+            border: 1px solid var(--border-light);
+            padding: 0.5rem 1rem;
+            border-radius: var(--radius-pill);
+            font-size: 0.82rem;
+            font-weight: 600;
+            white-space: nowrap;
+            box-shadow: 0 2px 6px rgba(15, 23, 42, 0.03);
+        }
+
+        /* -------------------------------------------------------------
+           SECTION 6: WHO USES ASSUREX?
+        -------------------------------------------------------------- */
+        .roles-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1.75rem;
+        }
+
+        .role-card {
+            background: #ffffff;
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius-lg);
+            padding: 2.25rem 1.75rem;
+            box-shadow: var(--shadow-subtle);
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            transition: all 0.25s ease;
+            position: relative;
+        }
+
+        .role-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-card);
+            border-color: var(--border-focus);
+        }
+
+        .role-icon-box {
+            width: 48px;
+            height: 48px;
+            border-radius: var(--radius-md);
+            background: var(--primary-soft);
+            color: var(--primary);
+            border: 1px solid var(--border-focus);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .role-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--text-title);
+        }
+
+        .role-desc {
+            font-size: 0.9rem;
+            color: var(--text-body);
+            line-height: 1.6;
+        }
+
+        .role-tag {
+            font-size: 0.72rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--primary);
+            background: var(--primary-soft);
+            padding: 0.2rem 0.6rem;
+            border-radius: var(--radius-pill);
+            width: fit-content;
+        }
+
+        /* -------------------------------------------------------------
+           SECTION 7: CORE PRINCIPLES
+        -------------------------------------------------------------- */
+        .section-principles {
+            background: #ffffff;
+            border-top: 1px solid var(--border-light);
+            border-bottom: 1px solid var(--border-light);
+        }
+
+        .principles-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1.75rem;
+        }
+
+        .principle-card {
+            background: var(--bg-body);
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius-lg);
+            padding: 2.25rem 1.75rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.85rem;
+            transition: all 0.25s ease;
+        }
+
+        .principle-card:hover {
+            background: #ffffff;
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-card);
+            border-color: var(--border-focus);
+        }
+
+        .principle-icon-box {
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            background: #ffffff;
+            color: var(--primary);
+            border: 1px solid var(--border-light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 6px rgba(15, 23, 42, 0.03);
+        }
+
+        .principle-card h3 {
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: var(--text-title);
+        }
+
+        .principle-card p {
+            font-size: 0.9rem;
+            color: var(--text-body);
+            line-height: 1.6;
+        }
+
+        /* -------------------------------------------------------------
+           SECTION 8: VISION
+        -------------------------------------------------------------- */
+        .vision-section {
+            padding: 6rem 0;
+            position: relative;
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 50%, #ede9fe 100%);
+            border-top: 1px solid rgba(56, 189, 248, 0.3);
+            border-bottom: 1px solid rgba(56, 189, 248, 0.3);
+            overflow: hidden;
+            text-align: center;
+        }
+
+        .vision-backdrop-svg {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 900px;
+            height: 600px;
+            opacity: 0.06;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .vision-content {
+            position: relative;
+            z-index: 1;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .vision-pill {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.9);
+            color: var(--primary);
+            border: 1px solid rgba(56, 189, 248, 0.4);
+            font-size: 0.78rem;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            padding: 0.35rem 0.95rem;
+            border-radius: var(--radius-pill);
+            margin-bottom: 1.5rem;
+        }
+
+        .vision-title {
+            font-size: 2.8rem;
+            font-weight: 800;
+            color: var(--text-title);
+            margin-bottom: 1.5rem;
+            letter-spacing: -0.02em;
+        }
+
+        .vision-quote {
+            font-size: 1.45rem;
+            font-weight: 500;
+            color: var(--text-title);
+            line-height: 1.6;
+            margin-bottom: 2.5rem;
+        }
+
+        .vision-pillars {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .v-pillar {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: rgba(255, 255, 255, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.9);
+            padding: 0.6rem 1.15rem;
+            border-radius: var(--radius-pill);
+            font-size: 0.88rem;
+            font-weight: 600;
+            color: var(--text-title);
+            box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
+        }
+
+        .v-pillar svg {
+            color: var(--primary);
+        }
+
+        /* -------------------------------------------------------------
+           SECTION 9: CTA
+        -------------------------------------------------------------- */
+        .cta-box {
+            background: #ffffff;
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius-lg);
+            padding: 4.5rem 2.5rem;
+            text-align: center;
+            box-shadow: var(--shadow-card);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cta-box h2 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: var(--text-title);
+            margin-bottom: 1rem;
+            letter-spacing: -0.02em;
+        }
+
+        .cta-box p {
+            font-size: 1.12rem;
+            color: var(--text-body);
+            max-width: 620px;
+            margin: 0 auto 2rem auto;
+            line-height: 1.6;
+        }
+
+        .cta-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        /* -------------------------------------------------------------
+           FOOTER
+        -------------------------------------------------------------- */
+        .site-footer {
+            background: #ffffff;
+            border-top: 1px solid var(--border-light);
+            padding: 4.5rem 0 2.5rem 0;
+            margin-top: auto;
+        }
+
+        .footer-grid {
+            display: grid;
+            grid-template-columns: 1.6fr 1fr 1fr 1fr;
+            gap: 3rem;
+            margin-bottom: 3.5rem;
+        }
+
+        .footer-brand p {
+            color: var(--text-muted);
+            font-size: 0.92rem;
+            line-height: 1.6;
+            margin-top: 0.75rem;
+            max-width: 320px;
+        }
+
+        .footer-heading {
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: var(--text-title);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 1.25rem;
+        }
+
+        .footer-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .footer-list a {
+            text-decoration: none;
+            color: var(--text-body);
+            font-size: 0.9rem;
+            transition: color 0.15s ease;
+        }
+
+        .footer-list a:hover {
+            color: var(--primary);
+        }
+
+        .footer-bottom {
+            padding-top: 2rem;
+            border-top: 1px solid var(--border-light);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        /* -------------------------------------------------------------
+           KEYFRAME ANIMATIONS
+        -------------------------------------------------------------- */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInRight {
+            from {
+                opacity: 0;
+                transform: translateX(25px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes floatSubtle {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-7px); }
+        }
+
+        @keyframes floatDelay {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-9px); }
+        }
+
+        @keyframes pulseGlow {
+            0%, 100% { box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.2); }
+            50% { box-shadow: 0 0 0 6px rgba(2, 132, 199, 0.4); }
+        }
+
+        /* -------------------------------------------------------------
+           RESPONSIVE BREAKPOINTS
+        -------------------------------------------------------------- */
+        @media (max-width: 1024px) {
+            .timeline-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+            .roles-grid, .principles-grid, .review-situations-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .footer-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+                position: absolute;
+                top: 72px;
+                left: 0;
+                right: 0;
+                background: #ffffff;
+                border-bottom: 1px solid var(--border-light);
+                flex-direction: column;
+                padding: 1.5rem;
+                gap: 1.25rem;
+                box-shadow: var(--shadow-card);
+            }
+            .nav-links.active {
+                display: flex;
+            }
+            .mobile-toggle {
+                display: block;
+            }
+            .hero-grid {
+                grid-template-columns: 1fr;
+                gap: 2.5rem;
+            }
+            .hero-title {
+                font-size: 2.35rem;
+            }
+            .split-grid, .ai-models-grid {
+                grid-template-columns: 1fr;
+            }
+            .timeline-grid {
+                grid-template-columns: 1fr;
+            }
+            .roles-grid, .principles-grid, .review-situations-grid {
+                grid-template-columns: 1fr;
+            }
+            .safety-net-banner {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .footer-grid {
+                grid-template-columns: 1fr;
+            }
+            .processed-items-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Respect Reduced Motion */
+        @media (prefers-reduced-motion: reduce) {
+            *, ::before, ::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+                scroll-behavior: auto !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Ambient Soft Glow Background -->
+    <div class="ambient-mesh"></div>
+
+    <div class="page-content-wrapper">
+        <!-- Modern Sticky Light Navigation Bar -->
+        <header class="site-header">
+            <div class="container">
+                <div class="nav-wrapper">
+                    <!-- Brand Identity -->
+                    <a href="/" class="brand-container" id="nav-brand">
+                        <div class="brand-icon-shield">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                                <path d="m9 12 2 2 4-4"/>
+                            </svg>
+                        </div>
+                        <div class="brand-text">
+                            <span class="brand-logo">Assure<span>X</span></span>
+                            <span class="brand-badge">Claim Engine</span>
+                        </div>
+                    </a>
+
+                    <!-- Navigation Links -->
+                    <ul class="nav-links" id="nav-menu">
+                        <li><a href="/" class="nav-link">Home</a></li>
+                        <li><a href="#hero" class="nav-link active">About</a></li>
+                        <li><a href="#our-approach" class="nav-link">How It Works</a></li>
+                        <li><a href="#what-is-assurex" class="nav-link">Features</a></li>
+                        <li><a href="/#faq" class="nav-link">FAQ</a></li>
+                        <li><a href="#cta" class="nav-link">Contact</a></li>
+                    </ul>
+
+                    <!-- Navigation CTA Buttons -->
+                    <div class="nav-actions">
+                        <a href="/auth/login" class="btn btn-ghost" id="nav-login-btn">
+                            Sign In
+                        </a>
+                        <a href="/auth/register" class="btn btn-primary" id="nav-register-btn">
+                            Create Customer Account
+                        </a>
+                        <button class="mobile-toggle" id="mobile-menu-btn" aria-label="Toggle navigation menu">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <line x1="3" y1="12" x2="21" y2="12"></line>
+                                <line x1="3" y1="6" x2="21" y2="6"></line>
+                                <line x1="3" y1="18" x2="21" y2="18"></line>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- HERO SECTION -->
+        <section class="hero-section" id="hero">
+            <div class="container">
+                <div class="hero-grid">
+                    <!-- Hero Content Left -->
+                    <div class="hero-content">
+                        <div class="hero-badge-pill">
+                            <span class="pulse-dot"></span>
+                            <span class="hero-badge-text">ABOUT ASSUREX</span>
+                        </div>
+
+                        <h1 class="hero-title">
+                            Making Warranty Claims Smarter, Faster, and More Transparent
+                        </h1>
+
+                        <p class="hero-subtext">
+                            AssureX is an AI-powered warranty claim validation platform designed to simplify claim processing, verify supporting documents, analyze claim information, and help teams make consistent warranty decisions.
+                        </p>
+
+                        <div class="hero-actions">
+                            <a href="#our-approach" class="btn btn-secondary btn-hero" id="hero-how-btn">
+                                Explore How It Works
+                            </a>
+                            <a href="/auth/register" class="btn btn-primary btn-hero" id="hero-claim-btn">
+                                <span>Start a Claim</span>
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                                    <polyline points="12 5 19 12 12 19"></polyline>
+                                </svg>
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Hero Visual Right -->
+                    <div class="hero-visual-wrapper">
+                        <div class="glow-orb-backdrop"></div>
+
+                        <!-- Floating UI Elements -->
+                        <div class="float-badge float-badge-tr">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                            <span>Document Verified</span>
+                        </div>
+
+                        <div class="float-badge float-badge-tl">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#0284c7" stroke-width="2.2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                            <span>Warranty Active</span>
+                        </div>
+
+                        <div class="float-badge float-badge-bl">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6366f1" stroke-width="2.2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                            <span>AI Analysis Complete</span>
+                        </div>
+
+                        <div class="float-badge float-badge-br">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#d97706" stroke-width="2.2"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><polyline points="17 11 19 13 23 9"/></svg>
+                            <span>Manual Review Ready</span>
+                        </div>
+
+                        <!-- Central Electronics / Warranty Mockup Card -->
+                        <div class="ui-mockup-card">
+                            <div class="mockup-header">
+                                <div class="device-meta">
+                                    <div class="device-avatar">
+                                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+                                    </div>
+                                    <div>
+                                        <div class="device-name">UltraVision 4K Display Pro</div>
+                                        <div class="device-serial">SN-ASX-8849-2026</div>
+                                    </div>
+                                </div>
+                                <div class="badge-status-active">
+                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+                                    <span>Active Coverage</span>
+                                </div>
+                            </div>
+
+                            <div class="mockup-body">
+                                <div class="mockup-check-item">
+                                    <div class="m-left">
+                                        <svg class="m-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+                                        <span>Invoice OCR &amp; Serial Match</span>
+                                    </div>
+                                    <span class="m-tag verified">Passed &bull; 99.8%</span>
+                                </div>
+
+                                <div class="mockup-check-item">
+                                    <div class="m-left">
+                                        <svg class="m-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+                                        <span>36-Month Policy Active</span>
+                                    </div>
+                                    <span class="m-tag">Valid to Dec 2027</span>
+                                </div>
+
+                                <div class="mockup-check-item">
+                                    <div class="m-left">
+                                        <svg class="m-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                                        <span>Dual-Model AI Consensus</span>
+                                    </div>
+                                    <span class="m-tag verified">Consensus Confirmed</span>
+                                </div>
+
+                                <div class="mockup-check-item">
+                                    <div class="m-left">
+                                        <svg class="m-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                                        <span>Deterministic Policy Rules</span>
+                                    </div>
+                                    <span class="m-tag verified">5 / 5 Rules Met</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 1: WHAT IS ASSUREX? -->
+        <section class="section-padding section-what-is" id="what-is-assurex">
+            <div class="container">
+                <div class="section-header">
+                    <span class="section-pill-tag">WHAT IS ASSUREX?</span>
+                    <h2 class="section-heading">A Unified Claim Validation Engine</h2>
+                    <p class="section-subtext">
+                        AssureX Claim Engine is a warranty claim validation platform that brings document processing, artificial intelligence, and warranty business rules together in one workflow.
+                    </p>
+                </div>
+
+                <div class="split-grid">
+                    <!-- Left: Explanation -->
+                    <div class="what-is-text">
+                        <h3>Built for Complete Warranty Clarity</h3>
+                        <p>
+                            Traditional warranty administration is often fractured between siloed receipt databases, disconnected repair centres, and subjective manual claim reviews. AssureX bridges these gaps by providing an end-to-end framework where structured data, physical documents, and technical defect evidence are unified into a single verifiable claim record.
+                        </p>
+                        <p>
+                            Whether handling consumer electronics, professional computing gear, or smart appliances, the system continuously correlates inputs to ensure transparent, policy-compliant outcomes.
+                        </p>
+
+                        <div class="processed-items-grid">
+                            <div class="item-chip">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                                <span>Product information</span>
+                            </div>
+                            <div class="item-chip">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                                <span>Purchase documents</span>
+                            </div>
+                            <div class="item-chip">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                                <span>Warranty details</span>
+                            </div>
+                            <div class="item-chip">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                                <span>Fault descriptions</span>
+                            </div>
+                            <div class="item-chip">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                                <span>Damage evidence</span>
+                            </div>
+                            <div class="item-chip">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                                <span>Serial numbers</span>
+                            </div>
+                            <div class="item-chip">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                                <span>AI predictions</span>
+                            </div>
+                            <div class="item-chip">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                                <span>Warranty rules</span>
+                            </div>
+                            <div class="item-chip" style="grid-column: span 2;">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                                <span>Auditable review decisions &amp; comments</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right: Claim Validation Engine Diagram Card -->
+                    <div class="engine-card">
+                        <div class="engine-card-header">
+                            <div class="engine-title">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/><line x1="9" y1="1" x2="9" y2="4"/><line x1="15" y1="1" x2="15" y2="4"/><line x1="9" y1="20" x2="9" y2="23"/><line x1="15" y1="20" x2="15" y2="23"/><line x1="20" y1="9" x2="23" y2="9"/><line x1="20" y1="14" x2="23" y2="14"/><line x1="1" y1="9" x2="4" y2="9"/><line x1="1" y1="14" x2="4" y2="14"/></svg>
+                                <span>Claim Validation Pipeline</span>
+                            </div>
+                            <span class="node-badge active-step">Autonomous Engine</span>
+                        </div>
+
+                        <div class="engine-flow">
+                            <!-- Node 1 -->
+                            <div class="flow-node">
+                                <div class="node-left">
+                                    <div class="node-icon-box">01</div>
+                                    <div>
+                                        <div class="node-name">Customer Claim</div>
+                                        <div class="node-meta">Asset registration &amp; incident submission</div>
+                                    </div>
+                                </div>
+                                <span class="node-badge">Input</span>
+                            </div>
+
+                            <div class="flow-connector">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><polyline points="19 12 12 19 5 12"/></svg>
+                            </div>
+
+                            <!-- Node 2 -->
+                            <div class="flow-node">
+                                <div class="node-left">
+                                    <div class="node-icon-box">02</div>
+                                    <div>
+                                        <div class="node-name">Document Processing</div>
+                                        <div class="node-meta">Receipt OCR, invoice parsing &amp; serial cross-check</div>
+                                    </div>
+                                </div>
+                                <span class="node-badge">Extraction</span>
+                            </div>
+
+                            <div class="flow-connector">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><polyline points="19 12 12 19 5 12"/></svg>
+                            </div>
+
+                            <!-- Node 3 -->
+                            <div class="flow-node">
+                                <div class="node-left">
+                                    <div class="node-icon-box">03</div>
+                                    <div>
+                                        <div class="node-name">AI Analysis</div>
+                                        <div class="node-meta">Dual classification &amp; visual consensus scoring</div>
+                                    </div>
+                                </div>
+                                <span class="node-badge">Intelligence</span>
+                            </div>
+
+                            <div class="flow-connector">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><polyline points="19 12 12 19 5 12"/></svg>
+                            </div>
+
+                            <!-- Node 4 -->
+                            <div class="flow-node">
+                                <div class="node-left">
+                                    <div class="node-icon-box">04</div>
+                                    <div>
+                                        <div class="node-name">Warranty Rule Validation</div>
+                                        <div class="node-meta">Deterministic dates, exclusions &amp; policy limits</div>
+                                    </div>
+                                </div>
+                                <span class="node-badge">Policy Engine</span>
+                            </div>
+
+                            <div class="flow-connector">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><polyline points="19 12 12 19 5 12"/></svg>
+                            </div>
+
+                            <!-- Node 5 -->
+                            <div class="flow-node" style="border-color: var(--success-border); background: var(--success-bg);">
+                                <div class="node-left">
+                                    <div class="node-icon-box" style="background: #ffffff; color: var(--success);">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                                    </div>
+                                    <div>
+                                        <div class="node-name" style="color: #14532d;">Final Claim Outcome</div>
+                                        <div class="node-meta" style="color: #166534;">Verified approval or human review routing</div>
+                                    </div>
+                                </div>
+                                <span class="node-badge" style="background: #ffffff; color: var(--success); border-color: var(--success-border);">Adjudicated</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 2: THE PROBLEM -->
+        <section class="section-padding" id="the-problem">
+            <div class="container">
+                <div class="section-header">
+                    <span class="section-pill-tag">THE PROBLEM</span>
+                    <h2 class="section-heading">Why Warranty Claims Need a Smarter Process</h2>
+                    <p class="section-subtext">
+                        Electronics warranty management historically struggles with friction, delays, and incomplete information. AssureX solves the core issues that slow down customer service and warranty operations.
+                    </p>
+                </div>
+
+                <div class="problems-grid">
+                    <!-- Card 1 -->
+                    <div class="problem-card">
+                        <div class="problem-icon-wrapper">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+                        </div>
+                        <h3>Too Much Manual Work</h3>
+                        <p>
+                            Manual document checking and paper-based verification slow down turnaround times and create operational bottlenecks for service teams.
+                        </p>
+                    </div>
+
+                    <!-- Card 2 -->
+                    <div class="problem-card">
+                        <div class="problem-icon-wrapper">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/><line x1="2" y1="2" x2="22" y2="22"/></svg>
+                        </div>
+                        <h3>Missing Evidence</h3>
+                        <p>
+                            Incomplete purchase receipts, blurred serial numbers, and absent photo evidence leave support teams guessing and claims stalled.
+                        </p>
+                    </div>
+
+                    <!-- Card 3 -->
+                    <div class="problem-card">
+                        <div class="problem-icon-wrapper">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 14 14"/></svg>
+                        </div>
+                        <h3>Warranty Uncertainty</h3>
+                        <p>
+                            Calculating active coverage windows, warranty tiers, and policy expiration rules across varied electronics models is complex and error-prone.
+                        </p>
+                    </div>
+
+                    <!-- Card 4 -->
+                    <div class="problem-card">
+                        <div class="problem-icon-wrapper">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+                        </div>
+                        <h3>Inconsistent Decisions</h3>
+                        <p>
+                            Without centralized validation rules, different support representatives evaluate similar defects inconsistently, harming customer trust.
+                        </p>
+                    </div>
+
+                    <!-- Card 5 -->
+                    <div class="problem-card">
+                        <div class="problem-icon-wrapper">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                        </div>
+                        <h3>Duplicate Claims</h3>
+                        <p>
+                            Repeated or overlapping claim submissions across different channels consume unnecessary labor and increase the risk of duplicate payouts.
+                        </p>
+                    </div>
+
+                    <!-- Card 6 -->
+                    <div class="problem-card">
+                        <div class="problem-icon-wrapper">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                        </div>
+                        <h3>Long Review Cycles</h3>
+                        <p>
+                            Disconnected communication between customers, service centres, and adjudicators stretches resolution times from hours to several weeks.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 3: OUR APPROACH -->
+        <section class="section-padding section-approach" id="our-approach">
+            <div class="container">
+                <div class="section-header">
+                    <span class="section-pill-tag">OUR APPROACH</span>
+                    <h2 class="section-heading">One Claim. Multiple Layers of Validation.</h2>
+                    <p class="section-subtext">
+                        AssureX does not rely on a single signal. Every warranty submission is evaluated across six structured checkpoints to ensure accuracy, policy compliance, and auditability.
+                    </p>
+                </div>
+
+                <div class="timeline-grid">
+                    <!-- Step 01 -->
+                    <div class="timeline-card">
+                        <div class="step-header">
+                            <span class="step-number">01</span>
+                            <div class="step-icon-box">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                            </div>
+                        </div>
+                        <h3>Document Intelligence</h3>
+                        <p>
+                            OCR processes purchase receipts, invoices, and serial numbers, extracting structured metadata directly from uploaded files.
+                        </p>
+                    </div>
+
+                    <!-- Step 02 -->
+                    <div class="timeline-card">
+                        <div class="step-header">
+                            <span class="step-number">02</span>
+                            <div class="step-icon-box">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+                            </div>
+                        </div>
+                        <h3>Data Validation</h3>
+                        <p>
+                            Cross-checks device serial numbers against registration records and checks for prior duplicate submissions across the database.
+                        </p>
+                    </div>
+
+                    <!-- Step 03 -->
+                    <div class="timeline-card">
+                        <div class="step-header">
+                            <span class="step-number">03</span>
+                            <div class="step-icon-box">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/></svg>
+                            </div>
+                        </div>
+                        <h3>Python AI Analysis</h3>
+                        <p>
+                            A Python-based classification model evaluates structured claim metrics and defect patterns, generating a prediction with a confidence score.
+                        </p>
+                    </div>
+
+                    <!-- Step 04 -->
+                    <div class="timeline-card">
+                        <div class="step-header">
+                            <span class="step-number">04</span>
+                            <div class="step-icon-box">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+                            </div>
+                        </div>
+                        <h3>Visual AI Analysis</h3>
+                        <p>
+                            A Google Teachable Machine model inspects the generated Claim Summary Card image as an independent, secondary visual opinion.
+                        </p>
+                    </div>
+
+                    <!-- Step 05 -->
+                    <div class="timeline-card">
+                        <div class="step-header">
+                            <span class="step-number">05</span>
+                            <div class="step-icon-box">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                            </div>
+                        </div>
+                        <h3>Warranty Rules</h3>
+                        <p>
+                            Deterministic policy checks verify warranty activation dates, expiration limits, exclusions, and prior repair histories.
+                        </p>
+                    </div>
+
+                    <!-- Step 06 -->
+                    <div class="timeline-card">
+                        <div class="step-header">
+                            <span class="step-number">06</span>
+                            <div class="step-icon-box">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                            </div>
+                        </div>
+                        <h3>Final Decision</h3>
+                        <p>
+                            System synthesizes AI predictions with warranty rules for an automated outcome or routes edge cases to human review.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 4: TWO AI OPINIONS -->
+        <section class="section-padding" id="two-ai-opinions">
+            <div class="container">
+                <div class="section-header">
+                    <span class="section-pill-tag">DUAL-MODEL ARCHITECTURE</span>
+                    <h2 class="section-heading">Two AI Opinions. One Smarter Validation Process.</h2>
+                    <p class="section-subtext">
+                        Relying on a single automated opinion can lead to false positives. AssureX leverages two complementary machine learning perspectives before synthesizing decisions with warranty policies.
+                    </p>
+                </div>
+
+                <!-- Two AI Cards -->
+                <div class="ai-models-grid">
+                    <!-- AI Model 1 -->
+                    <div class="ai-card">
+                        <div class="ai-card-stripe"></div>
+                        <span class="ai-card-badge">AI MODEL 1 &bull; PYTHON</span>
+                        <h3>Structured Claim Analysis</h3>
+                        <p>
+                            A Python-based classification model evaluates structured claim information and produces a prediction with a confidence score.
+                        </p>
+                        <div class="ai-attributes">
+                            <div class="ai-attr-row">
+                                <span class="ai-attr-label">Input Modality</span>
+                                <span class="ai-attr-val">Structured Claim Parameters</span>
+                            </div>
+                            <div class="ai-attr-row">
+                                <span class="ai-attr-label">Evaluation Engine</span>
+                                <span class="ai-attr-val">Python Classifier Model</span>
+                            </div>
+                            <div class="ai-attr-row">
+                                <span class="ai-attr-label">Primary Metric</span>
+                                <span class="ai-attr-val">Prediction Confidence Score</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- AI Model 2 -->
+                    <div class="ai-card">
+                        <div class="ai-card-stripe secondary"></div>
+                        <span class="ai-card-badge purple">AI MODEL 2 &bull; VISION</span>
+                        <h3>Visual Claim Analysis</h3>
+                        <p>
+                            A Google Teachable Machine model evaluates the generated Claim Summary Card image as an independent second opinion.
+                        </p>
+                        <div class="ai-attributes">
+                            <div class="ai-attr-row">
+                                <span class="ai-attr-label">Input Modality</span>
+                                <span class="ai-attr-val">Claim Summary Card Image</span>
+                            </div>
+                            <div class="ai-attr-row">
+                                <span class="ai-attr-label">Evaluation Engine</span>
+                                <span class="ai-attr-val">Teachable Machine Vision</span>
+                            </div>
+                            <div class="ai-attr-row">
+                                <span class="ai-attr-label">Primary Metric</span>
+                                <span class="ai-attr-val">Visual Classification Score</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Prediction Comparison & Consensus Pipeline -->
+                <div class="consensus-banner">
+                    <div class="consensus-heading">Validation Consensus Workflow</div>
+                    <div class="consensus-pipeline">
+                        <div class="c-step">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/></svg>
+                            <span>Claim Data</span>
+                        </div>
+                        <span class="c-arrow">&rarr;</span>
+                        <div class="c-step highlight">
+                            <span>AI Model 1</span>
+                        </div>
+                        <span class="c-arrow">&bull;</span>
+                        <div class="c-step">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/></svg>
+                            <span>Summary Card</span>
+                        </div>
+                        <span class="c-arrow">&rarr;</span>
+                        <div class="c-step highlight">
+                            <span>AI Model 2</span>
+                        </div>
+                        <span class="c-arrow">&rarr;</span>
+                        <div class="c-step">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+                            <span>Prediction Comparison</span>
+                        </div>
+                        <span class="c-arrow">&rarr;</span>
+                        <div class="c-step">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                            <span>Warranty Rule Validation</span>
+                        </div>
+                        <span class="c-arrow">&rarr;</span>
+                        <div class="c-step outcome">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                            <span>Final Claim Outcome</span>
+                        </div>
+                    </div>
+                    <div class="consensus-note">
+                        <strong>Important:</strong> The final warranty outcome is never based on one isolated AI prediction. AssureX requires agreement between predictions and compliance with deterministic warranty rules.
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 5: HUMAN REVIEW -->
+        <section class="section-padding section-human-review" id="human-review">
+            <div class="container">
+                <div class="section-header">
+                    <span class="section-pill-tag">TRUST &amp; SAFETY</span>
+                    <h2 class="section-heading">When AI Is Uncertain, Humans Stay in Control.</h2>
+                    <p class="section-subtext">
+                        AssureX is designed with a human review safety net. When evidence is incomplete, models disagree, confidence is low, or warranty rules identify a contradiction, the claim can be routed for human review.
+                    </p>
+                </div>
+
+                <!-- 4 Trigger Situations -->
+                <div class="review-situations-grid">
+                    <!-- Situation 1 -->
+                    <div class="situation-card">
+                        <div class="sit-icon-box">
+                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+                        </div>
+                        <h4>Low Confidence</h4>
+                        <p>When structured prediction confidence falls below the strict validation threshold.</p>
+                    </div>
+
+                    <!-- Situation 2 -->
+                    <div class="situation-card">
+                        <div class="sit-icon-box">
+                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 16v1a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h11a2 2 0 0 1 2 2v1"/><polyline points="23 7 23 11 19 11"/><polyline points="19 17 23 17 23 13"/></svg>
+                        </div>
+                        <h4>AI Disagreement</h4>
+                        <p>When the structured Python model and visual Teachable Machine deliver conflicting assessments.</p>
+                    </div>
+
+                    <!-- Situation 3 -->
+                    <div class="situation-card">
+                        <div class="sit-icon-box">
+                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><line x1="9" y1="15" x2="15" y2="15"/></svg>
+                        </div>
+                        <h4>Missing Evidence</h4>
+                        <p>When uploaded invoices are obscured, serial tags are unreadable, or proof documents are absent.</p>
+                    </div>
+
+                    <!-- Situation 4 -->
+                    <div class="situation-card">
+                        <div class="sit-icon-box">
+                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg>
+                        </div>
+                        <h4>Rule Conflict</h4>
+                        <p>When user fault descriptions contradict policy coverage limits or warranty exclusion terms.</p>
+                    </div>
+                </div>
+
+                <!-- Safety Net Routing Result -->
+                <div class="safety-net-banner">
+                    <div class="safety-left">
+                        <div class="safety-icon-circle">
+                            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><polyline points="17 11 19 13 23 9"/></svg>
+                        </div>
+                        <div>
+                            <h3>Manual Review Ready</h3>
+                            <p>Uncertain submissions are securely queued for authorized Claim Reviewers to examine evidence and make deliberate determinations.</p>
+                        </div>
+                    </div>
+                    <div class="safety-badge">
+                        Human-in-the-Loop Safeguard
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 6: WHO USES ASSUREX? -->
+        <section class="section-padding" id="who-uses-assurex">
+            <div class="container">
+                <div class="section-header">
+                    <span class="section-pill-tag">PLATFORM STAKEHOLDERS</span>
+                    <h2 class="section-heading">Built for Every Step of the Warranty Journey</h2>
+                    <p class="section-subtext">
+                        AssureX provides dedicated, purpose-built workspaces tailored to each key stakeholder in the electronics warranty lifecycle.
+                    </p>
+                </div>
+
+                <div class="roles-grid">
+                    <!-- Customer -->
+                    <div class="role-card">
+                        <div class="role-icon-box">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                        </div>
+                        <span class="role-tag">Customer</span>
+                        <h3 class="role-title">Customer</h3>
+                        <p class="role-desc">
+                            Register products, submit warranty claims, upload documents, provide evidence, and track claim progress in real time.
+                        </p>
+                    </div>
+
+                    <!-- Service-Centre Employee -->
+                    <div class="role-card">
+                        <div class="role-icon-box">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+                        </div>
+                        <span class="role-tag">Service Center</span>
+                        <h3 class="role-title">Service-Centre Employee</h3>
+                        <p class="role-desc">
+                            Create claims on behalf of customers and record repair-related information directly from service intake desks.
+                        </p>
+                    </div>
+
+                    <!-- Claim Reviewer -->
+                    <div class="role-card">
+                        <div class="role-icon-box">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><polyline points="10 9 9 9 8 9"/></svg>
+                        </div>
+                        <span class="role-tag">Adjudication</span>
+                        <h3 class="role-title">Claim Reviewer</h3>
+                        <p class="role-desc">
+                            Review uncertain claims, examine evidence, provide comments, and make review decisions on edge cases.
+                        </p>
+                    </div>
+
+                    <!-- Administrator -->
+                    <div class="role-card">
+                        <div class="role-icon-box">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><circle cx="12" cy="12" r="3"/></svg>
+                        </div>
+                        <span class="role-tag">Management</span>
+                        <h3 class="role-title">Administrator</h3>
+                        <p class="role-desc">
+                            Manage policies, monitor system activity, and review operational analytics across the entire platform.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 7: CORE PRINCIPLES -->
+        <section class="section-padding section-principles" id="core-principles">
+            <div class="container">
+                <div class="section-header">
+                    <span class="section-pill-tag">CORE PRINCIPLES</span>
+                    <h2 class="section-heading">Built Around Trust and Transparency</h2>
+                    <p class="section-subtext">
+                        Every warranty validation decision rendered by AssureX follows strict architectural commitments to objectivity, consistency, and traceability.
+                    </p>
+                </div>
+
+                <div class="principles-grid">
+                    <!-- Principle 1 -->
+                    <div class="principle-card">
+                        <div class="principle-icon-box">
+                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/></svg>
+                        </div>
+                        <h3>Evidence First</h3>
+                        <p>Claims are evaluated using supporting documents and evidence, ensuring tangible proof backs every warranty assessment.</p>
+                    </div>
+
+                    <!-- Principle 2 -->
+                    <div class="principle-card">
+                        <div class="principle-icon-box">
+                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
+                        </div>
+                        <h3>Multiple Validation Layers</h3>
+                        <p>AI predictions are combined with deterministic warranty checks to eliminate single points of failure in claim adjudication.</p>
+                    </div>
+
+                    <!-- Principle 3 -->
+                    <div class="principle-card">
+                        <div class="principle-icon-box">
+                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                        </div>
+                        <h3>Human Oversight</h3>
+                        <p>Uncertain cases can be reviewed by authorized people, preserving empathy and expert judgment where algorithms are inconclusive.</p>
+                    </div>
+
+                    <!-- Principle 4 -->
+                    <div class="principle-card">
+                        <div class="principle-icon-box">
+                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 14 14"/></svg>
+                        </div>
+                        <h3>Traceable Decisions</h3>
+                        <p>Important claim processing activity can be recorded for review and audit purposes, providing clear historical accountability.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 8: VISION -->
+        <section class="vision-section" id="vision">
+            <!-- Subtle Technical Vector Motif in Background -->
+            <svg class="vision-backdrop-svg" viewBox="0 0 800 500" fill="none" stroke="currentColor" stroke-width="1.5">
+                <circle cx="400" cy="250" r="180"/>
+                <circle cx="400" cy="250" r="100"/>
+                <path d="M400 50v400M150 250h500M220 120l360 260M220 380l360-260"/>
+            </svg>
+
+            <div class="container">
+                <div class="vision-content">
+                    <span class="vision-pill">OUR VISION</span>
+                    <h2 class="vision-title">Our Vision</h2>
+                    <p class="vision-quote">
+                        &ldquo;To make warranty claim processing more intelligent, consistent, transparent, and easier to manage for customers and warranty teams.&rdquo;
+                    </p>
+
+                    <div class="vision-pillars">
+                        <div class="v-pillar">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                            <span>Intelligent Processing</span>
+                        </div>
+                        <div class="v-pillar">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                            <span>Transparent Outcomes</span>
+                        </div>
+                        <div class="v-pillar">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                            <span>Consistent Decisions</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 9: CTA -->
+        <section class="section-padding" id="cta">
+            <div class="container">
+                <div class="cta-box">
+                    <h2>Ready to Experience Smarter Warranty Validation?</h2>
+                    <p>
+                        Explore how AssureX brings documents, AI analysis, warranty rules, and human review together in one streamlined workflow.
+                    </p>
+                    <div class="cta-buttons">
+                        <a href="#our-approach" class="btn btn-secondary btn-hero">
+                            Explore How It Works
+                        </a>
+                        <a href="/auth/register" class="btn btn-primary btn-hero">
+                            Get Started
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- FOOTER -->
+        <footer class="site-footer">
+            <div class="container">
+                <div class="footer-grid">
+                    <!-- Brand Column -->
+                    <div class="footer-brand">
+                        <div class="brand-container">
+                            <div class="brand-icon-shield">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                            </div>
+                            <span class="brand-logo">Assure<span>X</span></span>
+                        </div>
+                        <p>
+                            AI-Powered Warranty Claim Validation &bull; Bringing document processing, artificial intelligence, and warranty business rules together in one workflow.
+                        </p>
+                    </div>
+
+                    <!-- Platform Links -->
+                    <div>
+                        <div class="footer-heading">Platform</div>
+                        <ul class="footer-list">
+                            <li><a href="#hero">About AssureX</a></li>
+                            <li><a href="#our-approach">How It Works</a></li>
+                            <li><a href="#what-is-assurex">Features</a></li>
+                            <li><a href="/#faq">Frequently Asked Questions</a></li>
+                        </ul>
+                    </div>
+
+                    <!-- Account Portals -->
+                    <div>
+                        <div class="footer-heading">Account</div>
+                        <ul class="footer-list">
+                            <li><a href="/auth/login">Sign In</a></li>
+                            <li><a href="/auth/register">Create Customer Account</a></li>
+                            <li><a href="/auth/login">Service Centre Intake</a></li>
+                            <li><a href="/auth/login">Reviewer Console</a></li>
+                        </ul>
+                    </div>
+
+                    <!-- Trust & Standards -->
+                    <div>
+                        <div class="footer-heading">Trust &amp; Standards</div>
+                        <ul class="footer-list">
+                            <li><span style="color: var(--text-muted); font-size: 0.9rem;">Multi-Layer Validation</span></li>
+                            <li><span style="color: var(--text-muted); font-size: 0.9rem;">Dual-Model AI Consensus</span></li>
+                            <li><span style="color: var(--text-muted); font-size: 0.9rem;">Human-in-the-Loop Review</span></li>
+                            <li><span style="color: var(--text-muted); font-size: 0.9rem;">Traceable Audit Logging</span></li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="footer-bottom">
+                    <div>&copy; 2026 AssureX Claim Engine &bull; AI-Powered Warranty Claim Validation Platform. All rights reserved.</div>
+                    <div style="display: flex; gap: 1.5rem;">
+                        <a href="/auth/login" style="color: var(--text-muted); text-decoration: none;">Sign In</a>
+                        <a href="/auth/register" style="color: var(--text-muted); text-decoration: none;">Register</a>
+                    </div>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Mobile Navigation Toggle Script -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const mobileBtn = document.getElementById('mobile-menu-btn');
+            const navMenu = document.getElementById('nav-menu');
+            if (mobileBtn && navMenu) {
+                mobileBtn.addEventListener('click', function () {
+                    navMenu.classList.toggle('active');
+                });
+            }
+
+            // Close mobile menu on link click
+            const navLinks = document.querySelectorAll('.nav-link');
+            navLinks.forEach(link => {
+                link.addEventListener('click', () => {
+                    if (navMenu && navMenu.classList.contains('active')) {
+                        navMenu.classList.remove('active');
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>

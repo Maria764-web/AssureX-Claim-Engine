@@ -1,0 +1,142 @@
+{% extends "base.html" %}
+
+{% block title %}System Monitoring - AssureX Admin{% endblock %}
+
+{% block extra_css %}
+<style>
+    .status-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1.25rem; margin-bottom: 2rem; }
+    .check-card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 1rem; padding: 1.25rem 1.5rem; position: relative; overflow: hidden; transition: border-color 0.2s; }
+    .check-card.alert-ok { border-left: 3px solid #22c55e; }
+    .check-card.alert-warning { border-left: 3px solid #f59e0b; }
+    .check-card.alert-critical { border-left: 3px solid #ef4444; }
+    .check-card.alert-unknown { border-left: 3px solid #475569; }
+    .check-name { font-size: 0.92rem; font-weight: 700; color: #fff; margin-bottom: 0.35rem; display: flex; align-items: center; gap: 0.5rem; }
+    .check-val { font-size: 1.5rem; font-weight: 800; margin-bottom: 0.35rem; }
+    .val-ok { color: #4ade80; }
+    .val-warning { color: #fbbf24; }
+    .val-critical { color: #f87171; }
+    .val-unknown { color: #94a3b8; }
+    .check-detail { font-size: 0.8rem; color: #94a3b8; line-height: 1.5; }
+    .status-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+    .dot-ok { background: #22c55e; }
+    .dot-warning { background: #f59e0b; box-shadow: 0 0 6px #f59e0b; }
+    .dot-critical { background: #ef4444; box-shadow: 0 0 6px #ef4444; animation: pulse 1.5s infinite; }
+    .dot-unknown { background: #475569; }
+    @keyframes pulse { 0%,100% { opacity:1; } 50% { opacity:0.4; } }
+    .overall-banner { border-radius: 1rem; padding: 1.5rem 2rem; margin-bottom: 2rem; display: flex; align-items: center; gap: 1.5rem; }
+    .overall-healthy { background: rgba(34,197,94,0.08); border: 1px solid rgba(34,197,94,0.3); }
+    .overall-warning { background: rgba(245,158,11,0.08); border: 1px solid rgba(245,158,11,0.3); }
+    .overall-critical { background: rgba(239,68,68,0.08); border: 1px solid rgba(239,68,68,0.3); }
+    .overall-icon { font-size: 2.5rem; line-height:1; }
+    .overall-title { font-size: 1.3rem; font-weight: 800; }
+    .title-healthy { color: #4ade80; }
+    .title-warning { color: #fbbf24; }
+    .title-critical { color: #f87171; }
+    .refresh-btn { background: rgba(56,189,248,0.1); border: 1px solid rgba(56,189,248,0.3); color: var(--accent); border-radius: 0.5rem; padding: 0.4rem 1rem; font-size: 0.82rem; font-weight:600; cursor:pointer; transition:background 0.2s; }
+    .refresh-btn:hover { background: rgba(56,189,248,0.2); }
+    .last-refresh { font-size:0.75rem; color:#475569; margin-top:0.25rem; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div style="max-width: 1200px; margin: 0 auto;">
+
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem; flex-wrap:wrap; gap:1rem;">
+        <div>
+            <h1 style="font-size:2rem; font-weight:700; color:#fff;">System Monitoring</h1>
+            <p style="color:var(--text-muted); margin-top:0.25rem;">Real-time anomaly detection and system health checks.</p>
+        </div>
+        <div style="display:flex; gap:0.75rem; align-items:center; flex-wrap:wrap;">
+            <button class="refresh-btn" onclick="refreshMonitoring()" id="refresh-btn">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:4px;vertical-align:middle;"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.65"/></svg>
+                Refresh Now
+            </button>
+            <a href="{{ url_for('admin.dashboard') }}" class="btn btn-secondary" style="font-size:0.88rem;">
+                &larr; Back to Admin
+            </a>
+        </div>
+    </div>
+
+    <!-- Overall Status Banner -->
+    {% set overall = monitoring.overall %}
+    <div class="overall-banner overall-{{ overall }}" id="overall-banner">
+        <div class="overall-icon">
+            {% if overall == 'healthy' %}<i class="bi bi-check-circle-fill" style="color:#22c55e;"></i>{% elif overall == 'warning' %}<i class="bi bi-exclamation-triangle-fill" style="color:#f59e0b;"></i>{% else %}<i class="bi bi-x-octagon-fill" style="color:#ef4444;"></i>{% endif %}
+        </div>
+        <div>
+            <div class="overall-title title-{{ overall }}">
+                {% if overall == 'healthy' %}System Healthy
+                {% elif overall == 'warning' %}Attention Required
+                {% else %}Critical Issues Detected{% endif %}
+            </div>
+            <div style="font-size:0.85rem; color:var(--text-muted); margin-top:0.2rem;">
+                {{ monitoring.alert_count }} alert(s) active &mdash;
+                last checked <span id="last-check-time">{{ monitoring.generated_at[:19].replace('T',' ') }} UTC</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Check Cards -->
+    <div class="status-grid" id="checks-grid">
+        {% for check in monitoring.checks %}
+        {% set st = check.status %}
+        {% set lvl = check.get('level', st) %}
+        {% set card_class = lvl if st == 'alert' else ('ok' if st == 'ok' else 'unknown') %}
+        <div class="check-card alert-{{ card_class }}">
+            <div class="check-name">
+                <span class="status-dot dot-{{ card_class }}"></span>
+                {{ check.name }}
+            </div>
+            {% if check.value is defined %}
+            <div class="check-val val-{{ card_class }}">
+                {{ check.value }}
+            </div>
+            {% endif %}
+            <div class="check-detail">{{ check.detail }}</div>
+            {% if check.clusters is defined %}
+            <div style="margin-top:0.5rem;">
+                {% for cluster in check.clusters %}
+                <div style="font-size:0.75rem; color:#f87171; font-family:monospace;">Product #{{ cluster.product_id }}: {{ cluster.count }} claims</div>
+                {% endfor %}
+            </div>
+            {% endif %}
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Export & Audit Links -->
+    <div style="display:flex; gap:1rem; flex-wrap:wrap; margin-top:1rem;">
+        <a href="{{ url_for('reports.export_analytics_csv') }}" class="btn btn-secondary" style="font-size:0.85rem;">
+            &#8681; Export Analytics CSV
+        </a>
+        <a href="{{ url_for('reports.export_claims_csv') }}" class="btn btn-secondary" style="font-size:0.85rem;">
+            &#8681; Export All Claims CSV
+        </a>
+        <a href="{{ url_for('admin.audit_log_view') }}" class="btn btn-secondary" style="font-size:0.85rem;">
+            <i class="bi bi-journal-text"></i> View Audit Log
+        </a>
+    </div>
+
+</div>
+
+<script>
+function refreshMonitoring() {
+    const btn = document.getElementById('refresh-btn');
+    btn.textContent = 'Refreshing…';
+    btn.disabled = true;
+
+    fetch('/admin/api/monitoring')
+        .then(r => r.json())
+        .then(data => {
+            // Reload page to update all cards
+            window.location.reload();
+        })
+        .catch(() => {
+            window.location.reload();
+        });
+}
+
+// Auto-refresh every 60 seconds
+setTimeout(() => window.location.reload(), 60000);
+</script>
+{% endblock %}

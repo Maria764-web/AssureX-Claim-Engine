@@ -1,0 +1,619 @@
+{% extends "base.html" %}
+
+{% block title %}Warranty Certificate {{ warranty.warranty_uid }} - AssureX Claim Engine{% endblock %}
+
+{% block content %}
+<div class="warranty-detail-wrapper">
+    <!-- Breadcrumb & Top Action -->
+    <div class="detail-header-nav">
+        <div class="breadcrumb-trail">
+            <a href="{{ url_for('main.customer_dashboard') }}">Dashboard</a> &rsaquo; 
+            <a href="{{ url_for('warranties.list_warranties') }}">Warranties</a> &rsaquo; 
+            <span>{{ warranty.warranty_uid }}</span>
+        </div>
+        <div class="header-actions">
+            <a href="{{ url_for('warranties.list_warranties') }}" class="back-link">&larr; Back to Warranties</a>
+            {% if product %}
+                <a href="{{ url_for('products.get_product', product_id=product.id) }}" class="btn btn-secondary btn-sm" id="btn-view-product">
+                    View Associated Product &rarr;
+                </a>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Official Warranty Certificate Card -->
+    <div class="certificate-container">
+        <div class="certificate-watermark">ASSUREX VERIFIED</div>
+        
+        <div class="certificate-header">
+            <div class="cert-brand">
+                <div class="cert-logo">Assure<span>X</span></div>
+                <div class="cert-title">Manufacturer Warranty Certificate</div>
+            </div>
+            <div class="cert-seal-badge">
+                <i class="bi bi-shield-check seal-icon"></i>
+                <div>
+                    <div class="seal-text">Official Policy</div>
+                    <div class="seal-uid">{{ warranty.warranty_uid }}</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="cert-status-banner banner-{{ 'active' if warranty.warranty_status == 'Active' else ('nearing' if warranty.warranty_status == 'Nearing Expiry' else ('extended' if warranty.warranty_status == 'Extended' else 'expired')) }}">
+            <div class="status-indicator-dot"></div>
+            <div>
+                <strong>Current Status: {{ warranty.warranty_status }}</strong>
+                <span class="status-subtext">
+                    {% if warranty.warranty_status == 'Active' %}
+                        Policy is fully active and defects meeting covered clauses qualify for claim filing.
+                    {% elif warranty.warranty_status == 'Nearing Expiry' %}
+                        Policy expires within 30 days on {{ warranty.expiry_date.strftime('%B %d, %Y') }}.
+                    {% elif warranty.warranty_status == 'Extended' %}
+                        Policy has been extended by an authorized Administrator.
+                    {% else %}
+                        Policy has expired on {{ warranty.expiry_date.strftime('%B %d, %Y') }}.
+                    {% endif %}
+                </span>
+            </div>
+        </div>
+
+        <!-- Certificate Body: 2 Columns -->
+        <div class="certificate-body-grid">
+            <!-- Left: Policy Coverage Details -->
+            <div class="cert-section">
+                <h3 class="section-title">Coverage Specifications</h3>
+                <div class="spec-list">
+                    <div class="spec-row">
+                        <span class="spec-label">Policy UID</span>
+                        <span class="spec-value mono highlight">{{ warranty.warranty_uid }}</span>
+                    </div>
+                    <div class="spec-row">
+                        <span class="spec-label">Warranty Provider</span>
+                        <span class="spec-value">{{ warranty.warranty_provider }}</span>
+                    </div>
+                    <div class="spec-row">
+                        <span class="spec-label">Coverage Start Date</span>
+                        <span class="spec-value">{{ warranty.start_date.strftime('%B %d, %Y') }}</span>
+                    </div>
+                    <div class="spec-row">
+                        <span class="spec-label">Coverage Expiry Date</span>
+                        <span class="spec-value font-semibold" style="color: #ffffff;">{{ warranty.expiry_date.strftime('%B %d, %Y') }}</span>
+                    </div>
+                    <div class="spec-row">
+                        <span class="spec-label">Policy Duration</span>
+                        <span class="spec-value">{{ product.warranty_length if product else '12' }} Months</span>
+                    </div>
+                    <div class="spec-row">
+                        <span class="spec-label">Extended Policy</span>
+                        <span class="spec-value">{{ 'Yes (Admin Authorized)' if warranty.is_extended else 'No (Standard Initial Term)' }}</span>
+                    </div>
+                </div>
+
+                {% if warranty.is_extended and warranty.extended_details %}
+                    <div class="extension-notice-card">
+                        <div class="ext-title">Extended Coverage Log</div>
+                        <div class="ext-body">{{ warranty.extended_details }}</div>
+                    </div>
+                {% endif %}
+            </div>
+
+            <!-- Right: Associated Product Specifications -->
+            <div class="cert-section">
+                <h3 class="section-title">Covered Hardware Asset</h3>
+                {% if product %}
+                    <div class="spec-list">
+                        <div class="spec-row">
+                            <span class="spec-label">Device Name</span>
+                            <span class="spec-value font-semibold">{{ product.product_name }}</span>
+                        </div>
+                        <div class="spec-row">
+                            <span class="spec-label">Brand & Model</span>
+                            <span class="spec-value">{{ product.brand }} &bull; {{ product.model }}</span>
+                        </div>
+                        <div class="spec-row">
+                            <span class="spec-label">Serial Number</span>
+                            <span class="spec-value mono highlight">{{ product.serial_number }}</span>
+                        </div>
+                        <div class="spec-row">
+                            <span class="spec-label">Product UID</span>
+                            <span class="spec-value mono">{{ product.product_uid }}</span>
+                        </div>
+                        <div class="spec-row">
+                            <span class="spec-label">Purchase Date</span>
+                            <span class="spec-value">{{ product.purchase_date.strftime('%B %d, %Y') }}</span>
+                        </div>
+                        <div class="spec-row">
+                            <span class="spec-label">Authorized Retailer</span>
+                            <span class="spec-value">{{ product.retailer }}</span>
+                        </div>
+                    </div>
+                {% else %}
+                    <p style="color: var(--text-muted); font-size: 0.9rem;">Product information unavailable.</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Coverage & Exclusion Clauses -->
+        <div class="clauses-container">
+            <div class="clause-box clause-covered">
+                <div class="clause-header">
+                    <span class="clause-icon">✓</span>
+                    <span class="clause-title">Covered Items & Defects</span>
+                </div>
+                <p class="clause-text">
+                    {{ warranty.covered_items or 'Manufacturer hardware defects, electrical breakdown, and mechanical failure under normal operational conditions.' }}
+                </p>
+            </div>
+
+            <div class="clause-box clause-excluded">
+                <div class="clause-header">
+                    <span class="clause-icon">✕</span>
+                    <span class="clause-title">Policy Exclusions & Non-Covered Hazards</span>
+                </div>
+                <p class="clause-text">
+                    {{ warranty.exclusions or 'Physical drop impact, intentional tampering, unauthorized repair attempts, liquid submersion, and normal cosmetic wear.' }}
+                </p>
+            </div>
+        </div>
+
+        <!-- Administrator Extension Tool (Restricted to Administrator Role) -->
+        {% if current_user.is_authenticated and current_user.role == 'Administrator' %}
+            <div class="admin-extension-panel">
+                <div class="admin-panel-header">
+                    <h3>🛠️ Administrator Policy Extension Console</h3>
+                    <span class="admin-badge">Admin Privileged Action</span>
+                </div>
+                <p class="admin-panel-sub">Authorize warranty extension term, recalculate expiration, and generate immutable audit log record.</p>
+
+                <form method="POST" action="{{ url_for('warranties.extend_warranty', warranty_id=warranty.id) }}" class="extension-form">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+
+                    <div class="ext-form-grid">
+                        <div class="form-group">
+                            <label for="duration_months">Extension Duration (Months)</label>
+                            <select name="duration_months" id="duration_months" class="input-control">
+                                <option value="6">+6 Months Extension</option>
+                                <option value="12" selected>+12 Months (1 Year Extension)</option>
+                                <option value="24">+24 Months (2 Years Extension)</option>
+                                <option value="36">+36 Months (3 Years Extension)</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="details">Authorization Reason / Customer Reference</label>
+                            <input type="text" name="details" id="details" class="input-control" placeholder="e.g. Approved courtesy warranty extension by Admin" required>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary" id="btn-extend-warranty">
+                        Extend Warranty Coverage
+                    </button>
+                </form>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .warranty-detail-wrapper {
+        display: flex;
+        flex-direction: column;
+        gap: 1.75rem;
+    }
+
+    .detail-header-nav {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+
+    .breadcrumb-trail {
+        font-size: 0.85rem;
+        color: var(--text-muted);
+    }
+
+    .breadcrumb-trail a {
+        color: var(--accent);
+        text-decoration: none;
+    }
+
+    .breadcrumb-trail a:hover {
+        text-decoration: underline;
+    }
+
+    .header-actions {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .back-link {
+        color: var(--accent);
+        text-decoration: none;
+        font-size: 0.9rem;
+        font-weight: 500;
+        transition: color 0.15s;
+    }
+
+    .back-link:hover {
+        text-decoration: underline;
+    }
+
+    /* Certificate Card */
+    .certificate-container {
+        position: relative;
+        background: var(--card-bg);
+        border: 1px solid var(--card-border);
+        border-radius: 1.35rem;
+        padding: 2.5rem;
+        backdrop-filter: blur(16px);
+        box-shadow: 0 15px 35px -5px rgba(0, 0, 0, 0.4), 0 0 25px var(--accent-glow);
+        display: flex;
+        flex-direction: column;
+        gap: 1.75rem;
+        overflow: hidden;
+    }
+
+    .certificate-watermark {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%) rotate(-25deg);
+        font-size: 5rem;
+        font-weight: 900;
+        color: rgba(56, 189, 248, 0.025);
+        letter-spacing: 0.15em;
+        pointer-events: none;
+        user-select: none;
+        white-space: nowrap;
+    }
+
+    .certificate-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 1px solid rgba(56, 189, 248, 0.16);
+        padding-bottom: 1.5rem;
+    }
+
+    .cert-logo {
+        font-size: 1.8rem;
+        font-weight: 800;
+        color: #ffffff;
+        letter-spacing: -0.02em;
+    }
+
+    .cert-logo span {
+        color: var(--accent);
+    }
+
+    .cert-title {
+        font-size: 1rem;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        font-weight: 600;
+        margin-top: 0.2rem;
+    }
+
+    .cert-seal-badge {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        background: rgba(56, 189, 248, 0.08);
+        border: 1px solid rgba(56, 189, 248, 0.25);
+        padding: 0.6rem 1.15rem;
+        border-radius: 0.85rem;
+    }
+
+    .seal-icon {
+        font-size: 1.75rem;
+    }
+
+    .seal-text {
+        font-size: 0.72rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: var(--text-muted);
+        font-weight: 600;
+    }
+
+    .seal-uid {
+        font-family: monospace;
+        font-size: 0.95rem;
+        font-weight: 700;
+        color: var(--accent);
+    }
+
+    /* Status Banner */
+    .cert-status-banner {
+        display: flex;
+        align-items: center;
+        gap: 0.9rem;
+        padding: 1rem 1.35rem;
+        border-radius: 0.85rem;
+        font-size: 0.95rem;
+    }
+
+    .banner-active {
+        background: rgba(34, 197, 94, 0.12);
+        border: 1px solid rgba(34, 197, 94, 0.3);
+        color: #86efac;
+    }
+
+    .banner-nearing {
+        background: rgba(245, 158, 11, 0.12);
+        border: 1px solid rgba(245, 158, 11, 0.3);
+        color: #fde047;
+    }
+
+    .banner-expired {
+        background: rgba(239, 68, 68, 0.12);
+        border: 1px solid rgba(239, 68, 68, 0.3);
+        color: #fca5a5;
+    }
+
+    .banner-extended {
+        background: rgba(192, 132, 252, 0.12);
+        border: 1px solid rgba(192, 132, 252, 0.3);
+        color: #d8b4fe;
+    }
+
+    .status-indicator-dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background-color: currentColor;
+        box-shadow: 0 0 8px currentColor;
+    }
+
+    .status-subtext {
+        display: block;
+        font-size: 0.82rem;
+        color: var(--text-muted);
+        margin-top: 0.2rem;
+        font-weight: 400;
+    }
+
+    /* Body Grid */
+    .certificate-body-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 2rem;
+    }
+
+    @media (max-width: 840px) {
+        .certificate-body-grid {
+            grid-template-columns: 1fr;
+        }
+        .certificate-container {
+            padding: 1.5rem;
+        }
+    }
+
+    .cert-section {
+        display: flex;
+        flex-direction: column;
+        gap: 0.85rem;
+    }
+
+    .section-title {
+        font-size: 1.15rem;
+        font-weight: 700;
+        color: #ffffff;
+        letter-spacing: -0.01em;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        padding-bottom: 0.5rem;
+    }
+
+    .spec-list {
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+
+    .spec-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.5rem 0.75rem;
+        background: rgba(10, 15, 26, 0.5);
+        border-radius: 0.5rem;
+        font-size: 0.9rem;
+    }
+
+    .spec-label {
+        color: var(--text-muted);
+        font-size: 0.82rem;
+    }
+
+    .spec-value {
+        color: #f1f5f9;
+        font-weight: 500;
+    }
+
+    .mono {
+        font-family: monospace;
+    }
+
+    .highlight {
+        color: var(--accent);
+        font-weight: 600;
+    }
+
+    .font-semibold {
+        font-weight: 600;
+    }
+
+    .extension-notice-card {
+        background: rgba(192, 132, 252, 0.08);
+        border: 1px solid rgba(192, 132, 252, 0.25);
+        border-radius: 0.65rem;
+        padding: 0.85rem 1rem;
+        margin-top: 0.5rem;
+    }
+
+    .ext-title {
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        font-weight: 700;
+        color: #d8b4fe;
+        letter-spacing: 0.05em;
+    }
+
+    .ext-body {
+        font-size: 0.85rem;
+        color: #f1f5f9;
+        margin-top: 0.3rem;
+        line-height: 1.4;
+    }
+
+    /* Clauses */
+    .clauses-container {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1.5rem;
+    }
+
+    @media (max-width: 768px) {
+        .clauses-container {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    .clause-box {
+        padding: 1.25rem;
+        border-radius: 0.85rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .clause-covered {
+        background: rgba(34, 197, 94, 0.06);
+        border: 1px solid rgba(34, 197, 94, 0.2);
+    }
+
+    .clause-excluded {
+        background: rgba(239, 68, 68, 0.06);
+        border: 1px solid rgba(239, 68, 68, 0.2);
+    }
+
+    .clause-header {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .clause-icon {
+        font-weight: 800;
+        font-size: 1rem;
+    }
+
+    .clause-covered .clause-icon {
+        color: #4ade80;
+    }
+
+    .clause-excluded .clause-icon {
+        color: #f87171;
+    }
+
+    .clause-title {
+        font-size: 0.95rem;
+        font-weight: 700;
+        color: #ffffff;
+    }
+
+    .clause-text {
+        color: var(--text-muted);
+        font-size: 0.875rem;
+        line-height: 1.5;
+    }
+
+    /* Admin Extension Panel */
+    .admin-extension-panel {
+        background: rgba(15, 23, 42, 0.85);
+        border: 1px solid rgba(56, 189, 248, 0.3);
+        border-radius: 1rem;
+        padding: 1.5rem;
+        margin-top: 0.5rem;
+    }
+
+    .admin-panel-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 0.3rem;
+    }
+
+    .admin-panel-header h3 {
+        font-size: 1.1rem;
+        color: #ffffff;
+        font-weight: 700;
+    }
+
+    .admin-badge {
+        background: rgba(239, 68, 68, 0.15);
+        color: #fca5a5;
+        border: 1px solid rgba(239, 68, 68, 0.3);
+        padding: 0.2rem 0.6rem;
+        border-radius: 1rem;
+        font-size: 0.72rem;
+        font-weight: 600;
+        text-transform: uppercase;
+    }
+
+    .admin-panel-sub {
+        font-size: 0.82rem;
+        color: var(--text-muted);
+        margin-bottom: 1rem;
+    }
+
+    .ext-form-grid {
+        display: grid;
+        grid-template-columns: 1fr 2fr;
+        gap: 1rem;
+        margin-bottom: 1rem;
+    }
+
+    @media (max-width: 640px) {
+        .ext-form-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    .form-group {
+        display: flex;
+        flex-direction: column;
+        gap: 0.35rem;
+    }
+
+    .form-group label {
+        font-size: 0.8rem;
+        color: #cbd5e1;
+        font-weight: 500;
+    }
+
+    .input-control, select.input-control {
+        padding: 0.65rem 0.85rem;
+        background: rgba(10, 15, 26, 0.7);
+        border: 1px solid #27354a;
+        border-radius: 0.55rem;
+        color: #ffffff;
+        font-size: 0.9rem;
+    }
+
+    select.input-control option {
+        background: #0f172a;
+        color: #ffffff;
+    }
+
+    .input-control:focus, select.input-control:focus {
+        outline: none;
+        border-color: var(--accent);
+    }
+</style>
+{% endblock %}

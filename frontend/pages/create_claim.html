@@ -1,0 +1,1293 @@
+{% extends "base.html" %}
+
+{% block title %}File Warranty Claim - AssureX Claim Engine{% endblock %}
+
+{% block content %}
+<div class="claim-form-wrapper">
+    <!-- Header Banner -->
+    <div class="form-banner">
+        <div class="banner-badge">Step 5A Foundation &bull; Claim Registration</div>
+        <h1 class="banner-title">File a Warranty Claim</h1>
+        <p class="banner-desc">Select your registered device, describe the defect or breakdown, and attach supporting documentation and photos for validation.</p>
+    </div>
+
+    <!-- Stepper Indicator -->
+    <div class="stepper-bar">
+        <div class="step-indicator active" id="step-ind-1">
+            <span class="step-num">1</span>
+            <span class="step-text">Select Device</span>
+        </div>
+        <div class="step-separator"></div>
+        <div class="step-indicator active" id="step-ind-2">
+            <span class="step-num">2</span>
+            <span class="step-text">Warranty Info</span>
+        </div>
+        <div class="step-separator"></div>
+        <div class="step-indicator active" id="step-ind-3">
+            <span class="step-num">3</span>
+            <span class="step-text">Fault Details</span>
+        </div>
+        <div class="step-separator"></div>
+        <div class="step-indicator active" id="step-ind-4">
+            <span class="step-num">4</span>
+            <span class="step-text">Upload Documents</span>
+        </div>
+        <div class="step-separator"></div>
+        <div class="step-indicator" id="step-ind-5">
+            <span class="step-num">5</span>
+            <span class="step-text">Review & Submit</span>
+        </div>
+    </div>
+
+    <!-- Main Registration Form -->
+    <form action="{{ url_for('claims.create_claim') }}" method="POST" enctype="multipart/form-data" id="claim-registration-form">
+        
+        <!-- SECTION 1: Product Selection -->
+        <div class="form-section-card" id="section-product">
+            <div class="section-title-row">
+                <div class="section-icon">📦</div>
+                <div>
+                    <h2 class="section-heading">1. Select Registered Product</h2>
+                    <p class="section-subheading">Choose which of your registered devices requires warranty service or replacement.</p>
+                </div>
+            </div>
+
+            {% if products %}
+                <div class="form-group">
+                    <label for="product_id" class="input-label">Select Device <span class="req">*</span></label>
+                    <select name="product_id" id="product_id" class="form-select" required onchange="onProductSelected(this.value)">
+                        <option value="">-- Choose a registered product --</option>
+                        {% for p in products %}
+                            <option value="{{ p.id }}" 
+                                    {% if (selected_product and selected_product.id == p.id) or (form_data and form_data.get('product_id')|string == p.id|string) %}selected{% endif %}
+                                    data-name="{{ p.product_name }}"
+                                    data-brand="{{ p.brand }}"
+                                    data-model="{{ p.model }}"
+                                    data-serial="{{ p.serial_number }}"
+                                    data-purchase="{{ p.purchase_date.strftime('%Y-%m-%d') }}"
+                                    data-retailer="{{ p.retailer or 'Not specified' }}"
+                                    data-warranty-len="{{ p.warranty_length }}"
+                                    {% if p.warranties %}
+                                        {% set w = p.warranties[0] %}
+                                        data-warranty-uid="{{ w.warranty_uid }}"
+                                        data-warranty-provider="{{ w.warranty_provider }}"
+                                        data-warranty-expiry="{{ w.expiry_date.strftime('%Y-%m-%d') }}"
+                                        data-warranty-status="{{ w.calculate_status() }}"
+                                        data-warranty-covered="{{ w.covered_items }}"
+                                        data-warranty-exclusions="{{ w.exclusions }}"
+                                    {% else %}
+                                        data-warranty-uid="NONE"
+                                    {% endif %}>
+                                {{ p.brand }} {{ p.product_name }} (SN: {{ p.serial_number }})
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <!-- Live Product Preview Box -->
+                <div class="preview-box" id="product-preview-box" style="display: none;">
+                    <div class="preview-grid">
+                        <div class="preview-cell">
+                            <span class="preview-label">Device Name</span>
+                            <span class="preview-val font-semibold" id="prev-prod-name">-</span>
+                        </div>
+                        <div class="preview-cell">
+                            <span class="preview-label">Brand & Model</span>
+                            <span class="preview-val" id="prev-prod-model">-</span>
+                        </div>
+                        <div class="preview-cell">
+                            <span class="preview-label">Serial Number</span>
+                            <span class="preview-val mono highlight" id="prev-prod-serial">-</span>
+                        </div>
+                        <div class="preview-cell">
+                            <span class="preview-label">Purchase Date</span>
+                            <span class="preview-val" id="prev-prod-purchase">-</span>
+                        </div>
+                        <div class="preview-cell">
+                            <span class="preview-label">Authorized Retailer</span>
+                            <span class="preview-val" id="prev-prod-retailer">-</span>
+                        </div>
+                        <div class="preview-cell">
+                            <span class="preview-label">Standard Policy Duration</span>
+                            <span class="preview-val" id="prev-prod-wlen">-</span>
+                        </div>
+                    </div>
+                </div>
+            {% else %}
+                <div class="empty-product-notice">
+                    <p>You have no registered products under this account.</p>
+                    <a href="{{ url_for('products.register_product_view') }}" class="btn btn-primary btn-sm" style="margin-top: 0.75rem;">
+                        + Register a Product First
+                    </a>
+                </div>
+            {% endif %}
+        </div>
+
+        <!-- SECTION 2: Warranty Information -->
+        <div class="form-section-card" id="section-warranty">
+            <div class="section-title-row">
+                <i class="bi bi-shield-check section-icon"></i>
+                <div>
+                    <h2 class="section-heading">2. Associated Warranty Policy</h2>
+                    <p class="section-subheading">Review coverage conditions, policy status, and coverage exclusions for this device.</p>
+                </div>
+            </div>
+
+            <div id="warranty-info-box" style="display: none;">
+                <div class="warranty-card-inner">
+                    <div class="w-header">
+                        <div>
+                            <div class="w-uid-tag" id="w-prev-uid">WAR-XXXXXXXX</div>
+                            <h3 class="w-provider" id="w-prev-provider">Manufacturer Warranty</h3>
+                        </div>
+                        <div id="w-prev-status-badge">
+                            <span class="status-badge status-active">Active</span>
+                        </div>
+                    </div>
+
+                    <div class="w-meta-row">
+                        <div class="w-meta-item">
+                            <span class="w-label">Policy Expiration</span>
+                            <span class="w-val" id="w-prev-expiry">-</span>
+                        </div>
+                        <div class="w-meta-item">
+                            <span class="w-label">Coverage Status</span>
+                            <span class="w-val text-success" id="w-prev-status-text">Active Coverage</span>
+                        </div>
+                    </div>
+
+                    <div class="w-clause-container">
+                        <div class="clause-box clause-covered">
+                            <div class="clause-title">Covered Items & Faults</div>
+                            <div class="clause-body" id="w-prev-covered">-</div>
+                        </div>
+                        <div class="clause-box clause-exclusions">
+                            <div class="clause-title">Excluded Damage Types</div>
+                            <div class="clause-body" id="w-prev-exclusions">-</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="no-warranty-selected" class="selection-placeholder">
+                <span class="placeholder-icon">ℹ️</span>
+                <span>Select a product above to dynamically inspect its associated warranty certificate and policy terms.</span>
+            </div>
+        </div>
+
+        <!-- SECTION 3: Fault & Damage Details -->
+        <div class="form-section-card" id="section-fault">
+            <div class="section-title-row">
+                <div class="section-icon">⚡</div>
+                <div>
+                    <h2 class="section-heading">3. Fault & Breakdown Details</h2>
+                    <p class="section-subheading">Specify when the malfunction occurred, select the failure classification, and describe the symptoms.</p>
+                </div>
+            </div>
+
+            <div class="form-grid-2">
+                <div class="form-group">
+                    <label for="fault_date" class="input-label">Date Fault Started <span class="req">*</span></label>
+                    <input type="date" 
+                           name="fault_date" 
+                           id="fault_date" 
+                           class="form-control" 
+                           max="{{ today }}" 
+                           required 
+                           value="{{ form_data.get('fault_date') if form_data else today }}"
+                           onchange="updateReviewSummary()">
+                    <span class="input-hint">Must not be in the future and cannot precede product purchase date.</span>
+                </div>
+
+                <div class="form-group">
+                    <label for="damage_type" class="input-label">Type of Fault / Damage <span class="req">*</span></label>
+                    <select name="damage_type" id="damage_type" class="form-select" required onchange="updateReviewSummary()">
+                        <option value="">-- Select fault classification --</option>
+                        {% for dt in damage_types %}
+                            <option value="{{ dt }}" {% if form_data and form_data.get('damage_type') == dt %}selected{% endif %}>{{ dt }}</option>
+                        {% endfor %}
+                    </select>
+                    <span class="input-hint">Primary hardware or operational malfunction category.</span>
+                </div>
+            </div>
+
+            <div class="form-group" style="margin-top: 1rem;">
+                <label for="fault_description" class="input-label">Fault Description <span class="req">*</span></label>
+                <textarea name="fault_description" 
+                          id="fault_description" 
+                          rows="4" 
+                          class="form-control" 
+                          required 
+                          placeholder="Clearly describe what happened, how the fault manifested, any error messages displayed, and steps leading to the failure..."
+                          oninput="updateReviewSummary()">{{ form_data.get('fault_description', '') if form_data else '' }}</textarea>
+                <span class="input-hint">Minimum 10 characters. Provide specific detail to accelerate evaluation.</span>
+            </div>
+
+            <div class="form-grid-2" style="margin-top: 1rem;">
+                <div class="form-group">
+                    <label for="purchase_reference" class="input-label">Purchase / Order Reference <span class="opt">(Optional)</span></label>
+                    <input type="text" 
+                           name="purchase_reference" 
+                           id="purchase_reference" 
+                           class="form-control" 
+                           maxlength="150"
+                           placeholder="e.g. INV-2025-84920 or Amazon Order ID"
+                           value="{{ form_data.get('purchase_reference', '') if form_data else '' }}"
+                           oninput="updateReviewSummary()">
+                    <span class="input-hint">Invoice, receipt number, or retailer transaction ID.</span>
+                </div>
+
+                <div class="form-group">
+                    <label for="service_history_notes" class="input-label">Previous Service / Repair History <span class="opt">(Optional)</span></label>
+                    <input type="text" 
+                           name="service_history_notes" 
+                           id="service_history_notes" 
+                           class="form-control" 
+                           maxlength="2000"
+                           placeholder="e.g. Battery replaced in Nov 2025 at authorized Apple center"
+                           value="{{ form_data.get('service_history_notes', '') if form_data else '' }}">
+                    <span class="input-hint">Any prior maintenance or component replacements performed on this device.</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- SECTION 4: Supporting Documents & Evidence Upload -->
+        <div class="form-section-card" id="section-documents">
+            <div class="section-title-row">
+                <i class="bi bi-paperclip section-icon"></i>
+                <div>
+                    <h2 class="section-heading">4. Supporting Evidence & Document Upload</h2>
+                    <p class="section-subheading">Attach original proof of purchase and damage photos. Supported formats: PDF, JPG, PNG, WEBP (Max 10 MB per file).</p>
+                </div>
+            </div>
+
+            <div class="upload-requirements-notice">
+                <div class="req-title">Mandatory Submission Evidence:</div>
+                <div class="req-pills">
+                    <span class="req-pill req-mandatory"><i class="bi bi-receipt"></i> Proof of Purchase (Receipt / Invoice) <span class="star">*</span></span>
+                    <span class="req-pill req-mandatory">📷 Damage or Fault Photo Evidence <span class="star">*</span></span>
+                    <span class="req-pill req-optional">📑 Warranty Card (Optional)</span>
+                    <span class="req-pill req-optional"><i class="bi bi-upc-scan"></i> Serial Number Photo (Optional)</span>
+                    <span class="req-pill req-optional">🛠️ Diagnostic Report (Optional)</span>
+                </div>
+            </div>
+
+            <!-- Upload Inputs Grid -->
+            <div class="upload-grid">
+                <!-- Receipt / Invoice Upload -->
+                <div class="upload-card" id="upload-card-receipt">
+                    <div class="upload-card-header">
+                        <span class="uc-icon">🧾</span>
+                        <div class="uc-title-group">
+                            <span class="uc-title">Purchase Receipt or Invoice <span class="req">*</span></span>
+                            <span class="uc-sub">Original bill, VAT invoice, or online order receipt</span>
+                        </div>
+                    </div>
+                    <div class="drop-zone" onclick="document.getElementById('receipt_file').click()">
+                        <div class="drop-icon">📤</div>
+                        <div class="drop-text">Click to choose PDF or Image</div>
+                        <div class="drop-sub">PDF, PNG, JPG up to 10MB</div>
+                        <input type="file" 
+                               name="receipt_file" 
+                               id="receipt_file" 
+                               class="file-input-hidden" 
+                               accept=".pdf,.png,.jpg,.jpeg,.webp" 
+                               onchange="onFileSelected(this, 'receipt-preview')">
+                    </div>
+                    <div class="file-chosen-pill" id="receipt-preview" style="display: none;"></div>
+                </div>
+
+                <!-- Damage Photo Upload -->
+                <div class="upload-card" id="upload-card-damage">
+                    <div class="upload-card-header">
+                        <span class="uc-icon">📸</span>
+                        <div class="uc-title-group">
+                            <span class="uc-title">Fault or Damage Photo <span class="req">*</span></span>
+                            <span class="uc-sub">Clear photo of the defect, screen crack, or breakdown</span>
+                        </div>
+                    </div>
+                    <div class="drop-zone" onclick="document.getElementById('damage_photo_file').click()">
+                        <div class="drop-icon">📤</div>
+                        <div class="drop-text">Click to choose Photo or PDF</div>
+                        <div class="drop-sub">PNG, JPG, WEBP, PDF up to 10MB</div>
+                        <input type="file" 
+                               name="damage_photo_file" 
+                               id="damage_photo_file" 
+                               class="file-input-hidden" 
+                               accept=".pdf,.png,.jpg,.jpeg,.webp" 
+                               onchange="onFileSelected(this, 'damage-preview')">
+                    </div>
+                    <div class="file-chosen-pill" id="damage-preview" style="display: none;"></div>
+                </div>
+
+                <!-- Warranty Card Upload -->
+                <div class="upload-card">
+                    <div class="upload-card-header">
+                        <i class="bi bi-shield uc-icon"></i>
+                        <div class="uc-title-group">
+                            <span class="uc-title">Warranty Card <span class="opt">(Optional)</span></span>
+                            <span class="uc-sub">Manufacturer warranty slip or stamped certificate</span>
+                        </div>
+                    </div>
+                    <div class="drop-zone" onclick="document.getElementById('warranty_card_file').click()">
+                        <div class="drop-icon">📤</div>
+                        <div class="drop-text">Click to choose Warranty Card</div>
+                        <div class="drop-sub">PDF, PNG, JPG up to 10MB</div>
+                        <input type="file" 
+                               name="warranty_card_file" 
+                               id="warranty_card_file" 
+                               class="file-input-hidden" 
+                               accept=".pdf,.png,.jpg,.jpeg,.webp" 
+                               onchange="onFileSelected(this, 'warranty-preview')">
+                    </div>
+                    <div class="file-chosen-pill" id="warranty-preview" style="display: none;"></div>
+                </div>
+
+                <!-- Serial Photo Upload -->
+                <div class="upload-card">
+                    <div class="upload-card-header">
+                        <span class="uc-icon">🏷️</span>
+                        <div class="uc-title-group">
+                            <span class="uc-title">Serial Number Label Photo <span class="opt">(Optional)</span></span>
+                            <span class="uc-sub">Photo of serial sticker on device chassis or box</span>
+                        </div>
+                    </div>
+                    <div class="drop-zone" onclick="document.getElementById('serial_photo_file').click()">
+                        <div class="drop-icon">📤</div>
+                        <div class="drop-text">Click to choose Serial Photo</div>
+                        <div class="drop-sub">PNG, JPG, WEBP up to 10MB</div>
+                        <input type="file" 
+                               name="serial_photo_file" 
+                               id="serial_photo_file" 
+                               class="file-input-hidden" 
+                               accept=".pdf,.png,.jpg,.jpeg,.webp" 
+                               onchange="onFileSelected(this, 'serial-preview')">
+                    </div>
+                    <div class="file-chosen-pill" id="serial-preview" style="display: none;"></div>
+                </div>
+
+                <!-- Diagnostic Report Upload -->
+                <div class="upload-card">
+                    <div class="upload-card-header">
+                        <span class="uc-icon">📊</span>
+                        <div class="uc-title-group">
+                            <span class="uc-title">Diagnostic Report <span class="opt">(Optional)</span></span>
+                            <span class="uc-sub">Service centre inspection report or log file</span>
+                        </div>
+                    </div>
+                    <div class="drop-zone" onclick="document.getElementById('diagnostic_report_file').click()">
+                        <div class="drop-icon">📤</div>
+                        <div class="drop-text">Click to choose Diagnostic Report</div>
+                        <div class="drop-sub">PDF, PNG, JPG up to 10MB</div>
+                        <input type="file" 
+                               name="diagnostic_report_file" 
+                               id="diagnostic_report_file" 
+                               class="file-input-hidden" 
+                               accept=".pdf,.png,.jpg,.jpeg,.webp" 
+                               onchange="onFileSelected(this, 'diag-preview')">
+                    </div>
+                    <div class="file-chosen-pill" id="diag-preview" style="display: none;"></div>
+                </div>
+
+                <!-- Other Evidence Upload -->
+                <div class="upload-card">
+                    <div class="upload-card-header">
+                        <span class="uc-icon">📁</span>
+                        <div class="uc-title-group">
+                            <span class="uc-title">Other Supporting Evidence <span class="opt">(Optional)</span></span>
+                            <span class="uc-sub">Any additional documentation or communication</span>
+                        </div>
+                    </div>
+                    <div class="drop-zone" onclick="document.getElementById('other_file').click()">
+                        <div class="drop-icon">📤</div>
+                        <div class="drop-text">Click to choose Additional File</div>
+                        <div class="drop-sub">PDF, PNG, JPG up to 10MB</div>
+                        <input type="file" 
+                               name="other_file" 
+                               id="other_file" 
+                               class="file-input-hidden" 
+                               accept=".pdf,.png,.jpg,.jpeg,.webp" 
+                               onchange="onFileSelected(this, 'other-preview')">
+                    </div>
+                    <div class="file-chosen-pill" id="other-preview" style="display: none;"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SECTION 5: Review & Submit -->
+        <div class="form-section-card" id="section-review">
+            <div class="section-title-row">
+                <i class="bi bi-clipboard2-check section-icon"></i>
+                <div>
+                    <h2 class="section-heading">5. Review & Submit Claim</h2>
+                    <p class="section-subheading">Verify your claim details before finalizing your submission.</p>
+                </div>
+            </div>
+
+            <div class="review-summary-card">
+                <div class="review-grid">
+                    <div class="review-item">
+                        <span class="review-label">Target Device</span>
+                        <span class="review-val" id="rev-device">No product selected</span>
+                    </div>
+                    <div class="review-item">
+                        <span class="review-label">Warranty UID</span>
+                        <span class="review-val mono" id="rev-warranty">None</span>
+                    </div>
+                    <div class="review-item">
+                        <span class="review-label">Fault Date</span>
+                        <span class="review-val" id="rev-fault-date">{{ today }}</span>
+                    </div>
+                    <div class="review-item">
+                        <span class="review-label">Damage Type</span>
+                        <span class="review-val text-accent" id="rev-damage">None selected</span>
+                    </div>
+                    <div class="review-item" style="grid-column: 1 / -1;">
+                        <span class="review-label">Fault Description Snippet</span>
+                        <span class="review-val text-muted" id="rev-desc">No description entered yet</span>
+                    </div>
+                    <div class="review-item" style="grid-column: 1 / -1;">
+                        <span class="review-label">Attached Evidence Files</span>
+                        <span class="review-val" id="rev-files-count">0 files selected</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Submission Preparation Assistant -->
+            <div id="preflight-panel" style="margin-bottom:1.25rem; display:none;">
+                <div style="font-size:0.88rem; font-weight:700; color:#fff; margin-bottom:0.75rem; display:flex; align-items:center; gap:0.5rem;">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                    Submission Assistant
+                    <span id="preflight-score-badge" style="margin-left:auto; font-size:0.78rem; padding:0.2rem 0.65rem; border-radius:1rem; font-weight:700;"></span>
+                </div>
+                <div id="preflight-warnings" style="display:flex; flex-direction:column; gap:0.5rem;"></div>
+                <div id="preflight-suggestions" style="margin-top:0.5rem; font-size:0.78rem; color:#64748b;"></div>
+            </div>
+
+            <div class="submission-actions-bar">
+                <a href="{{ url_for('main.customer_dashboard') }}" class="btn btn-secondary">
+                    Cancel
+                </a>
+
+                <div style="display: flex; gap: 0.75rem; align-items: center;">
+                    <button type="submit" name="action" value="draft" class="btn btn-secondary" id="btn-save-draft">
+                        <i class="bi bi-floppy"></i> Save as Draft
+                    </button>
+                    <button type="submit" name="action" value="submit" class="btn btn-primary" id="btn-submit-claim">
+                        <i class="bi bi-send-fill"></i> Submit Warranty Claim
+                    </button>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .claim-form-wrapper {
+        max-width: 960px;
+        margin: 0 auto;
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+    }
+
+    .form-banner {
+        background: linear-gradient(135deg, rgba(15, 23, 42, 0.95), rgba(30, 41, 59, 0.75));
+        border: 1px solid var(--card-border);
+        border-radius: 1rem;
+        padding: 1.75rem 2rem;
+        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.4);
+    }
+
+    .banner-badge {
+        display: inline-block;
+        background: rgba(56, 189, 248, 0.1);
+        border: 1px solid rgba(56, 189, 248, 0.25);
+        color: var(--accent);
+        font-size: 0.72rem;
+        font-weight: 600;
+        padding: 0.2rem 0.6rem;
+        border-radius: 1rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        margin-bottom: 0.5rem;
+    }
+
+    .banner-title {
+        font-size: 1.85rem;
+        font-weight: 700;
+        color: #ffffff;
+        letter-spacing: -0.02em;
+        margin-bottom: 0.4rem;
+    }
+
+    .banner-desc {
+        color: var(--text-muted);
+        font-size: 0.95rem;
+        max-width: 780px;
+        line-height: 1.5;
+    }
+
+    /* Stepper Bar */
+    .stepper-bar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        background: var(--card-bg);
+        border: 1px solid var(--card-border);
+        border-radius: 0.75rem;
+        padding: 0.85rem 1.25rem;
+        overflow-x: auto;
+    }
+
+    .step-indicator {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        color: var(--text-muted);
+        font-size: 0.82rem;
+        font-weight: 500;
+        white-space: nowrap;
+    }
+
+    .step-indicator.active {
+        color: #ffffff;
+    }
+
+    .step-indicator.active .step-num {
+        background: var(--accent);
+        color: #0f172a;
+        font-weight: 700;
+    }
+
+    .step-num {
+        width: 22px;
+        height: 22px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.1);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.75rem;
+    }
+
+    .step-separator {
+        flex: 1;
+        height: 1px;
+        background: rgba(255, 255, 255, 0.1);
+        margin: 0 0.75rem;
+        min-width: 20px;
+    }
+
+    /* Form Section Cards */
+    .form-section-card {
+        background: var(--card-bg);
+        border: 1px solid var(--card-border);
+        border-radius: 1rem;
+        padding: 1.75rem;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+        backdrop-filter: blur(12px);
+    }
+
+    .section-title-row {
+        display: flex;
+        align-items: flex-start;
+        gap: 0.85rem;
+        margin-bottom: 1.35rem;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+        padding-bottom: 1rem;
+    }
+
+    .section-icon {
+        font-size: 1.5rem;
+        background: rgba(56, 189, 248, 0.1);
+        border: 1px solid rgba(56, 189, 248, 0.2);
+        width: 42px;
+        height: 42px;
+        border-radius: 0.6rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+    }
+
+    .section-heading {
+        font-size: 1.2rem;
+        font-weight: 700;
+        color: #ffffff;
+        margin-bottom: 0.2rem;
+    }
+
+    .section-subheading {
+        font-size: 0.85rem;
+        color: var(--text-muted);
+    }
+
+    .req {
+        color: var(--accent);
+        font-weight: 700;
+    }
+
+    .opt {
+        color: var(--text-muted);
+        font-size: 0.78rem;
+        font-weight: 400;
+    }
+
+    /* Form Controls */
+    .form-group {
+        display: flex;
+        flex-direction: column;
+        gap: 0.4rem;
+    }
+
+    .input-label {
+        font-size: 0.88rem;
+        font-weight: 600;
+        color: #e2e8f0;
+    }
+
+    .form-control, .form-select {
+        background: rgba(15, 23, 42, 0.8);
+        border: 1px solid rgba(56, 189, 248, 0.2);
+        color: #ffffff;
+        padding: 0.7rem 0.95rem;
+        border-radius: 0.55rem;
+        font-family: inherit;
+        font-size: 0.92rem;
+        outline: none;
+        transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .form-control:focus, .form-select:focus {
+        border-color: var(--accent);
+        box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.2);
+    }
+
+    .form-select option {
+        background: #0f172a;
+        color: #ffffff;
+    }
+
+    .input-hint {
+        font-size: 0.76rem;
+        color: var(--text-muted);
+    }
+
+    .form-grid-2 {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1.25rem;
+    }
+
+    /* Preview Box */
+    .preview-box {
+        margin-top: 1rem;
+        background: rgba(15, 23, 42, 0.6);
+        border: 1px solid rgba(56, 189, 248, 0.16);
+        border-radius: 0.65rem;
+        padding: 1.15rem;
+    }
+
+    .preview-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: 1rem;
+    }
+
+    .preview-cell {
+        display: flex;
+        flex-direction: column;
+        gap: 0.2rem;
+    }
+
+    .preview-label {
+        font-size: 0.75rem;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+    }
+
+    .preview-val {
+        font-size: 0.92rem;
+        color: #ffffff;
+    }
+
+    .mono {
+        font-family: 'JetBrains Mono', monospace, Consolas;
+    }
+
+    .highlight {
+        color: var(--accent);
+    }
+
+    .font-semibold {
+        font-weight: 600;
+    }
+
+    /* Warranty Card Inner */
+    .warranty-card-inner {
+        background: linear-gradient(135deg, rgba(15, 23, 42, 0.8), rgba(20, 30, 48, 0.5));
+        border: 1px solid rgba(56, 189, 248, 0.2);
+        border-radius: 0.75rem;
+        padding: 1.35rem;
+    }
+
+    .w-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 1rem;
+        padding-bottom: 0.75rem;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    .w-uid-tag {
+        font-family: monospace;
+        font-size: 0.8rem;
+        color: var(--accent);
+        letter-spacing: 0.05em;
+    }
+
+    .w-provider {
+        font-size: 1.15rem;
+        font-weight: 700;
+        color: #ffffff;
+    }
+
+    .w-meta-row {
+        display: flex;
+        gap: 2rem;
+        margin-bottom: 1rem;
+    }
+
+    .w-meta-item {
+        display: flex;
+        flex-direction: column;
+        gap: 0.15rem;
+    }
+
+    .w-label {
+        font-size: 0.75rem;
+        color: var(--text-muted);
+        text-transform: uppercase;
+    }
+
+    .w-val {
+        font-size: 0.92rem;
+        font-weight: 600;
+        color: #f1f5f9;
+    }
+
+    .w-clause-container {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+    }
+
+    .clause-box {
+        background: rgba(0, 0, 0, 0.25);
+        border-radius: 0.5rem;
+        padding: 0.85rem;
+        border-left: 3px solid #22c55e;
+    }
+
+    .clause-exclusions {
+        border-left-color: #ef4444;
+    }
+
+    .clause-title {
+        font-size: 0.75rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        color: #cbd5e1;
+        margin-bottom: 0.35rem;
+    }
+
+    .clause-body {
+        font-size: 0.82rem;
+        color: #94a3b8;
+        line-height: 1.4;
+    }
+
+    .selection-placeholder {
+        padding: 1.5rem;
+        text-align: center;
+        background: rgba(255, 255, 255, 0.02);
+        border: 1px dashed rgba(255, 255, 255, 0.15);
+        border-radius: 0.65rem;
+        color: var(--text-muted);
+        font-size: 0.9rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+    }
+
+    /* Document Upload Styles */
+    .upload-requirements-notice {
+        background: rgba(56, 189, 248, 0.08);
+        border: 1px solid rgba(56, 189, 248, 0.2);
+        border-radius: 0.65rem;
+        padding: 0.85rem 1.15rem;
+        margin-bottom: 1.25rem;
+    }
+
+    .req-title {
+        font-size: 0.8rem;
+        font-weight: 600;
+        color: var(--accent);
+        text-transform: uppercase;
+        margin-bottom: 0.4rem;
+        letter-spacing: 0.03em;
+    }
+
+    .req-pills {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+    }
+
+    .req-pill {
+        font-size: 0.78rem;
+        padding: 0.25rem 0.6rem;
+        border-radius: 0.4rem;
+        font-weight: 500;
+    }
+
+    .req-mandatory {
+        background: rgba(245, 158, 11, 0.15);
+        border: 1px solid rgba(245, 158, 11, 0.35);
+        color: #fde047;
+    }
+
+    .req-mandatory .star {
+        color: #ef4444;
+        font-weight: bold;
+    }
+
+    .req-optional {
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        color: #94a3b8;
+    }
+
+    .upload-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 1rem;
+    }
+
+    .upload-card {
+        background: rgba(15, 23, 42, 0.6);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 0.75rem;
+        padding: 1rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+        transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .upload-card:hover {
+        border-color: rgba(56, 189, 248, 0.3);
+    }
+
+    .upload-card-header {
+        display: flex;
+        align-items: flex-start;
+        gap: 0.6rem;
+    }
+
+    .uc-icon {
+        font-size: 1.3rem;
+    }
+
+    .uc-title-group {
+        display: flex;
+        flex-direction: column;
+        gap: 0.15rem;
+    }
+
+    .uc-title {
+        font-size: 0.88rem;
+        font-weight: 600;
+        color: #ffffff;
+    }
+
+    .uc-sub {
+        font-size: 0.74rem;
+        color: var(--text-muted);
+    }
+
+    .drop-zone {
+        border: 1.5px dashed rgba(56, 189, 248, 0.25);
+        border-radius: 0.55rem;
+        padding: 1rem;
+        text-align: center;
+        cursor: pointer;
+        background: rgba(0, 0, 0, 0.2);
+        transition: all 0.2s;
+    }
+
+    .drop-zone:hover {
+        background: rgba(56, 189, 248, 0.08);
+        border-color: var(--accent);
+    }
+
+    .drop-icon {
+        font-size: 1.25rem;
+        margin-bottom: 0.25rem;
+    }
+
+    .drop-text {
+        font-size: 0.82rem;
+        font-weight: 600;
+        color: #cbd5e1;
+    }
+
+    .drop-sub {
+        font-size: 0.72rem;
+        color: var(--text-muted);
+    }
+
+    .file-input-hidden {
+        display: none;
+    }
+
+    .file-chosen-pill {
+        background: rgba(34, 197, 94, 0.12);
+        border: 1px solid rgba(34, 197, 94, 0.3);
+        color: #86efac;
+        padding: 0.4rem 0.65rem;
+        border-radius: 0.4rem;
+        font-size: 0.78rem;
+        font-family: monospace;
+        word-break: break-all;
+    }
+
+    /* Review Summary Card */
+    .review-summary-card {
+        background: rgba(15, 23, 42, 0.6);
+        border: 1px solid rgba(56, 189, 248, 0.2);
+        border-radius: 0.75rem;
+        padding: 1.25rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .review-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+    }
+
+    .review-item {
+        display: flex;
+        flex-direction: column;
+        gap: 0.2rem;
+    }
+
+    .review-label {
+        font-size: 0.75rem;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.03em;
+    }
+
+    .review-val {
+        font-size: 0.92rem;
+        color: #ffffff;
+        font-weight: 500;
+    }
+
+    .submission-actions-bar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 1rem;
+        padding-top: 1rem;
+        border-top: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    .status-badge {
+        font-size: 0.75rem;
+        padding: 0.2rem 0.6rem;
+        border-radius: 1rem;
+        font-weight: 600;
+    }
+
+    .status-active {
+        background: var(--success-bg);
+        color: #86efac;
+        border: 1px solid var(--success);
+    }
+
+    .status-expired {
+        background: var(--danger-bg);
+        color: #fca5a5;
+        border: 1px solid var(--danger);
+    }
+
+    .status-warning, .status-nearing {
+        background: var(--warning-bg);
+        color: #fde047;
+        border: 1px solid var(--warning);
+    }
+
+    @media (max-width: 768px) {
+        .form-grid-2, .w-clause-container, .review-grid {
+            grid-template-columns: 1fr;
+        }
+        .upload-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Selected files tracker
+    const selectedFiles = {};
+
+    function onProductSelected(productId) {
+        const select = document.getElementById("product_id");
+        const prevBox = document.getElementById("product-preview-box");
+        const wBox = document.getElementById("warranty-info-box");
+        const wPlaceholder = document.getElementById("no-warranty-selected");
+
+        if (!productId) {
+            prevBox.style.display = "none";
+            wBox.style.display = "none";
+            wPlaceholder.style.display = "flex";
+            updateReviewSummary();
+            return;
+        }
+
+        const opt = select.options[select.selectedIndex];
+        
+        // Populate Product Preview
+        document.getElementById("prev-prod-name").textContent = opt.dataset.name || "-";
+        document.getElementById("prev-prod-model").textContent = (opt.dataset.brand || "") + " " + (opt.dataset.model || "");
+        document.getElementById("prev-prod-serial").textContent = opt.dataset.serial || "-";
+        document.getElementById("prev-prod-purchase").textContent = opt.dataset.purchase || "-";
+        document.getElementById("prev-prod-retailer").textContent = opt.dataset.retailer || "-";
+        document.getElementById("prev-prod-wlen").textContent = (opt.dataset.warrantyLen || "-") + " Months";
+        prevBox.style.display = "block";
+
+        // Set min date on fault date picker (cannot precede purchase date)
+        if (opt.dataset.purchase) {
+            document.getElementById("fault_date").min = opt.dataset.purchase;
+        }
+
+        // Populate Warranty Info
+        if (opt.dataset.warrantyUid && opt.dataset.warrantyUid !== "NONE") {
+            document.getElementById("w-prev-uid").textContent = opt.dataset.warrantyUid;
+            document.getElementById("w-prev-provider").textContent = opt.dataset.warrantyProvider || "Warranty Policy";
+            document.getElementById("w-prev-expiry").textContent = opt.dataset.warrantyExpiry || "-";
+            
+            const status = opt.dataset.warrantyStatus || "Active";
+            document.getElementById("w-prev-status-text").textContent = status;
+            const badgeContainer = document.getElementById("w-prev-status-badge");
+            let badgeClass = "status-active";
+            if (status === "Expired") badgeClass = "status-expired";
+            else if (status === "Nearing Expiry") badgeClass = "status-warning";
+            badgeContainer.innerHTML = `<span class="status-badge ${badgeClass}">● ${status}</span>`;
+
+            document.getElementById("w-prev-covered").textContent = opt.dataset.warrantyCovered || "Standard manufacturer warranty faults covered.";
+            document.getElementById("w-prev-exclusions").textContent = opt.dataset.warrantyExclusions || "Physical damage and liquid ingress excluded.";
+
+            wBox.style.display = "block";
+            wPlaceholder.style.display = "none";
+        } else {
+            wBox.style.display = "none";
+            wPlaceholder.innerHTML = `<i class="bi bi-exclamation-triangle placeholder-icon" style="color:#f59e0b;"></i><span>No active warranty policy found for this product.</span>`;
+            wPlaceholder.style.display = "flex";
+        }
+
+        updateReviewSummary();
+    }
+
+    function onFileSelected(inputElem, previewId) {
+        const preview = document.getElementById(previewId);
+        if (inputElem.files && inputElem.files[0]) {
+            const file = inputElem.files[0];
+            const sizeMb = (file.size / (1024 * 1024)).toFixed(2);
+            preview.textContent = `✓ ${file.name} (${sizeMb} MB)`;
+            preview.style.display = "block";
+            selectedFiles[inputElem.name] = file.name;
+        } else {
+            preview.style.display = "none";
+            delete selectedFiles[inputElem.name];
+        }
+        updateReviewSummary();
+    }
+
+    function updateReviewSummary() {
+        const select = document.getElementById("product_id");
+        const revDevice = document.getElementById("rev-device");
+        const revWarranty = document.getElementById("rev-warranty");
+        const revFaultDate = document.getElementById("rev-fault-date");
+        const revDamage = document.getElementById("rev-damage");
+        const revDesc = document.getElementById("rev-desc");
+        const revFilesCount = document.getElementById("rev-files-count");
+
+        if (select && select.value) {
+            const opt = select.options[select.selectedIndex];
+            revDevice.textContent = (opt.dataset.brand || "") + " " + (opt.dataset.name || "") + " (" + (opt.dataset.serial || "") + ")";
+            revWarranty.textContent = opt.dataset.warrantyUid || "None";
+        } else {
+            revDevice.textContent = "No product selected";
+            revWarranty.textContent = "None";
+        }
+
+        const faultDate = document.getElementById("fault_date").value;
+        revFaultDate.textContent = faultDate || "Not set";
+
+        const damageType = document.getElementById("damage_type").value;
+        revDamage.textContent = damageType || "None selected";
+
+        const desc = document.getElementById("fault_description").value.trim();
+        revDesc.textContent = desc.length > 0 ? (desc.substring(0, 90) + (desc.length > 90 ? "..." : "")) : "No description entered yet";
+
+        const filesCount = Object.keys(selectedFiles).length;
+        revFilesCount.textContent = `${filesCount} evidence file(s) attached`;
+    }
+
+    // Auto-trigger on page load if preselected product
+    document.addEventListener("DOMContentLoaded", function() {
+        const select = document.getElementById("product_id");
+        if (select && select.value) {
+            onProductSelected(select.value);
+        }
+        updateReviewSummary();
+        runPreflightCheck();
+    });
+
+    // ─── Submission Preparation Assistant ────────────────────────────────────
+    function runPreflightCheck() {
+        const panel = document.getElementById("preflight-panel");
+        const warningsDiv = document.getElementById("preflight-warnings");
+        const suggestionsDiv = document.getElementById("preflight-suggestions");
+        const badge = document.getElementById("preflight-score-badge");
+
+        const warnings = [];
+        const suggestions = [];
+        let score = 100;
+
+        // 1. Product selected?
+        const productId = document.getElementById("product_id")?.value;
+        if (!productId) {
+            warnings.push({level:"error", msg:"No product selected. Please choose a registered product."});
+            score -= 30;
+        }
+
+        // 2. Fault date provided?
+        const faultDate = document.getElementById("fault_date")?.value;
+        if (!faultDate) {
+            warnings.push({level:"error", msg:"Fault date is required."});
+            score -= 20;
+        } else {
+            // Future date?
+            const today = new Date(); today.setHours(0,0,0,0);
+            const fd = new Date(faultDate);
+            if (fd > today) {
+                warnings.push({level:"error", msg:"Fault date cannot be in the future."});
+                score -= 30;
+            }
+        }
+
+        // 3. Damage type selected?
+        const damageType = document.getElementById("damage_type")?.value;
+        if (!damageType) {
+            warnings.push({level:"warning", msg:"No damage type selected. This helps the AI evaluate your claim accurately."});
+            score -= 10;
+        }
+
+        // 4. Fault description length?
+        const desc = (document.querySelector("textarea[name=fault_description]")?.value || "").trim();
+        if (desc.length === 0) {
+            warnings.push({level:"error", msg:"Fault description is required."});
+            score -= 20;
+        } else if (desc.length < 30) {
+            warnings.push({level:"warning", msg:"Fault description is too brief. A detailed description improves approval chances."});
+            score -= 10;
+            suggestions.push("Tip: Describe symptoms, when they started, and what you tried.");
+        }
+
+        // 5. Receipt uploaded?
+        const hasReceipt = selectedFiles['receipt_file'] || selectedFiles['invoice_file'] ||
+            document.getElementById("receipt_file")?.files?.length > 0;
+        if (!hasReceipt) {
+            warnings.push({level:"error", msg:"Purchase receipt or invoice is required. Claims without proof of purchase are typically rejected."});
+            score -= 30;
+        }
+
+        // 6. Damage photo uploaded?
+        const hasPhoto = selectedFiles['damage_photo_file'] ||
+            document.getElementById("damage_photo_file")?.files?.length > 0;
+        if (!hasPhoto) {
+            warnings.push({level:"warning", msg:"No damage/fault photo attached. Photos significantly improve claim approval."});
+            score -= 15;
+            suggestions.push("Tip: Take a clear photo of the fault/damage and upload it.");
+        }
+
+        // Warranty expiry check (from data attribute set by onProductSelected)
+        const wExpiry = document.getElementById("prev-warranty-expiry")?.textContent;
+        if (wExpiry && wExpiry !== "—" && faultDate) {
+            try {
+                const expDate = new Date(wExpiry);
+                const fd = new Date(faultDate);
+                if (fd > expDate) {
+                    warnings.push({level:"error", msg:`Fault date (${faultDate}) is after warranty expiry (${wExpiry}). Claim will be automatically rejected.`});
+                    score -= 40;
+                }
+            } catch (e) {}
+        }
+
+        score = Math.max(0, score);
+
+        // Render
+        panel.style.display = "block";
+        let readiness, badgeColor;
+        if (score >= 80) { readiness = "Ready"; badgeColor = "#4ade80"; }
+        else if (score >= 50) { readiness = "Fair"; badgeColor = "#fbbf24"; }
+        else { readiness = "Needs Attention"; badgeColor = "#f87171"; }
+
+        badge.textContent = `${score}/100 — ${readiness}`;
+        badge.style.background = badgeColor + "20";
+        badge.style.color = badgeColor;
+        badge.style.border = `1px solid ${badgeColor}60`;
+
+        if (warnings.length === 0) {
+            warningsDiv.innerHTML = `<div style="font-size:0.82rem; color:#4ade80; display:flex; align-items:center; gap:0.4rem;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> All checks passed. Your claim is ready to submit.</div>`;
+        } else {
+            warningsDiv.innerHTML = warnings.map(w => {
+                const isError = w.level === "error";
+                const c = isError ? "#f87171" : "#fbbf24";
+                const bg = isError ? "rgba(239,68,68,0.06)" : "rgba(245,158,11,0.06)";
+                const icon = isError ? "✕" : "⚠";
+                return `<div style="font-size:0.8rem; color:${c}; background:${bg}; border:1px solid ${c}30; border-radius:0.4rem; padding:0.45rem 0.75rem; display:flex; gap:0.5rem; align-items:flex-start;">
+                    <span style="flex-shrink:0; font-weight:700;">${icon}</span><span>${w.msg}</span></div>`;
+            }).join("");
+        }
+
+        suggestionsDiv.innerHTML = suggestions.map(s => `<div><i class="bi bi-lightbulb" style="color:#f59e0b;"></i> ${s}</div>`).join("");
+    }
+
+    // Re-run preflight when key fields change
+    ["product_id", "fault_date", "damage_type"].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.addEventListener("change", runPreflightCheck);
+    });
+    const descEl = document.querySelector("textarea[name=fault_description]");
+    if (descEl) descEl.addEventListener("input", () => { clearTimeout(descEl._t); descEl._t = setTimeout(runPreflightCheck, 400); });
+    ["receipt_file", "damage_photo_file"].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.addEventListener("change", runPreflightCheck);
+    });
+</script>
+{% endblock %}
